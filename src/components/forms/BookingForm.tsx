@@ -133,6 +133,11 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                             onChange={(place) => handleLocationSelect(place, 'stopover', formData, setFormData, translations, index)}
                             placeholder={`${translations.hero.stopover} ${index + 1}`}
                             translations={translations}
+                            onClear={() => {
+                                const newStopovers = [...formData.stopovers];
+                                newStopovers[index] = null as unknown as Location;
+                                setFormData(prev => ({ ...prev, stopovers: newStopovers }));
+                            }}
                         />
                     </div>
                     <div className="flex justify-center pt-8">
@@ -148,7 +153,6 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             ))}
         </>
     )
-
     const renderDestination = () => (
         <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
             <div className="flex justify-center pt-8">
@@ -163,6 +167,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                     onChange={(place) => handleLocationSelect(place, 'destination', formData, setFormData, translations)}
                     placeholder={translations.hero.destinationPlaceholder}
                     translations={translations}
+                    onClear={() => setFormData(prev => ({ ...prev, destination: null }))}
                 />
             </div>
             <div className="flex justify-center pt-7">
@@ -200,12 +205,12 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     return (
         <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
             <form className="space-y-6">
-                    <div className="space-y-4 sm:space-y-6 relative">
-                        <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
-                        {renderPickupLocation()}
-                        {renderStopovers()}
-                        {renderAddStopoverButton()}
-                        {renderDestination()}
+                <div className="space-y-4 sm:space-y-6 relative">
+                    <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
+                    {renderPickupLocation()}
+                    {renderStopovers()}
+                    {renderAddStopoverButton()}
+                    {renderDestination()}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
