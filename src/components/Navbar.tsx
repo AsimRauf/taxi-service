@@ -17,11 +17,11 @@ export const Navbar = () => {
     }
 
     return (
-        <div className="w-full px-4 py-6">
-            <nav className="max-w-7xl mx-auto bg-white rounded-full shadow-lg px-8 py-4 flex items-center justify-between border border-secondary/20">
+        <div className="w-full px-2 sm:px-4 py-3 sm:py-6 fixed top-0 left-0 right-0 z-50 bg-white/0 backdrop-blur-sm">
+            <nav className="max-w-7xl mx-auto bg-white rounded-full shadow-lg px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border border-secondary/20">
                 {/* Logo */}
                 <div className="flex-shrink-0">
-                    <Link href="/" className="font-montserrat text-2xl font-bold text-secondary">
+                    <Link href="/" className="font-montserrat text-xl sm:text-2xl font-bold text-secondary whitespace-nowrap">
                         <span className="text-primary">Taxi</span>Service
                     </Link>
                 </div>
@@ -46,11 +46,11 @@ export const Navbar = () => {
                         >
                             <Popover.Panel className="absolute z-50 mt-3 w-48 transform">
                                 <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
-                                    <div className="relative bg-white">
-                                        <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 w-full text-left">
+                                    <div className="relative bg-white p-1">
+                                        <button className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg text-left">
                                             {t('nav.service1')}
                                         </button>
-                                        <button className="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 w-full text-left">
+                                        <button className="block w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg text-left">
                                             {t('nav.service2')}
                                         </button>
                                     </div>
@@ -71,19 +71,19 @@ export const Navbar = () => {
                 </div>
 
                 {/* Right Side - Language & Auth */}
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center gap-2 sm:gap-4">
                     <Popover className="relative">
-                        <Popover.Button className="flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 text-secondary hover:bg-primary/20 transition-all">
+                        <Popover.Button className="flex items-center space-x-1 bg-primary/10 rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-secondary hover:bg-primary/20 transition-all">
                             <ReactCountryFlag
                                 countryCode={router.locale === 'nl' ? 'NL' : 'GB'}
                                 svg
                                 style={{
-                                    width: '1.5em',
-                                    height: '1.5em',
+                                    width: '1.2em',
+                                    height: '1.2em',
                                 }}
                             />
-                            <span className="font-medium">{router.locale === 'nl' ? 'NL' : 'EN'}</span>
-                            <ChevronDownIcon className="h-4 w-4" />
+                            <span className="font-medium text-sm sm:text-base">{router.locale === 'nl' ? 'NL' : 'EN'}</span>
+                            <ChevronDownIcon className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Popover.Button>
 
                         <Transition
@@ -95,32 +95,32 @@ export const Navbar = () => {
                             leaveFrom="opacity-100 translate-y-0"
                             leaveTo="opacity-0 translate-y-1"
                         >
-                            <Popover.Panel className="absolute right-0 z-50 mt-3 w-32 transform">
-                                <div className="relative bg-white">
+                            <Popover.Panel className="absolute right-0 z-50 mt-3 w-36 transform">
+                                <div className="relative bg-white rounded-xl shadow-lg p-1">
                                     <button
                                         onClick={() => changeLanguage('nl')}
-                                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 w-full"
+                                        className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
                                     >
                                         <ReactCountryFlag
                                             countryCode="NL"
                                             svg
                                             style={{
-                                                width: '1.5em',
-                                                height: '1.5em',
+                                                width: '1.2em',
+                                                height: '1.2em',
                                             }}
                                         />
                                         <span>Dutch</span>
                                     </button>
                                     <button
                                         onClick={() => changeLanguage('en')}
-                                        className="flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 w-full"
+                                        className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
                                     >
                                         <ReactCountryFlag
                                             countryCode="GB"
                                             svg
                                             style={{
-                                                width: '1.5em',
-                                                height: '1.5em',
+                                                width: '1.2em',
+                                                height: '1.2em',
                                             }}
                                         />
                                         <span>English</span>
@@ -132,7 +132,7 @@ export const Navbar = () => {
 
                     {isLoggedIn ? (
                         <Popover className="relative">
-                            {/* User menu stays the same */}
+                            {/* User menu implementation */}
                         </Popover>
                     ) : (
                         <Link href="/login" className="hidden md:block bg-secondary text-white px-6 py-2 rounded-full hover:bg-secondary/90 transition-colors">
@@ -142,18 +142,18 @@ export const Navbar = () => {
 
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden rounded-full p-2 text-secondary hover:bg-primary/10"
+                        className="md:hidden rounded-full p-1.5 sm:p-2 text-secondary hover:bg-primary/10"
                     >
                         {isMobileMenuOpen ? (
-                            <XMarkIcon className="h-6 w-6" />
+                            <XMarkIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                         ) : (
-                            <Bars3Icon className="h-6 w-6" />
+                            <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                         )}
                     </button>
                 </div>
 
                 {/* Mobile Menu */}
-                <div className={`absolute inset-x-0 top-24 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+                <div className={`absolute left-2 right-2 top-20 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
                     <Transition
                         show={isMobileMenuOpen}
                         enter="transition ease-out duration-200"
@@ -163,25 +163,25 @@ export const Navbar = () => {
                         leaveFrom="opacity-100 scale-100"
                         leaveTo="opacity-0 scale-95"
                     >
-                        <div className="mx-4 bg-white shadow-lg rounded-2xl border border-secondary/10">
-                            <div className="flex flex-col py-4">
+                        <div className="bg-white shadow-lg rounded-2xl border border-secondary/10">
+                            <div className="flex flex-col py-2">
                                 <Link
                                     href="#services"
-                                    className="px-6 py-3 text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
+                                    className="px-4 py-2.5 text-base text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     {t('nav.services')}
                                 </Link>
                                 <Link
                                     href="#about"
-                                    className="px-6 py-3 text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
+                                    className="px-4 py-2.5 text-base text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     {t('nav.aboutUs')}
                                 </Link>
                                 <Link
                                     href="#contact"
-                                    className="px-6 py-3 text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
+                                    className="px-4 py-2.5 text-base text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
                                     onClick={() => setIsMobileMenuOpen(false)}
                                 >
                                     {t('nav.contact')}
@@ -189,7 +189,7 @@ export const Navbar = () => {
                                 {!isLoggedIn && (
                                     <Link
                                         href="/login"
-                                        className="px-6 py-3 text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
+                                        className="px-4 py-2.5 text-base text-gray-700 hover:bg-primary/10 hover:text-secondary transition-colors"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                     >
                                         {t('nav.login')}

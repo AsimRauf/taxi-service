@@ -9,6 +9,9 @@ import { handleLocationSelect } from '@/hooks/useLocationSelect'
 import { LuggageCheckbox } from './booking/LuggageCheckbox'
 import { DateSelector } from './booking/DateSelector'
 import { PassengerSelector } from './booking/PassengerSelector'
+import { format } from 'date-fns'
+import { validateBookingForm } from '@/utils/bookingValidation'
+import { calculateSegmentDistances } from '@/utils/distanceCalculations'
 
 interface BookingFormProps {
     translations: WebsiteTranslations
@@ -26,10 +29,40 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
         returnDate: undefined,
     })
 
-    const handleCalculate = () => {
-        console.log('Form Data:', formData)
-      }    
+    const handleCalculate = async () => {
+        const { isValid, error } = validateBookingForm(formData)
+        if (!isValid && error) {
+            alert(error)
+            return
+        }
 
+        try {
+            const segments = await calculateSegmentDistances(
+                formData.pickup,
+                formData.destination,
+                formData.stopovers
+            )
+
+            const bookingData = {
+                sourceAddress: formData.pickup?.mainAddress,
+                destinationAddress: formData.destination?.mainAddress,
+                directDistance: segments[0].distance,
+                stopovers: formData.stopovers.map(stop => stop?.mainAddress),
+                extraDistance: segments[1]?.distance || '0 km',
+                pickupDateTime: formData.pickupDate ? format(formData.pickupDate, 'yyyy-MM-dd HH:mm') : null,
+                returnDateTime: formData.isReturn && formData.returnDate ?
+                    format(formData.returnDate, 'yyyy-MM-dd HH:mm') : null,
+                hasLuggage: formData.hasLuggage,
+                passengers: formData.travelers
+            }
+
+            localStorage.setItem('bookingData', JSON.stringify(bookingData))
+            console.log('Booking data:', bookingData)
+        } catch (error) {
+            console.error('Error processing booking:', error)
+            alert('Error calculating route. Please try again.')
+        }
+    }
 
     const swapLocations = () => {
         setFormData(prev => ({
@@ -54,13 +87,13 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     }
 
     const renderPickupLocation = () => (
-        <div className="grid grid-cols-[48px_1fr_48px] items-start gap-2">
-            <div className="flex justify-center pt-7">
-                <div className="w-6 h-6 m-2 rounded-full bg-primary flex items-center justify-center relative z-10">
+        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+            <div className="flex justify-center pt-8">
+                <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
                     <MapPin className="text-white" size={16} />
                 </div>
             </div>
-            <div className="space-y-1">
+            <div className="w-full space-y-1">
                 <span className="block text-sm font-medium text-gray-600">From</span>
                 <LocationInput
                     value={formData.pickup}
@@ -87,13 +120,13 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     const renderStopovers = () => (
         <>
             {formData.stopovers.map((stopover, index) => (
-                <div key={index} className="grid grid-cols-[48px_1fr_48px] items-start gap-2">
+                <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
                     <div className="flex justify-center pt-8">
-                        <div className="w-4 h-4 rounded-full bg-primary mt-4 flex items-center justify-center relative z-10">
-                            <MapPin className="text-secondary" size={12} />
+                        <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-10">
+                            <MapPin className="text-white" size={12} />
                         </div>
                     </div>
-                    <div className="space-y-1">
+                    <div className="w-full space-y-1">
                         <span className="block text-sm font-medium text-gray-600">Via</span>
                         <LocationInput
                             value={stopover}
@@ -117,13 +150,13 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     )
 
     const renderDestination = () => (
-        <div className="grid grid-cols-[48px_1fr_48px] items-start gap-2">
+        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
             <div className="flex justify-center pt-8">
                 <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
                     <MapPin className="text-white" size={16} />
                 </div>
             </div>
-            <div className="space-y-1">
+            <div className="w-full space-y-1">
                 <span className="block text-sm font-medium text-gray-600">To</span>
                 <LocationInput
                     value={formData.destination}
@@ -146,7 +179,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     )
 
     const renderAddStopoverButton = () => (
-        <div className="grid grid-cols-[48px_1fr_48px] items-center">
+        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-center gap-1 sm:gap-2">
             <div className="flex justify-center">
                 <div className="w-5 h-5 rounded-full bg-gray-200 flex items-center justify-center relative z-10">
                     <Plus size={14} className="text-gray-600" />
@@ -163,20 +196,20 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             <div></div>
         </div>
     )
+
     return (
-        <div className="max-w-2xl mx-auto">
-            <form className="space-y-8">
-                <div className="relative bg-white/50 p-6 rounded-2xl backdrop-blur-sm">
-                    <div className="space-y-6 relative">
-                        <div className="absolute left-6 top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
+        <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
+            <form className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6 relative">
+                        <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
                         {renderPickupLocation()}
                         {renderStopovers()}
                         {renderAddStopoverButton()}
                         {renderDestination()}
-                    </div>
                 </div>
-                <div className="grid md:grid-cols-2 gap-8 mt-8">
-                    <div className="space-y-6 bg-gray-50/80 p-6 rounded-2xl">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
+                    <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
                         <LuggageCheckbox
                             checked={formData.hasLuggage}
                             onChange={(checked) => setFormData(prev => ({ ...prev, hasLuggage: checked }))}
@@ -189,7 +222,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                         />
                     </div>
 
-                    <div className="space-y-6 bg-gray-50/80 p-6 rounded-2xl">
+                    <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
                         <DateSelector
                             label={translations.hero.pickupDateTime}
                             value={formData.pickupDate || null}
@@ -222,14 +255,14 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                                 />
                             )}
                         </div>
-
                     </div>
                 </div>
-                <div className="flex justify-end mt-8">
+
+                <div className="flex justify-end mt-6">
                     <button
                         type="button"
                         onClick={handleCalculate}
-                        className="bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors"
+                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full hover:bg-primary/90 transition-colors"
                     >
                         {translations.hero.calculate}
                     </button>

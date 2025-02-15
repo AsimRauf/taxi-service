@@ -15,8 +15,6 @@ interface GooglePlaceValue {
     place_id: string
   }
   
-  
-  
   interface SelectOption {
     label: string
     value: GooglePlaceValue
@@ -63,7 +61,7 @@ interface GooglePlaceValue {
     console.log(translations.locale)
 
     return (
-      <div className="min-h-[60px]">
+      <div className="w-full min-h-[60px]">
         <GooglePlacesAutocomplete
           {...googlePlacesProps}
           selectProps={{
