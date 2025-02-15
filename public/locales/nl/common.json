@@ -1,0 +1,67 @@
+{
+    "nav": {
+      "login": "Inloggen",
+      "services": "Onze Diensten",
+      "contact": "Contact",
+      "aboutUs": "Over Ons",
+      "service1": "Taxi Service",
+      "service2": "Zakelijk Vervoer",
+      "profile": "Profiel",
+      "signOut": "Uitloggen"
+    },
+    "hero": {
+      "title": "Boek uw rit met vertrouwen",
+      "subtitle": "Professionele taxiservice voor al uw vervoersbehoeften",
+      "pickupPlaceholder": "Voer ophaallocatie in",
+      "destinationPlaceholder": "Voer bestemming in",
+      "addStopover": "Tussenstop toevoegen",
+      "swapLocations": "Locaties wisselen",
+      "stopover": "Tussenstop",
+      "removeStopover": "Tussenstop verwijderen",
+      "pickupDateTime": "Ophaaldatum & tijd",
+      "returnDateTime": "Retourdatum & tijd",
+      "returnTrip": "Retourrit",
+      "luggage": "Ik heb bagage",
+      "travelers": "Aantal reizigers",
+      "calculate": "Prijs berekenen",
+      "returnPlaceholder": "Selecteer retourdatum en tijd"
+    },
+    "booking": {
+      "title": "Comfort Taxi Service",
+      "from": "Van",
+      "to": "Naar",
+      "distance": "Afstand",
+      "duration": "Duur",
+      "passengers": "Passagiers",
+      "luggage": "Bagage",
+      "yes": "Ja",
+      "no": "Nee",
+      "pickupTime": "Ophaaltijd",
+      "returnTime": "Retourtijd",
+      "totalPrice": "Totaalprijs",
+      "returnIncluded": "*Retourrit inbegrepen in totaalprijs",
+      "back": "Terug",
+      "bookNow": "Nu Boeken"
+    },
+    "auth": {
+      "createAccount": "Maak uw account aan",
+      "fullName": "Volledige naam",
+      "nameRequired": "Naam is verplicht",
+      "emailRequired": "E-mail is verplicht",
+      "invalidEmail": "Ongeldig e-mailformaat",
+      "phoneRequired": "Telefoonnummer is verplicht",
+      "invalidPhone": "Ongeldig Nederlands telefoonnummer",
+      "passwordRequired": "Wachtwoord is verplicht",
+      "passwordLength": "Wachtwoord moet minimaal 8 tekens bevatten",
+      "passwordMatch": "Wachtwoorden komen niet overeen",
+      "genericError": "Er is iets misgegaan",
+      "creating": "Account aanmaken...",
+      "create": "Account aanmaken",
+      "haveAccount": "Heeft u al een account?",
+      "signin": "Inloggen",
+      "password": "Wachtwoord",
+      "phoneNumber": "Telefoonnummer",
+      "confirmPassword": "Bevestig wachtwoord"
+    }
+  }
+  

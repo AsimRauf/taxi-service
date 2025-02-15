@@ -1,0 +1,67 @@
+{
+    "nav": {
+      "login": "Login",
+      "services": "Our Services",
+      "contact": "Contact",
+      "aboutUs": "About Us",
+      "service1": "Taxi Service",
+      "service2": "Business Transport",
+      "profile": "Profile",
+      "signOut": "Sign out"
+    },
+    "hero": {
+      "title": "Book Your Ride with Confidence",
+      "subtitle": "Professional taxi service for all your transportation needs",
+      "pickupPlaceholder": "Enter pickup location",
+      "destinationPlaceholder": "Enter destination",
+      "addStopover": "Add stopover",
+      "swapLocations": "Swap locations",
+      "stopover": "Stopover",
+      "removeStopover": "Remove stopover",
+      "pickupDateTime": "Pickup Date & Time",
+      "returnDateTime": "Return Date & Time",
+      "returnTrip": "Return Trip",
+      "luggage": "I have luggage",
+      "travelers": "Number of Travelers",
+      "calculate": "Calculate Price",
+      "returnPlaceholder": "Select return date and time"
+    },
+    "booking": {
+      "title": "Comfort Taxi Service",
+      "from": "From",
+      "to": "To",
+      "distance": "Distance",
+      "duration": "Duration",
+      "passengers": "Passengers",
+      "luggage": "Luggage",
+      "yes": "Yes",
+      "no": "No",
+      "pickupTime": "Pickup Time",
+      "returnTime": "Return Time",
+      "totalPrice": "Total Price",
+      "returnIncluded": "*Return journey included in total price",
+      "back": "Back",
+      "bookNow": "Book Now"
+    },
+    "auth": {
+      "createAccount": "Create your account",
+      "fullName": "Full Name",
+      "nameRequired": "Name is required",
+      "emailRequired": "Email is required",
+      "invalidEmail": "Invalid email format",
+      "phoneRequired": "Phone number is required",
+      "invalidPhone": "Invalid Netherlands phone number",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password must be at least 8 characters",
+      "passwordMatch": "Passwords do not match",
+      "genericError": "Something went wrong",
+      "creating": "Creating Account...",
+      "create": "Create Account",
+      "haveAccount": "Already have an account?",
+      "signin": "Sign in",
+      "password": "Password",
+      "phoneNumber": "Phone Number",
+      "confirmPassword": "Confirm Password"
+    }
+  }
+  
