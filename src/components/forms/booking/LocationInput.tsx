@@ -60,7 +60,8 @@ interface GooglePlaceValue {
         }
       }
     } : null
-  
+    console.log(translations.locale)
+
     return (
       <div className="min-h-[60px]">
         <GooglePlacesAutocomplete

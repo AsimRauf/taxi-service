@@ -12,8 +12,8 @@ module.exports = {
         secondary: '#0077BE',
       },
       fontFamily: {
-        poppins: ['Poppins', 'sans-serif'],
-        montserrat: ['Montserrat', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
+        heading: ['Poppins', 'sans-serif'],
       },
     },
   },

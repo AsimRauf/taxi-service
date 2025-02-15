@@ -16,10 +16,6 @@ export default function Home() {
   return (
     <main className="min-h-screen pt-20">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-secondary">
-          {t('hero.title')}
-        </h1>
-        {/* Rest of your content */}
       </div>
     </main>
   )
