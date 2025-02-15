@@ -1,5 +1,4 @@
 import { GetStaticProps } from 'next'
-import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
@@ -11,7 +10,6 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 }
 
 export default function Home() {
-  const { t } = useTranslation('common')
 
   return (
     <main className="min-h-screen pt-20">
