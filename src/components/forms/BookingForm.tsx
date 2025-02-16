@@ -57,7 +57,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             }
 
             localStorage.setItem('bookingData', JSON.stringify(bookingData))
-            alert('Booking data:', bookingData)
+            alert(bookingData)
         } catch (error) {
             console.error('Error processing booking:', error)
             alert('Error calculating route. Please try again.')
