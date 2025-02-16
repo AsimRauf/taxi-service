@@ -12,12 +12,16 @@ import { PassengerSelector } from './booking/PassengerSelector'
 import { format } from 'date-fns'
 import { validateBookingForm } from '@/utils/bookingValidation'
 import { calculateSegmentDistances } from '@/utils/distanceCalculations'
+import { useRouter } from 'next/router'
+
+
 
 interface BookingFormProps {
     translations: WebsiteTranslations
 }
 
 export const BookingForm = ({ translations }: BookingFormProps) => {
+    const router = useRouter()
     const [formData, setFormData] = useState<BookingFormData>({
         pickup: null,
         stopovers: [],
@@ -57,7 +61,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             }
 
             localStorage.setItem('bookingData', JSON.stringify(bookingData))
-            alert(bookingData)
+            router.push('/booking/calculate')
         } catch (error) {
             console.error('Error processing booking:', error)
             alert('Error calculating route. Please try again.')

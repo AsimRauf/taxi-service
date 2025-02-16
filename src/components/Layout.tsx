@@ -1,7 +1,6 @@
 import { Navbar } from './Navbar'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { useTranslation } from 'next-i18next'
-import { WebsiteTranslations } from '@/types/translations'
 import { useRouter } from 'next/router'
 
 interface LayoutProps {
@@ -12,8 +11,10 @@ export const Layout = ({ children }: LayoutProps) => {
     const { t } = useTranslation('common')
     const router = useRouter()
 
-    const translations: WebsiteTranslations = {
-        locale: router.locale || 'nl', // Now it will be "nl" or "en"
+    const showHero = router.pathname === '/'
+
+    const translations = {
+        locale: router.locale || 'nl',
         hero: {
             title: t('hero.title'),
             subtitle: t('hero.subtitle'),
@@ -88,7 +89,7 @@ export const Layout = ({ children }: LayoutProps) => {
     return (
         <div className="min-h-screen">
             <Navbar />
-            <HeroSection translations={translations} />
+            {showHero && <HeroSection translations={translations} />}
             <main>{children}</main>
         </div>
     )

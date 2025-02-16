@@ -21,6 +21,7 @@ export const calculateSegmentDistances = async (
 
     if (source && destination) {
         try {
+            // Log direct route
             const mainResponse = await distanceService.getDistanceMatrix({
                 origins: [source?.mainAddress || source?.label || ''],
                 destinations: [destination?.mainAddress || destination?.label || ''],
@@ -29,20 +30,24 @@ export const calculateSegmentDistances = async (
             })
 
             const mainDistance = formatDistance(mainResponse.rows[0].elements[0].distance.text)
-            const mainDuration = mainResponse.rows[0].elements[0].duration.text
+            console.log('Direct Route:', {
+                from: source?.mainAddress,
+                to: destination?.mainAddress,
+                distance: mainDistance
+            })
 
             segments.push({
                 from: source?.mainAddress || source?.label || '',
                 to: destination?.mainAddress || destination?.label || '',
                 distance: mainDistance,
-                duration: mainDuration
+                duration: mainResponse.rows[0].elements[0].duration.text
             })
 
             if (stopovers.length > 0) {
                 let totalSegmentDistance = 0
                 const points = [source, ...stopovers, destination]
-                const stopoverNames = stopovers.map(stop => stop?.mainAddress || stop?.label).join(' → ')
 
+                // Log each segment with stopovers
                 for (let i = 0; i < points.length - 1; i++) {
                     const response = await distanceService.getDistanceMatrix({
                         origins: [points[i]?.mainAddress || points[i]?.label || ''],
@@ -53,13 +58,26 @@ export const calculateSegmentDistances = async (
                    
                     const segmentDistance = formatDistance(response.rows[0].elements[0].distance.text)
                     totalSegmentDistance += parseFloat(segmentDistance.replace(/[^0-9.]/g, ''))
+                    
+                    console.log(`Segment ${i + 1}:`, {
+                        from: points[i]?.mainAddress,
+                        to: points[i + 1]?.mainAddress,
+                        distance: segmentDistance,
+                        runningTotal: `${totalSegmentDistance.toFixed(1)} km`
+                    })
                 }
 
                 const directDistance = parseFloat(mainDistance.replace(/[^0-9.]/g, ''))
                 const extraKm = totalSegmentDistance - directDistance
 
+                console.log('Route Summary:', {
+                    directDistance: `${directDistance} km`,
+                    totalWithStopovers: `${totalSegmentDistance.toFixed(1)} km`,
+                    extraDistance: `${extraKm.toFixed(1)} km`
+                })
+
                 segments.push({
-                    from: `Additional distance via: ${stopoverNames}`,
+                    from: `Additional distance via: ${stopovers.map(stop => stop?.mainAddress).join(' → ')}`,
                     to: 'Extra kilometers',
                     distance: `${extraKm.toFixed(1)} km`,
                     duration: '-'
@@ -73,3 +91,4 @@ export const calculateSegmentDistances = async (
 
     return segments
 }
+

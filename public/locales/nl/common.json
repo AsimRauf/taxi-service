@@ -44,24 +44,37 @@
       "bookNow": "Nu Boeken"
     },
     "auth": {
-      "createAccount": "Maak uw account aan",
+      "signInTitle": "Welkom terug",
+      "signInMessage": "Log in om toegang te krijgen tot je account en je taxiritten te beheren.",
+      "signingIn": "Inloggen...",
+      "signIn": "Inloggen",
+      "noAccount": "Nog geen account?",
+      "invalidCredentials": "Ongeldige e-mail of wachtwoord",
+      "unknownError": "Er is een onbekende fout opgetreden",
+      "createAccount": "Maak je account aan",
       "fullName": "Volledige naam",
       "nameRequired": "Naam is verplicht",
       "emailRequired": "E-mail is verplicht",
-      "invalidEmail": "Ongeldig e-mailformaat",
+      "invalidEmail": "Ongeldig e-mailadres",
       "phoneRequired": "Telefoonnummer is verplicht",
-      "invalidPhone": "Ongeldig Nederlands telefoonnummer",
+      "invalidPhone": "Ongeldig telefoonnummer",
       "passwordRequired": "Wachtwoord is verplicht",
       "passwordLength": "Wachtwoord moet minimaal 8 tekens bevatten",
       "passwordMatch": "Wachtwoorden komen niet overeen",
       "genericError": "Er is iets misgegaan",
       "creating": "Account aanmaken...",
       "create": "Account aanmaken",
-      "haveAccount": "Heeft u al een account?",
+      "haveAccount": "Heb je al een account?",
       "signin": "Inloggen",
       "password": "Wachtwoord",
       "phoneNumber": "Telefoonnummer",
-      "confirmPassword": "Bevestig wachtwoord"
+      "confirmPassword": "Bevestig wachtwoord",
+      "personalInfo": "Persoonlijke informatie",
+      "stepOneDesc": "Laten we beginnen met je basisgegevens",
+      "securityInfo": "Beveiligingsgegevens",
+      "stepTwoDesc": "Stel je accountbeveiliging in",
+      "continue": "Doorgaan",
+      "back": "Terug",
+      "welcomeMessage": "Begin je reis met ons. Maak een account aan voor gepersonaliseerde taxidiensten en exclusieve voordelen."
     }
   }
-  
