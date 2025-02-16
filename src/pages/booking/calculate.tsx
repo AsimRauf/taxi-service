@@ -15,7 +15,7 @@ export default function CalculateBooking() {
       return
     }
     setBookingData(JSON.parse(data))
-  }, [])
+  }, [router])
 
   return (
     <div className="min-h-screen pt-32 pb-16 bg-gradient-to-b from-primary to-white">

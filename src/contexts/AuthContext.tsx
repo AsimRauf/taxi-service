@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user && (router.pathname === '/auth/signin' || router.pathname === '/auth/signup')) {
       router.push('/')
     }
-  }, [user, router.pathname])
+  }, [user, router.pathname, router])
 
   const login = (token: string, user: User) => {
     localStorage.setItem('token', token)
