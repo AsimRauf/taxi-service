@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { SingleValue } from 'react-select'
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react'
 import { LocationInput } from './booking/LocationInput'
-import { Location, BookingFormData } from '@/types/booking'
+import { Location, BookingFormData, BookingData } from '@/types/booking'
 import { WebsiteTranslations } from '@/types/translations'
 import type { SelectOption } from '@/hooks/useLocationSelect'
 import { handleLocationSelect } from '@/hooks/useLocationSelect'
@@ -34,10 +34,10 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     })
 
     const handleCalculate = async () => {
-        const { isValid, error } = validateBookingForm(formData)
+        const { isValid, error } = validateBookingForm(formData);
         if (!isValid && error) {
-            alert(error)
-            return
+            alert(error);
+            return;
         }
 
         try {
@@ -45,28 +45,42 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                 formData.pickup,
                 formData.destination,
                 formData.stopovers
-            )
+            );
 
-            const bookingData = {
-                sourceAddress: formData.pickup?.mainAddress,
-                destinationAddress: formData.destination?.mainAddress,
+            const bookingData: BookingData = {
+                sourceAddress: formData.pickup?.mainAddress || '',
+                destinationAddress: formData.destination?.mainAddress || '',
                 directDistance: segments[0].distance,
-                stopovers: formData.stopovers.map(stop => stop?.mainAddress),
+                stopovers: formData.stopovers.map(stop => stop?.mainAddress || ''),
                 extraDistance: segments[1]?.distance || '0 km',
                 pickupDateTime: formData.pickupDate ? format(formData.pickupDate, 'yyyy-MM-dd HH:mm') : null,
                 returnDateTime: formData.isReturn && formData.returnDate ?
                     format(formData.returnDate, 'yyyy-MM-dd HH:mm') : null,
                 hasLuggage: formData.hasLuggage,
                 passengers: formData.travelers
+            };
+
+
+            if (!formData.hasLuggage) {
+                // Clear any existing luggage data
+                bookingData.luggage = {
+                    regularLuggage: { large: 0, small: 0, handLuggage: 0 },
+                    specialLuggage: {
+                        foldableWheelchair: 0, rollator: 0, pets: 0,
+                        bicycle: 0, winterSports: 0, stroller: 0,
+                        golfBag: 0, waterSports: 0
+                    }
+                };
             }
 
-            localStorage.setItem('bookingData', JSON.stringify(bookingData))
-            router.push('/booking/calculate')
+            localStorage.setItem('bookingData', JSON.stringify(bookingData));
+            router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
-            console.error('Error processing booking:', error)
-            alert('Error calculating route. Please try again.')
+            console.error('Error processing booking:', error);
+            alert('Error calculating route. Please try again.');
         }
-    }
+    };
+
 
     const swapLocations = () => {
         setFormData(prev => ({
