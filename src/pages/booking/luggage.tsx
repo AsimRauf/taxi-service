@@ -10,13 +10,9 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { LuggageFormData, RegularLuggage, SpecialLuggage } from '@/types/luggage';
+import { Stepper } from '@/components/booking/Stepper';
 
-const steps = [
-    { id: 'luggage', label: 'Luggage' },
-    { id: 'offers', label: 'Offers' },
-    { id: 'travel-info', label: 'Travel Info' },
-    { id: 'personal-info', label: 'Personal Info' }
-];
+
 
 interface BookingData {
     sourceAddress: string;
@@ -54,44 +50,6 @@ const SpecialLuggageIcon = ({ type }: { type: keyof SpecialLuggage }) => {
     }
 };
 
-const Stepper = ({ currentStep }: { currentStep: string }) => {
-    const { t } = useTranslation();
-    const router = useRouter();
-
-    const handleStepClick = (stepId: string) => {
-        const savedData = localStorage.getItem('bookingData');
-        if (savedData) {
-            router.push(`/booking/${stepId}`);
-        }
-    };
-
-    return (
-        <div className="w-full bg-white/80 backdrop-blur-sm rounded-xl shadow-sm mb-6">
-            <div className="max-w-2xl mx-auto py-4 px-6">
-                <ol className="flex items-center justify-between w-full relative">
-                    <div className="absolute top-4 left-0 w-full h-0.5 bg-gray-100" />
-                    {steps.map((step, idx) => (
-                        <li key={step.id}
-                            className="flex flex-col items-center relative"
-                            onClick={() => handleStepClick(step.id)}
-                        >
-                            <div className={`z-10 flex items-center justify-center w-8 h-8 rounded-full shrink-0 cursor-pointer
-                                ${currentStep === step.id ? 'bg-primary text-white' : 'bg-gray-100 text-gray-500'}`}
-                            >
-                                <span className="text-sm font-medium">{idx + 1}</span>
-                            </div>
-                            <span className={`mt-2 text-xs whitespace-nowrap
-                                ${currentStep === step.id ? 'text-primary font-medium' : 'text-gray-500'}`}
-                            >
-                                {t(`booking.steps.${step.id}`)}
-                            </span>
-                        </li>
-                    ))}
-                </ol>
-            </div>
-        </div>
-    );
-};
 
 
 const RegularLuggageSelector = ({ type, value, onChange, max, title, subtitle }: {
@@ -135,18 +93,26 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
     return (
         <div className="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
             <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                    <SpecialLuggageIcon type={type} />
-                    <span className="font-medium text-gray-900">{t(`luggage.special.${type}.title`)}</span>
+                <div className="flex items-start gap-3">
+                    <div className="shrink-0 w-8">
+                        <SpecialLuggageIcon type={type} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                        <span className="font-medium text-gray-900 block text-sm">
+                            {t(`luggage.special.${type}.title`)}
+                        </span>
+                        <p className="text-xs text-gray-500 mt-1 truncate">
+                            {t(`luggage.special.${type}.description`)}
+                        </p>
+                    </div>
                 </div>
-                <p className="text-sm text-gray-500">{t(`luggage.special.${type}.description`)}</p>
                 <div className="flex justify-end items-center space-x-3">
                     <button
                         onClick={() => value > 0 && onChange(value - 1)}
                         className="p-1 rounded-full hover:bg-gray-200 transition-colors"
                         disabled={value === 0}
                     >
-                        <Minus size={20} className={value === 0 ? "text-gray-300" : "text-gray-600"} />
+                        <Minus size={16} className={value === 0 ? "text-gray-300" : "text-gray-600"} />
                     </button>
                     <span className="w-8 text-center font-medium">{value}</span>
                     <button
@@ -154,7 +120,7 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
                         className="p-1 rounded-full hover:bg-gray-200 transition-colors"
                         disabled={value === 3}
                     >
-                        <Plus size={20} className={value === 3 ? "text-gray-300" : "text-gray-600"} />
+                        <Plus size={16} className={value === 3 ? "text-gray-300" : "text-gray-600"} />
                     </button>
                 </div>
             </div>
@@ -190,7 +156,7 @@ export const LuggagePage = () => {
         if (savedData) {
             const parsedData = JSON.parse(savedData);
             setBookingData(parsedData);
-            
+
             if (parsedData.luggage) {
                 setLuggageData(parsedData.luggage);
                 if (Object.values(parsedData.luggage.specialLuggage).some((value): value is number => typeof value === 'number' && value > 0)) {
@@ -256,11 +222,11 @@ export const LuggagePage = () => {
                 specialLuggage: updatedBookingData.luggage.specialLuggage
             }
         });
-    
-    
+
+
 
         localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
-        
+
         router.push('/booking/offers');
     };
 
@@ -273,7 +239,7 @@ export const LuggagePage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl"
+                    className="w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl mt-8 lg:mt-[100px]"
                 >
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-6">{t('luggage.regularLuggage')}</h2>
 

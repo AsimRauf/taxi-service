@@ -221,7 +221,7 @@ export const OffersPage = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
-                    className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl"
+                    className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl mt-[130px] lg:mt-[165px]"
                 >
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2">
                         {t('offers.title')}
