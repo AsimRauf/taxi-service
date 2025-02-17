@@ -17,6 +17,17 @@ export interface SelectOption {
 
 
 
+/**
+ * Handles the selection of a location in a booking form.
+ *
+ * @param selected - The selected location option.
+ * @param type - The type of location being selected (pickup, destination, or stopover).
+ * @param formData - The current state of the booking form data.
+ * @param setFormData - The function to update the booking form data.
+ * @param translations - The website translations.
+ * @param index - The index of the stopover location (if applicable).
+ * @returns - Void.
+ */
 export const handleLocationSelect = async (
     selected: SingleValue<SelectOption>,
     type: 'pickup' | 'destination' | 'stopover',
@@ -62,7 +73,8 @@ export const handleLocationSelect = async (
                     main_text: selected.value.structured_formatting.main_text,
                     secondary_text: selected.value.structured_formatting.secondary_text
                 }
-            }
+            },
+            description: ''
         }
 
         if (type === 'stopover' && typeof index === 'number') {
