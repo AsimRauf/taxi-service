@@ -1,49 +1,120 @@
 {
-    "nav": {
-      "login": "Login",
-      "services": "Our Services",
-      "contact": "Contact",
-      "aboutUs": "About Us",
-      "service1": "Taxi Service",
-      "service2": "Business Transport",
-      "profile": "Profile",
-      "signOut": "Sign out"
-    },
-    "hero": {
-      "title": "Book Your Ride with Confidence",
-      "subtitle": "Professional taxi service for all your transportation needs",
-      "pickupPlaceholder": "Enter pickup location",
-      "destinationPlaceholder": "Enter destination",
-      "addStopover": "Add stopover",
-      "swapLocations": "Swap locations",
-      "stopover": "Stopover",
-      "removeStopover": "Remove stopover",
-      "pickupDateTime": "Pickup Date & Time",
-      "returnDateTime": "Return Date & Time",
-      "returnTrip": "Return Trip",
-      "luggage": "I have luggage",
-      "travelers": "Number of Travelers",
-      "calculate": "Calculate Price",
-      "returnPlaceholder": "Select return date and time"
-    },
-    "booking": {
-      "title": "Comfort Taxi Service",
-      "from": "From",
-      "to": "To",
-      "distance": "Distance",
-      "duration": "Duration",
-      "passengers": "Passengers",
+  "nav": {
+    "login": "Login",
+    "services": "Our Services",
+    "contact": "Contact",
+    "aboutUs": "About Us",
+    "service1": "Taxi Service",
+    "service2": "Business Transport",
+    "profile": "Profile",
+    "signOut": "Sign out"
+  },
+  "hero": {
+    "title": "Book Your Ride with Confidence",
+    "subtitle": "Professional taxi service for all your transportation needs",
+    "pickupPlaceholder": "Enter pickup location",
+    "destinationPlaceholder": "Enter destination",
+    "addStopover": "Add stopover",
+    "swapLocations": "Swap locations",
+    "stopover": "Stopover",
+    "removeStopover": "Remove stopover",
+    "pickupDateTime": "Pickup Date & Time",
+    "returnDateTime": "Return Date & Time",
+    "returnTrip": "Return Trip",
+    "luggage": "I have luggage",
+    "travelers": "Number of Travelers",
+    "calculate": "Calculate Price",
+    "returnPlaceholder": "Select return date and time"
+  },
+  "booking": {
+    "title": "Comfort Taxi Service",
+    "from": "From",
+    "to": "To",
+    "distance": "Distance",
+    "duration": "Duration",
+    "passengers": "Passengers",
+    "luggage": "Luggage",
+    "yes": "Yes",
+    "no": "No",
+    "pickupTime": "Pickup Time",
+    "returnTime": "Return Time",
+    "totalPrice": "Total Price",
+    "returnIncluded": "*Return journey included in total price",
+    "back": "Back",
+    "bookNow": "Book Now",
+    "steps": {
       "luggage": "Luggage",
-      "yes": "Yes",
-      "no": "No",
-      "pickupTime": "Pickup Time",
-      "returnTime": "Return Time",
-      "totalPrice": "Total Price",
-      "returnIncluded": "*Return journey included in total price",
-      "back": "Back",
-      "bookNow": "Book Now"
+      "offers": "Offers",
+      "travel-info": "Travel Info",
+      "personal-info": "Personal Info",
+      "incomplete": "Please complete previous steps first"
     },
-    "auth": {
+    "navigation": {
+      "saved": "Saved progress",
+      "continue": "Continue where you left off"
+    }
+  },
+  "luggage": {
+    "title": "Luggage Details",
+    "regularLuggage": "Regular Luggage",
+    "specialItems": "Special Items",
+    "large": {
+      "title": "Large checked case",
+      "dimensions": "85cm x 55cm x 35cm",
+      "max": "Maximum 8 pieces",
+      "description": "Perfect for longer trips"
+    },
+    "small": {
+      "title": "Small checked case",
+      "dimensions": "55cm x 45cm x 25cm",
+      "max": "Maximum 11 pieces",
+      "description": "Ideal for shorter trips"
+    },
+    "hand": {
+      "title": "Hand luggage",
+      "dimensions": "40cm x 30cm x 20cm",
+      "description": "Handbag, backpack, etc.",
+      "max": "Maximum 8 pieces"
+    },
+    "special": {
+      "foldableWheelchair": {
+        "title": "Foldable wheelchair",
+        "description": "Manual wheelchair that can be folded"
+      },
+      "rollator": {
+        "title": "Rollator",
+        "description": "Walking aid with wheels"
+      },
+      "pets": {
+        "title": "Pets",
+        "description": "In appropriate travel carriers"
+      },
+      "bicycle": {
+        "title": "Bicycle",
+        "description": "Standard or foldable bicycle"
+      },
+      "winterSports": {
+        "title": "Winter sports",
+        "description": "Ski or snowboard equipment"
+      },
+      "stroller": {
+        "title": "Stroller",
+        "description": "Baby carriage or pushchair"
+      },
+      "golfBag": {
+        "title": "Golf bag",
+        "description": "Standard golf equipment bag"
+      },
+      "waterSports": {
+        "title": "Water sports",
+        "description": "Surfboard or similar equipment"
+      },
+      "maxTotal": "Maximum 3 special items in total"
+    },
+    "continue": "Continue to Offers",
+    "back": "Back to Details"
+  },
+  "auth": {
     "signInTitle": "Welcome back",
     "signInMessage": "Sign in to access your account and manage your taxi bookings.",
     "signingIn": "Signing in...",
@@ -76,4 +147,42 @@
     "continue": "Continue",
     "back": "Back",
     "welcomeMessage": "Start your journey with us. Create an account to access personalized taxi services and exclusive benefits."
-  } }
+  },
+  "offers": {
+    "title": "Select Your Vehicle",
+    "subtitle": "Choose the perfect vehicle for your journey",
+    "regularTaxi": {
+      "name": "Regular Taxi",
+      "features": {
+        "passengers": "Up to 4 passengers",
+        "luggage": "Up to 3 large suitcases",
+        "freeTransport": "Free luggage transport",
+        "doorService": "Door-to-door service",
+        "fixedPrice": "Fixed price guarantee"
+      }
+    },
+    "vanTaxi": {
+      "name": "Van Taxi",
+      "features": {
+        "passengers": "Up to 8 passengers",
+        "luggage": "Up to 8 large suitcases",
+        "freeTransport": "Free luggage transport",
+        "doorService": "Door-to-door service",
+        "fixedPrice": "Fixed price guarantee",
+        "extraSpace": "Extra space for special items"
+      }
+    },
+    "select": "Select",
+    "selected": "Selected",
+    "continue": "Continue to Travel Info",
+    "back": "Back to Luggage",
+    "priceInfo": {
+      "fixed": "Fixed Price",
+      "estimated": "Estimated Price",
+      "includes": "Price includes",
+      "allTaxes": "All taxes and fees",
+      "freeCancellation": "Free cancellation",
+      "luggageIncluded": "Luggage included"
+    }
+  }
+}
