@@ -54,6 +54,18 @@ export const DateSelector = ({ label, onChange, value, placeholder = "Select dat
               }
             }}
             initialFocus
+            disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+            className="rounded-md border shadow"
+            classNames={{
+              nav: "space-x-1 flex items-center",
+              nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
+              nav_button_previous: "absolute left-1",
+              nav_button_next: "absolute right-1",
+              day: "h-9 w-9 p-0 font-normal aria-selected:opacity-100",
+              day_disabled: "!text-red-500 line-through hover:bg-transparent cursor-not-allowed",
+              day_range_middle: "rounded-none",
+              day_selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground"
+            }}
           />
           <div className="w-[120px] my-4 mr-2">
             <ScrollArea className="h-[300px]">
