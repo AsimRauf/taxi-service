@@ -222,6 +222,7 @@ export const LuggagePage = () => {
         localStorage.setItem('bookingData', JSON.stringify(updatedData));
         router.push('/booking/offers');
       };
+
       
 
     return (

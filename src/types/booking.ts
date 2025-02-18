@@ -39,6 +39,7 @@ export interface BookingData {
   extraDistance: string;
   pickupDateTime: string;
   returnDateTime: string | null;
+  isReturn: boolean; // Added to track if the trip is a return trip
   hasLuggage: boolean;
   passengers: number;
 

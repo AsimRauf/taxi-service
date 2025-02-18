@@ -34,16 +34,47 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     })
 
     // In BookingForm.tsx
-    const handleCalculate = async () => {
+const handleCalculate = async () => {
+    if (formData.isReturn && !formData.returnDate) {
+        alert(translations.errors.returnDateRequired);
+        return;
+    }
+
+    if (!formData.pickup || !formData.destination) {
+        alert(translations.errors.requiredLocations);
+        return;
+    }
+
+    if (formData.pickup.mainAddress === formData.destination.mainAddress) {
+        alert(translations.errors.duplicateLocation);
+        return;
+    }
+
+    if (formData.stopovers.length > 3) {
+        alert(translations.errors.maxStopovers);
+        return;
+    }
+    
         const { isValid, error } = validateBookingForm(formData);
         if (!isValid && error) {
-            alert(error);
+            // Map validation errors to translation keys
+            const errorMap: { [key: string]: string } = {
+                'Please select a pickup location': translations.errors.requiredLocations,
+                'Please select a destination': translations.errors.requiredLocations,
+                'Please select a pickup date and time': translations.errors.pickupDateRequired,
+                'Pickup date cannot be in the past': translations.errors.invalidPickupTime,
+                'Number of travelers must be between 1 and 8': translations.errors.invalidPassengers,
+                'Please select a return date and time': translations.errors.returnDateRequired,
+                'Return date must be after pickup date': translations.errors.invalidReturnTime,
+                'Pickup and destination cannot be the same location': translations.errors.duplicateLocation
+            };
+            alert(errorMap[error] || translations.errors.invalidRoute);
             return;
         }
 
         try {
             if (!formData.pickup || !formData.destination) {
-                throw new Error('Pickup or destination location is missing');
+                throw new Error(translations.errors.requiredLocations);
             }
 
             const segments = await calculateSegmentDistances(
@@ -74,6 +105,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                     }
                 },
                 vehicle: 'regular',
+                isReturn: formData.isReturn, // Added to track if the trip is a return trip
                 price: 0,
                 isFixedPrice: false
             };
@@ -82,7 +114,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
             console.error('Error processing booking:', error);
-            alert('Error calculating route. Please try again.');
+            alert(translations.errors.invalidRoute);
         }
     };
 
@@ -97,10 +129,14 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     }
 
     const addStopover = () => {
+        if (formData.stopovers.length >= 3) {
+            alert(translations.errors.maxStopovers);
+            return;
+        }
         setFormData(prev => ({
             ...prev,
             stopovers: [...prev.stopovers, null] as Location[]
-        }))
+        }));
     }
 
     const removeStopover = (index: number) => {

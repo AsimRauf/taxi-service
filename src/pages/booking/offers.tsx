@@ -50,13 +50,15 @@ const VehicleCard = ({
     isSelected,
     onSelect,
     isAvailable,
-    price
+    price,
+    bookingData
 }: {
     vehicle: VehicleOption;
     isSelected: boolean;
     onSelect: () => void;
     isAvailable: boolean;
     price: number;
+    bookingData: BookingData | null;
 }) => {
     const { t } = useTranslation();
 
@@ -94,7 +96,19 @@ const VehicleCard = ({
                 </div>
 
                 <div className="text-center sm:text-right shrink-0 mt-4 sm:mt-0 border-t sm:border-t-0 pt-4 sm:pt-0">
-                    <div className="text-xl sm:text-2xl font-bold text-primary">€{price.toFixed(2)}</div>
+                    <div className="flex flex-col">
+                        <div className="text-xl sm:text-2xl font-bold text-primary">
+                            €{price.toFixed(2)}
+                            <span className="text-sm text-gray-500 ml-1">
+                                {bookingData?.isReturn ? t('offers.oneWayPrice') : ''}
+                            </span>
+                        </div>
+                        {bookingData?.isReturn && (
+                            <div className="text-sm text-gray-600 mt-1">
+                                {t('offers.returnTotalPrice', { price: (price * 2).toFixed(2) })}
+                            </div>
+                        )}
+                    </div>
                     {isAvailable && (
                         <button
                             className={`mt-2 sm:mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full text-sm transition-colors ${isSelected
@@ -111,7 +125,7 @@ const VehicleCard = ({
     );
 };
 
-const PriceInfo = ({ isFixedPrice }: { isFixedPrice: boolean }) => {
+const PriceInfo = ({ isFixedPrice, bookingData }: { isFixedPrice: boolean, bookingData: BookingData | null }) => {
     const { t } = useTranslation();
 
     return (
@@ -128,6 +142,13 @@ const PriceInfo = ({ isFixedPrice }: { isFixedPrice: boolean }) => {
                     </li>
                 ))}
             </ul>
+            {bookingData?.isReturn && (
+                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+                    <p className="text-sm text-blue-700">
+                        {t('offers.returnTripNote')}
+                    </p>
+                </div>
+            )}
         </div>
     );
 };
@@ -175,9 +196,11 @@ export const OffersPage = () => {
     
         // Update price if vehicle is already selected
         if (parsedData.vehicle) {
+            const basePrice = calculatedPrices[parsedData.vehicle];
+            const finalPrice = parsedData.isReturn ? basePrice * 2 : basePrice;
             const updatedData: BookingData = {
                 ...parsedData,
-                price: calculatedPrices[parsedData.vehicle],
+                price: finalPrice,
                 isFixedPrice: calculatedPrices.isFixedPrice
             };
             setBookingData(updatedData);
@@ -192,13 +215,14 @@ export const OffersPage = () => {
     const handleVehicleSelect = (vehicleId: 'regular' | 'van') => {
         if (!bookingData) return;
         
-        const newPrice = prices[vehicleId];
+        const basePrice = prices[vehicleId];
+        const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
         setSelectedVehicle(vehicleId);
         
         const updatedData: BookingData = {
             ...bookingData,
             vehicle: vehicleId,
-            price: newPrice,
+            price: finalPrice,
             isFixedPrice
         };
     
@@ -206,19 +230,22 @@ export const OffersPage = () => {
         localStorage.setItem('bookingData', JSON.stringify(updatedData));
     };
 
-    const handleContinue = () => {
-        if (!selectedVehicle || !bookingData) return;
-        
-        // Ensure latest price is saved before navigation
-        const finalData: BookingData = {
-            ...bookingData,
-            price: prices[selectedVehicle],
-            isFixedPrice
-        };
-        localStorage.setItem('bookingData', JSON.stringify(finalData));
-        
-        router.push('/booking/travel-info');
+const handleContinue = () => {
+    if (!selectedVehicle || !bookingData) return;
+
+    // Calculate final price including return trip if selected
+    const basePrice = prices[selectedVehicle];
+    const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
+
+    const finalData: BookingData = {
+        ...bookingData,
+        price: finalPrice,
+        isFixedPrice
     };
+
+    localStorage.setItem('bookingData', JSON.stringify(finalData));
+    router.push('/booking/travel-info');
+};
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
@@ -246,11 +273,12 @@ export const OffersPage = () => {
                                 onSelect={() => handleVehicleSelect(vehicle.id as 'regular' | 'van')}
                                 isAvailable={availableVehicles[vehicle.id as 'regular' | 'van']}
                                 price={prices[vehicle.id as 'regular' | 'van']}
+                                bookingData={bookingData}
                             />
                         ))}
                     </div>
 
-                    <PriceInfo isFixedPrice={isFixedPrice} />
+                    <PriceInfo isFixedPrice={isFixedPrice} bookingData={bookingData} />
 
                     <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8 sm:mt-12">
                         <button
