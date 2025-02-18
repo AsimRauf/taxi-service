@@ -184,5 +184,26 @@
       "freeCancellation": "Free cancellation",
       "luggageIncluded": "Luggage included"
     }
+  },
+  "travelInfo": {
+    "title": "Travel Information",
+    "airportCaution": "Always check with your airline what time you should be at the airport.",
+    "rideDetails": "Your Ride",
+    "totalPassengers": "{{count}} passengers",
+    "optional": "optional",
+    "continue": "Continue to Personal Information",
+    "flightNumberPlaceholder": "Enter your flight number",
+    "remarksPlaceholder": "Any special requests or additional information?",
+    "errors": {
+      "requiredLocations": "Please provide both pickup and destination locations",
+      "invalidPrice": "Invalid price calculation. Please check your route",
+      "invalidPickupTime": "Pickup time must be at least 2 hours from now",
+    "invalidReturnTime": "Return time must be after pickup time",
+    "invalidDates": "Please check your pickup and return dates",
+    "pickupDateRequired": "Pickup date and time is required",
+    "returnDateRequired": "Return date and time is required for return trips"
+    },
+    "flightNumber": "Flight Number",
+    "remarks": "Additional Notes"
   }
 }

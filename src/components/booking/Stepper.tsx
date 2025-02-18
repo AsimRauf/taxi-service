@@ -1,4 +1,3 @@
-// src/components/booking/Stepper.tsx
 import { useTranslation } from 'next-i18next';
 import { Luggage, Car, Route, User } from 'lucide-react';
 import { useRouter } from 'next/router';

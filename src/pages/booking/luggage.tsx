@@ -131,7 +131,7 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
 export const LuggagePage = () => {
     const router = useRouter();
     const { t } = useTranslation();
-    const [bookingData, setBookingData] = useState<BookingData | null>(null);
+    const [, setBookingData] = useState<BookingData | null>(null);
     const [showSpecialLuggage, setShowSpecialLuggage] = useState(false);
     const [luggageData, setLuggageData] = useState<LuggageFormData>({
         regularLuggage: {
@@ -210,25 +210,19 @@ export const LuggagePage = () => {
     };
 
     const handleContinue = () => {
-        const updatedBookingData = {
-            ...bookingData,
-            luggage: luggageData
+        const savedData = localStorage.getItem('bookingData');
+        if (!savedData) return;
+      
+        const bookingData: BookingData = JSON.parse(savedData);
+        const updatedData: BookingData = {
+          ...bookingData,
+          luggage: luggageData
         };
-
-        console.log('Complete Booking Data:', {
-            ...updatedBookingData,
-            luggage: {
-                regularLuggage: updatedBookingData.luggage.regularLuggage,
-                specialLuggage: updatedBookingData.luggage.specialLuggage
-            }
-        });
-
-
-
-        localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
-
+      
+        localStorage.setItem('bookingData', JSON.stringify(updatedData));
         router.push('/booking/offers');
-    };
+      };
+      
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">

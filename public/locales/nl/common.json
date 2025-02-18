@@ -184,5 +184,26 @@
       "freeCancellation": "Gratis annulering",
       "luggageIncluded": "Bagage inbegrepen"
     }
+  },
+  "travelInfo": {
+    "title": "Reisinformatie",
+    "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
+    "rideDetails": "Uw Rit",
+    "totalPassengers": "{{count}} passagiers",
+    "flightNumber": "Vluchtnummer",
+    "optional": "(optioneel)",
+    "remarks": "Aanvullende Opmerkingen",
+    "flightNumberPlaceholder": "Voer uw vluchtnummer in bij reis van/naar vliegveld",
+    "remarksPlaceholder": "Speciale verzoeken, voorkeuren of andere belangrijke informatie",
+    "continue": "Doorgaan naar Persoonlijke Informatie",
+    "errors": {
+      "requiredLocations": "Vul alstublieft zowel ophaal- als bestemmingslocatie in",
+      "invalidPrice": "Ongeldige prijsberekening. Controleer uw route",
+      "invalidPickupTime": "Ophaaltijd moet minimaal 2 uur vanaf nu zijn",
+      "invalidReturnTime": "Retourtijd moet na de ophaaltijd zijn",
+      "invalidDates": "Controleer uw ophaal- en retourdatums",
+      "pickupDateRequired": "Ophaaldatum en tijd zijn verplicht",
+      "returnDateRequired": "Retourdatum en tijd zijn verplicht voor retourritten"
+    }
   }
 }

@@ -1,4 +1,3 @@
-// src/pages/booking/offers.tsx
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
@@ -9,7 +8,7 @@ import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { Stepper } from '@/components/booking/Stepper';
 import { calculatePrice, determineVehicleAvailability } from '@/utils/pricingCalculator';
-import { LuggageFormData } from '@/types/luggage';
+import { BookingData } from '@/types/booking';
 
 interface VehicleOption {
     id: 'regular' | 'van';
@@ -17,25 +16,8 @@ interface VehicleOption {
     features: string[];
 }
 
-interface BookingDataType {
-    sourceAddress: string;
-    destinationAddress: string;
-    directDistance: string;
-    stopovers: string[];
-    extraDistance: string;
-    pickupDateTime: string | null;
-    returnDateTime: string | null;
-    hasLuggage: boolean;
-    passengers: number;
-    luggage: LuggageFormData;
-    vehicle?: 'regular' | 'van';
-    price?: number;
-    isFixedPrice?: boolean;
-}
-
 const useVehicleOptions = () => {
     const { t } = useTranslation();
-    
     return [
         {
             id: 'regular',
@@ -63,28 +45,27 @@ const useVehicleOptions = () => {
     ];
 };
 
-const VehicleCard = ({ 
-    vehicle, 
-    isSelected, 
-    onSelect, 
+const VehicleCard = ({
+    vehicle,
+    isSelected,
+    onSelect,
     isAvailable,
-    price 
-}: { 
-    vehicle: VehicleOption; 
-    isSelected: boolean; 
+    price
+}: {
+    vehicle: VehicleOption;
+    isSelected: boolean;
     onSelect: () => void;
     isAvailable: boolean;
     price: number;
 }) => {
     const { t } = useTranslation();
-    
+
     return (
-        <motion.div 
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${
-                !isAvailable ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
-            } ${isSelected ? 'ring-2 ring-primary' : ''}`}
+            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${!isAvailable ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
+                } ${isSelected ? 'ring-2 ring-primary' : ''}`}
             onClick={() => isAvailable && onSelect()}
         >
             <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
@@ -97,9 +78,11 @@ const VehicleCard = ({
                         className="object-contain"
                     />
                 </div>
-                
+
                 <div className="flex-1">
-                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 text-center sm:text-left">{vehicle.name}</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-900 text-center sm:text-left">
+                        {vehicle.name}
+                    </h3>
                     <ul className="mt-2 sm:mt-3 space-y-1 sm:space-y-2">
                         {vehicle.features.map((feature, index) => (
                             <li key={index} className="flex items-start text-xs sm:text-sm text-gray-600">
@@ -114,11 +97,10 @@ const VehicleCard = ({
                     <div className="text-xl sm:text-2xl font-bold text-primary">€{price.toFixed(2)}</div>
                     {isAvailable && (
                         <button
-                            className={`mt-2 sm:mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full text-sm transition-colors ${
-                                isSelected 
-                                    ? 'bg-primary text-white' 
+                            className={`mt-2 sm:mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full text-sm transition-colors ${isSelected
+                                    ? 'bg-primary text-white'
                                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                            }`}
+                                }`}
                         >
                             {isSelected ? t('offers.selected') : t('offers.select')}
                         </button>
@@ -131,7 +113,7 @@ const VehicleCard = ({
 
 const PriceInfo = ({ isFixedPrice }: { isFixedPrice: boolean }) => {
     const { t } = useTranslation();
-    
+
     return (
         <div className="bg-gray-50 rounded-lg p-4 mt-6">
             <h4 className="font-medium text-gray-900 text-sm sm:text-base">
@@ -154,9 +136,9 @@ export const OffersPage = () => {
     const router = useRouter();
     const { t } = useTranslation();
     const vehicleOptions = useVehicleOptions();
-    const [bookingData, setBookingData] = useState<BookingDataType | null>(null);
-    const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
-    const [prices, setPrices] = useState<{ regular: number; van: number }>({ regular: 0, van: 0 });
+    const [bookingData, setBookingData] = useState<BookingData | null>(null);
+    const [selectedVehicle, setSelectedVehicle] = useState<'regular' | 'van' | null>(null);
+    const [prices, setPrices] = useState({ regular: 0, van: 0 });
     const [availableVehicles, setAvailableVehicles] = useState({ regular: true, van: true });
     const [isFixedPrice, setIsFixedPrice] = useState(false);
 
@@ -166,49 +148,75 @@ export const OffersPage = () => {
             router.push('/booking/luggage');
             return;
         }
-
-        const parsedData = JSON.parse(savedData);
-        setBookingData(parsedData);
-
-        if (parsedData.vehicle) {
-            setSelectedVehicle(parsedData.vehicle);
-        }
-
+    
+        const parsedData: BookingData = JSON.parse(savedData);
+        
         const calculatedPrices = calculatePrice(
             parsedData.sourceAddress,
             parsedData.destinationAddress,
             parsedData.directDistance,
             parsedData.extraDistance
         );
-
+    
         setPrices({
             regular: calculatedPrices.regular,
             van: calculatedPrices.van
         });
         setIsFixedPrice(calculatedPrices.isFixedPrice);
-
+    
         const availability = determineVehicleAvailability(
             parsedData.passengers,
-            parsedData.luggage
+            {
+                regularLuggage: parsedData.luggage.regularLuggage,
+                specialLuggage: parsedData.luggage.specialLuggage as unknown as Record<string, number>
+            }
         );
         setAvailableVehicles(availability);
+    
+        // Update price if vehicle is already selected
+        if (parsedData.vehicle) {
+            const updatedData: BookingData = {
+                ...parsedData,
+                price: calculatedPrices[parsedData.vehicle],
+                isFixedPrice: calculatedPrices.isFixedPrice
+            };
+            setBookingData(updatedData);
+            setSelectedVehicle(parsedData.vehicle);
+            localStorage.setItem('bookingData', JSON.stringify(updatedData));
+        } else {
+            setBookingData(parsedData);
+        }
     }, [router]);
+           
 
     const handleVehicleSelect = (vehicleId: 'regular' | 'van') => {
+        if (!bookingData) return;
+        
+        const newPrice = prices[vehicleId];
         setSelectedVehicle(vehicleId);
+        
+        const updatedData: BookingData = {
+            ...bookingData,
+            vehicle: vehicleId,
+            price: newPrice,
+            isFixedPrice
+        };
+    
+        setBookingData(updatedData);
+        localStorage.setItem('bookingData', JSON.stringify(updatedData));
     };
 
     const handleContinue = () => {
-        if (!selectedVehicle) return;
-
-        const updatedBookingData = {
+        if (!selectedVehicle || !bookingData) return;
+        
+        // Ensure latest price is saved before navigation
+        const finalData: BookingData = {
             ...bookingData,
-            vehicle: selectedVehicle,
-            price: prices[selectedVehicle as keyof typeof prices],
+            price: prices[selectedVehicle],
             isFixedPrice
         };
-
-        localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+        localStorage.setItem('bookingData', JSON.stringify(finalData));
+        
         router.push('/booking/travel-info');
     };
 
@@ -220,7 +228,6 @@ export const OffersPage = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
                     className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl mt-[130px] lg:mt-[165px]"
                 >
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2">
@@ -237,8 +244,8 @@ export const OffersPage = () => {
                                 vehicle={vehicle as VehicleOption}
                                 isSelected={selectedVehicle === vehicle.id}
                                 onSelect={() => handleVehicleSelect(vehicle.id as 'regular' | 'van')}
-                                isAvailable={availableVehicles[vehicle.id as keyof typeof availableVehicles]}
-                                price={prices[vehicle.id as keyof typeof prices]}
+                                isAvailable={availableVehicles[vehicle.id as 'regular' | 'van']}
+                                price={prices[vehicle.id as 'regular' | 'van']}
                             />
                         ))}
                     </div>
@@ -263,7 +270,8 @@ export const OffersPage = () => {
                 </motion.div>
             </div>
         </div>
-    );};
+    );
+};
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
     return {

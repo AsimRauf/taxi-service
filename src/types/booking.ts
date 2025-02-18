@@ -1,4 +1,5 @@
 // Booking types
+import { LuggageFormData } from "./luggage"
 export interface Location {
   description: string
   label: string
@@ -26,30 +27,30 @@ export interface BookingFormData {
 }
 
 export interface BookingData {
+  // Location data
+  pickup: Location;
+  destination: Location;
+  stopovers: Location[];
   sourceAddress: string;
   destinationAddress: string;
+
+  // Trip details
   directDistance: string;
-  stopovers: string[];
   extraDistance: string;
-  pickupDateTime: string | null;
+  pickupDateTime: string;
   returnDateTime: string | null;
   hasLuggage: boolean;
   passengers: number;
-  luggage?: {
-      regularLuggage: {
-          large: number;
-          small: number;
-          handLuggage: number;
-      };
-      specialLuggage: {
-          foldableWheelchair: number;
-          rollator: number;
-          pets: number;
-          bicycle: number;
-          winterSports: number;
-          stroller: number;
-          golfBag: number;
-          waterSports: number;
-      };
-  };
+
+  // Added by luggage.tsx
+  luggage: LuggageFormData;
+
+  // Added by offers.tsx
+  vehicle: 'regular' | 'van';
+  price: number;
+  isFixedPrice: boolean;
+
+  // Added by travel-info.tsx
+  flightNumber?: string;
+  remarks?: string;
 }
