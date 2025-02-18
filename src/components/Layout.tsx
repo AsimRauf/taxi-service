@@ -15,6 +15,22 @@ export const Layout = ({ children }: LayoutProps) => {
 
     const translations = {
         locale: router.locale || 'nl',
+        errors: {
+            requiredLocations: t('errors.requiredLocations'),
+            invalidPrice: t('errors.invalidPrice'),
+            invalidPickupTime: t('errors.invalidPickupTime'),
+            invalidReturnTime: t('errors.invalidReturnTime'),
+            invalidDates: t('errors.invalidDates'),
+            pickupDateRequired: t('errors.pickupDateRequired'),
+            returnDateRequired: t('errors.returnDateRequired'),
+            invalidStopover: t('errors.invalidStopover'),
+            maxStopovers: t('errors.maxStopovers'),
+            duplicateLocation: t('errors.duplicateLocation'),
+            invalidPassengers: t('errors.invalidPassengers'),
+            invalidLuggage: t('errors.invalidLuggage'),
+            invalidVehicle: t('errors.invalidVehicle'),
+            invalidRoute: t('errors.invalidRoute')
+        },
         hero: {
             title: t('hero.title'),
             subtitle: t('hero.subtitle'),

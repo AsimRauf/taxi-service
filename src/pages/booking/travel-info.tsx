@@ -32,6 +32,10 @@ export const TravelInfoPage = () => {
       router.push('/booking/offers');
       return;
     }
+    // Ensure stopovers array is initialized
+    if (!parsedData.stopovers) {
+      parsedData.stopovers = [];
+    }
     setBookingData(parsedData);
   }, [router]);
 
@@ -72,27 +76,39 @@ export const TravelInfoPage = () => {
       return;
     }
 
-    if (bookingData.price <= 0) {
-      alert(t('errors.invalidPrice'));
-      return;
-    }
-
-    console.log('Booking Data:', bookingData);
+    // Save flight info and remarks
+    const updatedData = {
+      ...bookingData,
+      flightNumber: bookingData.flightNumber || '',
+      remarks: bookingData.remarks || ''
+    };
+    localStorage.setItem('bookingData', JSON.stringify(updatedData));
 
     router.push('/booking/personal-info');
   };
 
-  const updateBookingData = async (updatedData: BookingData) => {
+  const handleReturnTripChange = async (checked: boolean) => {
+    if (!bookingData) return;
+
+    const updatedData = {
+      ...bookingData,
+      returnDateTime: checked ? '' : null,
+      isReturn: checked
+    };
+
+    // Update state first to ensure UI consistency
     setBookingData(updatedData);
-    localStorage.setItem('bookingData', JSON.stringify(updatedData));
 
-    if (!updatedData.pickup?.mainAddress || !updatedData.destination?.mainAddress) return;
-
-    try {
+    // Then recalculate price if we have the necessary data
+    if (updatedData.pickup?.mainAddress && updatedData.destination?.mainAddress) {
       const segments = await calculateSegmentDistances(
         updatedData.pickup,
         updatedData.destination,
-        updatedData.stopovers.filter(Boolean)
+        (updatedData.stopovers || []).filter(stopover => 
+          stopover && 
+          stopover.mainAddress && 
+          stopover.mainAddress.length > 0
+        )
       );
 
       const calculatedPrices = calculatePrice(
@@ -102,11 +118,61 @@ export const TravelInfoPage = () => {
         segments[1]?.distance || '0 km'
       );
 
+      const basePrice = calculatedPrices[updatedData.vehicle] || 0;
+      const finalPrice = checked ? basePrice * 2 : basePrice;
+
+      const finalData = {
+        ...updatedData,
+        price: finalPrice,
+        isFixedPrice: calculatedPrices.isFixedPrice,
+        directDistance: segments[0].distance || '0 km',
+        extraDistance: segments[1]?.distance || '0 km'
+      };
+
+      setBookingData(finalData);
+      localStorage.setItem('bookingData', JSON.stringify(finalData));
+    } else {
+      localStorage.setItem('bookingData', JSON.stringify(updatedData));
+    }
+  };
+
+  const updateBookingData = async (updatedData: BookingData) => {
+    setBookingData(updatedData);
+    localStorage.setItem('bookingData', JSON.stringify(updatedData));
+
+    if (!updatedData.pickup?.mainAddress || !updatedData.destination?.mainAddress) return;
+
+    try {
+      const validStopovers = (updatedData.stopovers || []).filter(stopover => 
+        stopover && 
+        stopover.mainAddress && 
+        stopover.mainAddress.length > 0
+      );
+      
+      const segments = await calculateSegmentDistances(
+        updatedData.pickup,
+        updatedData.destination,
+        validStopovers
+      );
+
+      const calculatedPrices = calculatePrice(
+        updatedData.pickup.mainAddress,
+        updatedData.destination.mainAddress,
+        segments[0].distance,
+        segments[1]?.distance || '0 km'
+      );
+
+      // Calculate base price first
+      const basePrice = calculatedPrices[updatedData.vehicle] || 0;
+      
+      // Double the price if it's a return trip using isReturn flag
+      const finalPrice = updatedData.isReturn ? basePrice * 2 : basePrice;
+
       const finalData: BookingData = {
         ...updatedData,
         directDistance: segments[0].distance || '0 km',
         extraDistance: segments[1]?.distance || '0 km',
-        price: calculatedPrices[updatedData.vehicle] || 0,
+        price: finalPrice,
         isFixedPrice: calculatedPrices.isFixedPrice,
       };
 
@@ -123,13 +189,29 @@ export const TravelInfoPage = () => {
     const updatedData = { ...bookingData };
 
     if (type === 'stopover' && typeof index !== 'undefined') {
-      updatedData.stopovers[index] = newLocation || {} as Location;
+      if (!newLocation?.mainAddress) {
+        alert(t('errors.invalidStopover'));
+        return;
+      }
+      updatedData.stopovers[index] = newLocation;
     } else if (type === 'pickup') {
       updatedData.pickup = newLocation || {} as Location;
       updatedData.sourceAddress = newLocation?.mainAddress || '';
+      
+      // Check if pickup and destination are the same
+      if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.destination?.mainAddress) {
+        alert(t('errors.duplicateLocation'));
+        return;
+      }
     } else if (type === 'destination') {
       updatedData.destination = newLocation || {} as Location;
       updatedData.destinationAddress = newLocation?.mainAddress || '';
+      
+      // Check if pickup and destination are the same
+      if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.pickup?.mainAddress) {
+        alert(t('errors.duplicateLocation'));
+        return;
+      }
     }
 
     updateBookingData(updatedData);
@@ -154,24 +236,40 @@ export const TravelInfoPage = () => {
 
   const addStopover = () => {
     if (!bookingData) return;
+    
+    // Initialize stopovers array if it doesn't exist
+    const currentStopovers = bookingData.stopovers || [];
+    
+    // Check maximum stopovers
+    if (currentStopovers.length >= 3) {
+      alert(t('errors.maxStopovers'));
+      return;
+    }
+    
     const updatedData: BookingData = {
       ...bookingData,
-      stopovers: [...bookingData.stopovers, {
-        description: '',
-        label: '',
-        value: {
-          place_id: '',
+      stopovers: [
+        ...currentStopovers,
+        {
           description: '',
-          structured_formatting: {
-            main_text: '',
-            secondary_text: ''
-          }
-        },
-        mainAddress: '',
-        secondaryAddress: ''
-      }]
+          label: '',
+          value: {
+            place_id: '',
+            description: '',
+            structured_formatting: {
+              main_text: '',
+              secondary_text: ''
+            }
+          },
+          mainAddress: '',
+          secondaryAddress: ''
+        }
+      ]
     };
-    updateBookingData(updatedData);
+
+    // Don't recalculate distances for empty stopovers
+    setBookingData(updatedData);
+    localStorage.setItem('bookingData', JSON.stringify(updatedData));
   };
 
   const removeStopover = async (index: number) => {
@@ -242,7 +340,7 @@ export const TravelInfoPage = () => {
             </div>
           </div>
           <div className="w-full space-y-1">
-            <span className="block text-sm font-medium text-gray-600">Via</span>
+            <span className="block text-sm font-medium text-gray-600">{t('travelInfo.via')}</span>
             <LocationInput
               value={stopover}
               onChange={(place) => {
@@ -355,14 +453,8 @@ export const TravelInfoPage = () => {
               type="checkbox"
               id="return"
               className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer"
-              checked={Boolean(bookingData?.returnDateTime)}
-              onChange={(e) => {
-                if (!bookingData) return;
-                setBookingData({
-                  ...bookingData,
-                  returnDateTime: e.target.checked ? '' : null
-                });
-              }}
+              checked={Boolean(bookingData?.isReturn)}
+              onChange={(e) => handleReturnTripChange(e.target.checked)}
             />
             <label htmlFor="return" className="text-sm font-medium text-gray-700 cursor-pointer">
               {t('hero.returnTrip')}
@@ -380,8 +472,20 @@ export const TravelInfoPage = () => {
               <h3 className="text-base sm:text-lg font-medium text-gray-900">
                 {t('travelInfo.rideDetails')}
               </h3>
-              <div className="text-xl sm:text-2xl font-bold text-primary">
-                €{bookingData?.price.toFixed(2)}
+              <div className="space-y-1">
+                <div className="text-xl sm:text-2xl font-bold text-primary">
+                  €{bookingData?.price?.toFixed(2) || '0.00'}
+                  {bookingData?.returnDateTime !== null && bookingData?.price && (
+                    <span className="text-sm text-gray-500 ml-2">
+                      (€{(bookingData.price / 2).toFixed(2)} {t('offers.oneWayPrice')})
+                    </span>
+                  )}
+                </div>
+                {bookingData?.returnDateTime !== null && (
+                  <div className="text-sm text-gray-600">
+                    {t('offers.returnTripNote')}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -397,61 +501,79 @@ export const TravelInfoPage = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
             <div className="space-y-6">
-              {/* Date Selectors before location inputs */}
-              <div className="space-y-4">
-                <DateSelector
-                  label={t('hero.pickupDateTime')}
-                  value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
-                  onChange={(date) => {
-                    if (!bookingData) return;
-                    const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
-
-                    if (!validateDates(dateString, bookingData.returnDateTime)) {
-                      alert(t('errors.invalidPickupTime'));
-                      return;
-                    }
-
-                    setBookingData({
-                      ...bookingData,
-                      pickupDateTime: dateString
-                    });
-                  }}
-                  placeholder={t('hero.pickupDateTime')}
-                />
-
-                {bookingData?.returnDateTime !== null && (
+              {/* Pickup Section */}
+              <div className="space-y-6">
+                <div className="space-y-4 border-b border-gray-200 pb-6">
+                  <h3 className="text-base font-medium text-gray-900">{t('travelInfo.pickupSection')}</h3>
                   <DateSelector
-                    label={t('hero.returnDateTime')}
-                    value={bookingData?.returnDateTime ? new Date(bookingData.returnDateTime.replace(' ', 'T')) : null}
+                    label={t('hero.pickupDateTime')}
+                    value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
                     onChange={(date) => {
                       if (!bookingData) return;
                       const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
 
-                      if (!validateDates(bookingData.pickupDateTime, dateString)) {
-                        alert(t('errors.invalidReturnTime'));
+                      if (!validateDates(dateString, bookingData.returnDateTime)) {
+                        alert(t('errors.invalidPickupTime'));
                         return;
                       }
 
                       setBookingData({
                         ...bookingData,
-                        returnDateTime: dateString
+                        pickupDateTime: dateString
                       });
                     }}
-                    placeholder={t('hero.returnPlaceholder')}
+                    placeholder={t('hero.pickupDateTime')}
                   />
-                )}
+                </div>
+
+                <div className="space-y-4 sm:space-y-6 relative">
+                  <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
+                      {renderPickupLocation()}
+                      {renderStopovers()}
+                      {renderAddStopoverButton()}
+                      {renderDestination()}
+                </div>
               </div>
 
-              <div className="hidden md:block h-px bg-gray-200 my-6" />
+              {/* Return Section */}
+              {bookingData?.isReturn && (
+                <>
+                  <div className="hidden md:block h-px bg-gray-200 my-6" />
+                  <div className="space-y-6">
+                    <div className="space-y-4 border-b border-gray-200 pb-6">
+                      <h3 className="text-base font-medium text-gray-900">{t('travelInfo.returnSection')}</h3>
+                      <DateSelector
+                        label={t('hero.returnDateTime')}
+                        value={bookingData?.returnDateTime ? new Date(bookingData.returnDateTime.replace(' ', 'T')) : null}
+                        onChange={(date) => {
+                          if (!bookingData) return;
+                          const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
 
-              {/* Original location inputs with preserved styling */}
-              <div className="space-y-4 sm:space-y-6 relative">
-                <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
-                {renderPickupLocation()}
-                {renderStopovers()}
-                {renderAddStopoverButton()}
-                {renderDestination()}
-              </div>
+                          if (!validateDates(bookingData.pickupDateTime, dateString)) {
+                            alert(t('errors.invalidReturnTime'));
+                            return;
+                          }
+
+                          setBookingData({
+                            ...bookingData,
+                            returnDateTime: dateString
+                          });
+                        }}
+                        placeholder={t('hero.returnPlaceholder')}
+                      />
+                    </div>
+
+                    <div className="space-y-4 sm:space-y-6 relative">
+                      <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-green-500/80 to-primary/80" />
+                      {renderPickupLocation()}
+                      {renderStopovers()}
+                      {renderAddStopoverButton()}
+                      {renderDestination()}
+                    </div>
+                  </div>
+                </>
+              )}
+
             </div>
 
             <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-gray-200" />

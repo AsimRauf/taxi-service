@@ -1,5 +1,21 @@
 export interface WebsiteTranslations {
     locale: string
+    errors: {
+      requiredLocations: string
+      invalidPrice: string
+      invalidPickupTime: string
+      invalidReturnTime: string
+      invalidDates: string
+      pickupDateRequired: string
+      returnDateRequired: string
+      invalidStopover: string
+      maxStopovers: string
+      duplicateLocation: string
+      invalidPassengers: string
+      invalidLuggage: string
+      invalidVehicle: string
+      invalidRoute: string
+    }
     nav: {
       login: string
       services: string
