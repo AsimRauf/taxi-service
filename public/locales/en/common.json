@@ -183,11 +183,19 @@
       "allTaxes": "All taxes and fees",
       "freeCancellation": "Free cancellation",
       "luggageIncluded": "Luggage included"
-    }
+    },
+    "oneWayPrice": "(one-way price)",
+    "returnTotalPrice": "Total with return: €{{price}}",
+    "returnTripNote": "For return trips, the price shown is per direction. The total price includes both journeys."
   },
-  "travelInfo": {
-    "title": "Travel Information",
-    "airportCaution": "Always check with your airline what time you should be at the airport.",
+    "travelInfo": {
+      "title": "Travel Information",
+      "airportCaution": "Always check with your airline what time you should be at the airport.",
+      "returnRoute": "Return Route",
+      "returnRouteInfo": "This is your return journey route",
+      "via": "Via",
+      "pickupSection": "Outbound Journey",
+      "returnSection": "Return Journey",
     "rideDetails": "Your Ride",
     "totalPassengers": "{{count}} passengers",
     "optional": "optional",
@@ -198,10 +206,17 @@
       "requiredLocations": "Please provide both pickup and destination locations",
       "invalidPrice": "Invalid price calculation. Please check your route",
       "invalidPickupTime": "Pickup time must be at least 2 hours from now",
-    "invalidReturnTime": "Return time must be after pickup time",
-    "invalidDates": "Please check your pickup and return dates",
-    "pickupDateRequired": "Pickup date and time is required",
-    "returnDateRequired": "Return date and time is required for return trips"
+      "invalidReturnTime": "Return time must be after pickup time",
+      "invalidDates": "Please check your pickup and return dates",
+      "pickupDateRequired": "Pickup date and time is required",
+      "returnDateRequired": "Return date and time is required for return trips",
+      "invalidStopover": "Please provide a valid stopover location",
+      "maxStopovers": "Maximum 3 stopovers allowed",
+      "duplicateLocation": "Pickup and destination locations cannot be the same",
+      "invalidPassengers": "Please select number of passengers",
+      "invalidLuggage": "Please specify if you have luggage",
+      "invalidVehicle": "Please select a vehicle type",
+      "invalidRoute": "Unable to calculate route. Please check your locations"
     },
     "flightNumber": "Flight Number",
     "remarks": "Additional Notes"

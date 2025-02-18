@@ -183,11 +183,17 @@
       "allTaxes": "Alle belastingen en toeslagen",
       "freeCancellation": "Gratis annulering",
       "luggageIncluded": "Bagage inbegrepen"
-    }
+    },
+    "oneWayPrice": "(enkele reis prijs)",
+    "returnTotalPrice": "Totaal met retour: €{{price}}",
+    "returnTripNote": "Voor retourritten is de getoonde prijs per richting. De totaalprijs is inclusief beide ritten."
   },
-  "travelInfo": {
-    "title": "Reisinformatie",
-    "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
+    "travelInfo": {
+      "title": "Reisinformatie",
+      "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
+      "returnRoute": "Retourroute",
+      "returnRouteInfo": "Dit is uw terugreis route",
+      "via": "Via",
     "rideDetails": "Uw Rit",
     "totalPassengers": "{{count}} passagiers",
     "flightNumber": "Vluchtnummer",
@@ -203,7 +209,14 @@
       "invalidReturnTime": "Retourtijd moet na de ophaaltijd zijn",
       "invalidDates": "Controleer uw ophaal- en retourdatums",
       "pickupDateRequired": "Ophaaldatum en tijd zijn verplicht",
-      "returnDateRequired": "Retourdatum en tijd zijn verplicht voor retourritten"
+      "returnDateRequired": "Retourdatum en tijd zijn verplicht voor retourritten",
+      "invalidStopover": "Voer een geldige tussenstop locatie in",
+      "maxStopovers": "Maximaal 3 tussenstops toegestaan",
+      "duplicateLocation": "Ophaal- en bestemmingslocatie kunnen niet hetzelfde zijn",
+      "invalidPassengers": "Selecteer het aantal passagiers",
+      "invalidLuggage": "Geef aan of u bagage heeft",
+      "invalidVehicle": "Selecteer een voertuigtype",
+      "invalidRoute": "Kan route niet berekenen. Controleer uw locaties"
     }
   }
 }
