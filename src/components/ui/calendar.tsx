@@ -13,7 +13,10 @@ import {
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
 
+import { CustomComponents } from "@/types/customComponents";
+
 export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  components?: CustomComponents;
   captionLabelClassName?: string
   dayClassName?: string
   dayButtonClassName?: string
