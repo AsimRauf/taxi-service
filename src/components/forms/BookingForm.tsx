@@ -1,27 +1,25 @@
-import { useState } from 'react'
-import { SingleValue } from 'react-select'
-import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react'
-import { LocationInput } from './booking/LocationInput'
-import { Location, BookingFormData, BookingData } from '@/types/booking'
-import { WebsiteTranslations } from '@/types/translations'
-import type { SelectOption } from '@/hooks/useLocationSelect'
-import { handleLocationSelect } from '@/hooks/useLocationSelect'
-import { LuggageCheckbox } from './booking/LuggageCheckbox'
-import { DateSelector } from './booking/DateSelector'
-import { PassengerSelector } from './booking/PassengerSelector'
-import { format } from 'date-fns'
-import { validateBookingForm } from '@/utils/bookingValidation'
-import { calculateSegmentDistances } from '@/utils/distanceCalculations'
-import { useRouter } from 'next/router'
-
-
+import { useState } from 'react';
+import { SingleValue } from 'react-select';
+import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
+import { LocationInput } from './booking/LocationInput';
+import { Location, BookingFormData, BookingData } from '@/types/booking';
+import { WebsiteTranslations } from '@/types/translations';
+import type { SelectOption } from '@/hooks/useLocationSelect';
+import { handleLocationSelect } from '@/hooks/useLocationSelect';
+import { LuggageCheckbox } from './booking/LuggageCheckbox';
+import { DateSelector } from './booking/DateSelector';
+import { PassengerSelector } from './booking/PassengerSelector';
+import { format } from 'date-fns';
+import { validateBookingForm, ValidationErrors } from '@/utils/bookingValidation';
+import { calculateSegmentDistances } from '@/utils/distanceCalculations';
+import { useRouter } from 'next/router';
 
 interface BookingFormProps {
-    translations: WebsiteTranslations
+    translations: WebsiteTranslations;
 }
 
 export const BookingForm = ({ translations }: BookingFormProps) => {
-    const router = useRouter()
+    const router = useRouter();
     const [formData, setFormData] = useState<BookingFormData>({
         pickup: null,
         stopovers: [],
@@ -31,57 +29,27 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
         pickupDate: undefined,
         isReturn: false,
         returnDate: undefined,
-    })
+    });
+    const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
-    // In BookingForm.tsx
-const handleCalculate = async () => {
-    if (formData.isReturn && !formData.returnDate) {
-        alert(translations.errors.returnDateRequired);
-        return;
-    }
+    const handleCalculate = async () => {
+        const { isValid, errors } = validateBookingForm(formData, translations);
+        setValidationErrors(errors);
 
-    if (!formData.pickup || !formData.destination) {
-        alert(translations.errors.requiredLocations);
-        return;
-    }
-
-    if (formData.pickup.mainAddress === formData.destination.mainAddress) {
-        alert(translations.errors.duplicateLocation);
-        return;
-    }
-
-    if (formData.stopovers.length > 3) {
-        alert(translations.errors.maxStopovers);
-        return;
-    }
-    
-        const { isValid, error } = validateBookingForm(formData);
-        if (!isValid && error) {
-            // Map validation errors to translation keys
-            const errorMap: { [key: string]: string } = {
-                'Please select a pickup location': translations.errors.requiredLocations,
-                'Please select a destination': translations.errors.requiredLocations,
-                'Please select a pickup date and time': translations.errors.pickupDateRequired,
-                'Pickup date cannot be in the past': translations.errors.invalidPickupTime,
-                'Number of travelers must be between 1 and 8': translations.errors.invalidPassengers,
-                'Please select a return date and time': translations.errors.returnDateRequired,
-                'Return date must be after pickup date': translations.errors.invalidReturnTime,
-                'Pickup and destination cannot be the same location': translations.errors.duplicateLocation
-            };
-            alert(errorMap[error] || translations.errors.invalidRoute);
-            return;
+        if (!isValid) {
+            return; // Stop further processing if the form is invalid
         }
 
         try {
-            if (!formData.pickup || !formData.destination) {
-                throw new Error(translations.errors.requiredLocations);
-            }
-
             const segments = await calculateSegmentDistances(
                 formData.pickup,
                 formData.destination,
                 formData.stopovers
             );
+
+            if (!formData.pickup || !formData.destination) {
+                throw new Error(translations.errors.requiredLocations);
+            }
 
             const bookingData: BookingData = {
                 pickup: formData.pickup,
@@ -90,7 +58,7 @@ const handleCalculate = async () => {
                 sourceAddress: formData.pickup.mainAddress || '',
                 destinationAddress: formData.destination.mainAddress || '',
                 directDistance: segments[0].distance,
-                extraDistance: segments[1]?.distance || '0 km',
+                extraDistance: segments[1]?.distance || `0 ${translations.units.km}`,
                 pickupDateTime: formData.pickupDate ? format(formData.pickupDate, 'yyyy-MM-dd HH:mm') : '',
                 returnDateTime: formData.isReturn && formData.returnDate ?
                     format(formData.returnDate, 'yyyy-MM-dd HH:mm') : null,
@@ -105,7 +73,7 @@ const handleCalculate = async () => {
                     }
                 },
                 vehicle: 'regular',
-                isReturn: formData.isReturn, // Added to track if the trip is a return trip
+                isReturn: formData.isReturn,
                 price: 0,
                 isFixedPrice: false
             };
@@ -118,15 +86,13 @@ const handleCalculate = async () => {
         }
     };
 
-
-
     const swapLocations = () => {
         setFormData(prev => ({
             ...prev,
             pickup: prev.destination,
             destination: prev.pickup
-        }))
-    }
+        }));
+    };
 
     const addStopover = () => {
         if (formData.stopovers.length >= 3) {
@@ -137,24 +103,24 @@ const handleCalculate = async () => {
             ...prev,
             stopovers: [...prev.stopovers, null] as Location[]
         }));
-    }
+    };
 
     const removeStopover = (index: number) => {
         setFormData(prev => ({
             ...prev,
             stopovers: prev.stopovers.filter((_, i) => i !== index)
-        }))
-    }
+        }));
+    };
 
     const renderPickupLocation = () => (
         <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
             <div className="flex justify-center pt-8">
-                <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
+                <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-20">
                     <MapPin className="text-white" size={16} />
                 </div>
             </div>
             <div className="w-full space-y-1">
-                <span className="block text-sm font-medium text-gray-600">From</span>
+                <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
                 <LocationInput
                     value={formData.pickup}
                     onChange={(place: SingleValue<SelectOption>) =>
@@ -163,6 +129,7 @@ const handleCalculate = async () => {
                     translations={translations}
                     onClear={() => setFormData(prev => ({ ...prev, pickup: null }))}
                 />
+                {validationErrors.pickup && <span className="text-red-500 text-sm">{validationErrors.pickup}</span>}
             </div>
             <div className="flex justify-center pt-7">
                 <button
@@ -175,19 +142,19 @@ const handleCalculate = async () => {
                 </button>
             </div>
         </div>
-    )
+    );
 
     const renderStopovers = () => (
         <>
             {formData.stopovers.map((stopover, index) => (
                 <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
                     <div className="flex justify-center pt-8">
-                        <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-10">
+                <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-20">
                             <MapPin className="text-white" size={12} />
                         </div>
                     </div>
                     <div className="w-full space-y-1">
-                        <span className="block text-sm font-medium text-gray-600">Via</span>
+                        <span className="block text-sm font-medium text-gray-600">{translations.booking.via}</span>
                         <LocationInput
                             value={stopover}
                             onChange={(place) => handleLocationSelect(place, 'stopover', formData, setFormData, translations, index)}
@@ -212,16 +179,17 @@ const handleCalculate = async () => {
                 </div>
             ))}
         </>
-    )
+    );
+
     const renderDestination = () => (
         <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
             <div className="flex justify-center pt-8">
-                <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
+                <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-20">
                     <MapPin className="text-white" size={16} />
                 </div>
             </div>
             <div className="w-full space-y-1">
-                <span className="block text-sm font-medium text-gray-600">To</span>
+                <span className="block text-sm font-medium text-gray-600">{translations.booking.to}</span>
                 <LocationInput
                     value={formData.destination}
                     onChange={(place) => handleLocationSelect(place, 'destination', formData, setFormData, translations)}
@@ -229,6 +197,7 @@ const handleCalculate = async () => {
                     translations={translations}
                     onClear={() => setFormData(prev => ({ ...prev, destination: null }))}
                 />
+                {validationErrors.destination && <span className="text-red-500 text-sm">{validationErrors.destination}</span>}
             </div>
             <div className="flex justify-center pt-7">
                 <button
@@ -241,7 +210,7 @@ const handleCalculate = async () => {
                 </button>
             </div>
         </div>
-    )
+    );
 
     const renderAddStopoverButton = () => (
         <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-center gap-1 sm:gap-2">
@@ -260,13 +229,13 @@ const handleCalculate = async () => {
             </button>
             <div></div>
         </div>
-    )
+    );
 
     return (
         <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
             <form className="space-y-6">
                 <div className="space-y-4 sm:space-y-6 relative">
-                    <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
+                    <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80 z-0" />
                     {renderPickupLocation()}
                     {renderStopovers()}
                     {renderAddStopoverButton()}
@@ -285,6 +254,7 @@ const handleCalculate = async () => {
                             onChange={(value) => setFormData(prev => ({ ...prev, travelers: value }))}
                             label={translations.hero.travelers}
                         />
+                        {validationErrors.travelers && <span className="text-red-500 text-sm">{validationErrors.travelers}</span>}
                     </div>
 
                     <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
@@ -294,6 +264,7 @@ const handleCalculate = async () => {
                             onChange={(date) => setFormData(prev => ({ ...prev, pickupDate: date || undefined }))}
                             placeholder={translations.hero.pickupDateTime}
                         />
+                        {validationErrors.pickupDate && <span className="text-red-500 text-sm">{validationErrors.pickupDate}</span>}
 
                         <div className="space-y-3">
                             <div className="flex items-center space-x-2">
@@ -315,10 +286,11 @@ const handleCalculate = async () => {
                             {formData.isReturn && (
                                 <DateSelector
                                     label={translations.hero.returnDateTime}
-                                    value={formData.returnDate || null}
-                                    onChange={(date) => setFormData(prev => ({ ...prev, returnDate: date || undefined }))}
+                            value={formData.returnDate || null}
+                            onChange={(date) => setFormData(prev => ({ ...prev, returnDate: date || undefined }))}
                                 />
                             )}
+                            {validationErrors.returnDate && <span className="text-red-500 text-sm">{validationErrors.returnDate}</span>}
                         </div>
                     </div>
                 </div>
@@ -334,5 +306,5 @@ const handleCalculate = async () => {
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};

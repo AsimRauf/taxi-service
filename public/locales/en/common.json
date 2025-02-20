@@ -30,6 +30,7 @@
     "title": "Comfort Taxi Service",
     "from": "From",
     "to": "To",
+    "via": "Via",
     "distance": "Distance",
     "duration": "Duration",
     "passengers": "Passengers",
@@ -188,6 +189,9 @@
     "returnTotalPrice": "Total with return: €{{price}}",
     "returnTripNote": "For return trips, the price shown is per direction. The total price includes both journeys."
   },
+    "units": {
+        "km": "km"
+    },
     "travelInfo": {
       "title": "Travel Information",
       "airportCaution": "Always check with your airline what time you should be at the airport.",

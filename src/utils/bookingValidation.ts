@@ -1,40 +1,56 @@
 // Booking validation
 import { BookingFormData } from '@/types/booking'
+import { WebsiteTranslations } from '@/types/translations'
 
-export const validateBookingForm = (formData: BookingFormData): { isValid: boolean; error?: string } => {
+export interface ValidationErrors {
+    pickup?: string
+    destination?: string
+    pickupDate?: string
+    travelers?: string
+    returnDate?: string
+    [key: string]: string | undefined
+}
+
+export const validateBookingForm = (formData: BookingFormData, translations: WebsiteTranslations): { isValid: boolean; errors: ValidationErrors } => {
+    const errors: ValidationErrors = {}
+
     if (!formData.pickup) {
-        return { isValid: false, error: 'Please select a pickup location' }
+        errors.pickup = translations.errors.requiredLocations
     }
 
     if (!formData.destination) {
-        return { isValid: false, error: 'Please select a destination' }
+        errors.destination = translations.errors.requiredLocations
     }
 
     if (!formData.pickupDate) {
-        return { isValid: false, error: 'Please select a pickup date and time' }
-    }
-
-    const now = new Date()
-    if (formData.pickupDate < now) {
-        return { isValid: false, error: 'Pickup date cannot be in the past' }
+        errors.pickupDate = translations.errors.pickupDateRequired
+    } else {
+        const now = new Date()
+        if (formData.pickupDate < now) {
+            errors.pickupDate = translations.errors.invalidPickupTime
+        }
     }
 
     if (formData.travelers < 1 || formData.travelers > 8) {
-        return { isValid: false, error: 'Number of travelers must be between 1 and 8' }
+        errors.travelers = translations.errors.invalidPassengers
     }
 
-    if (formData.isReturn && !formData.returnDate) {
-        return { isValid: false, error: 'Please select a return date and time' }
+    if (formData.isReturn) {
+        if (!formData.returnDate) {
+            errors.returnDate = translations.errors.returnDateRequired
+        } else if (formData.returnDate < formData.pickupDate!) {
+            errors.returnDate = translations.errors.invalidReturnTime
+        }
     }
 
-    if (formData.isReturn && formData.returnDate && formData.returnDate < formData.pickupDate) {
-        return { isValid: false, error: 'Return date must be after pickup date' }
+    if (formData.pickup && formData.destination && 
+        formData.pickup.value.place_id === formData.destination.value.place_id) {
+        errors.destination = translations.errors.invalidRoute
     }
 
-    if (formData.pickup.value.place_id === formData.destination.value.place_id) {
-        return { isValid: false, error: 'Pickup and destination cannot be the same location' }
+    return {
+        isValid: Object.keys(errors).length === 0,
+        errors
     }
-
-    return { isValid: true }
 }
 

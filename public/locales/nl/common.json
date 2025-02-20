@@ -30,6 +30,7 @@
     "title": "Comfort Taxiservice",
     "from": "Van",
     "to": "Naar",
+    "via": "Via",
     "distance": "Afstand",
     "duration": "Reistijd",
     "passengers": "Passagiers",

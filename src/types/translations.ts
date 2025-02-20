@@ -73,6 +73,7 @@ export interface WebsiteTranslations {
       title: string
       from: string
       to: string
+      via: string
       distance: string
       duration: string
       passengers: string
@@ -85,6 +86,9 @@ export interface WebsiteTranslations {
       returnIncluded: string
       back: string
       bookNow: string
+    },
+    units: {
+      km: string
     }
   }
   
