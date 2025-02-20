@@ -19,6 +19,7 @@ export const TravelInfoPage = () => {
   const router = useRouter();
   const { t } = useTranslation();
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const translations = createTranslationsObject(t, router.locale || 'en');
 
   useEffect(() => {
@@ -56,28 +57,49 @@ export const TravelInfoPage = () => {
   };
 
   const handleContinue = () => {
-    if (!bookingData?.pickup || !bookingData?.destination) {
-      alert(t('errors.requiredLocations'));
+    if (!bookingData) {
       return;
+    }
+
+    const errors: Record<string, string> = {};
+
+    if (!bookingData.pickup) {
+      errors.pickup = t('travelInfo.errors.requiredLocations');
+    }
+    if (!bookingData.destination) {
+      errors.destination = t('travelInfo.errors.requiredLocations');
     }
 
     if (!bookingData.pickupDateTime) {
-      alert(t('errors.pickupDateRequired'));
-      return;
+      errors.pickupDate = t('travelInfo.errors.pickupDateRequired');
+    } else {
+      const now = new Date();
+      if (isBefore(bookingData.pickupDateTime, now)) {
+        errors.pickupDate = t('travelInfo.errors.invalidPickupTime');
+      }
     }
 
-    if (bookingData.returnDateTime === '') {
-      alert(t('errors.returnDateRequired'));
-      return;
+    if (bookingData.isReturn) {
+      if (!bookingData.returnDateTime) {
+        errors.returnDate = t('travelInfo.errors.returnDateRequired');
+      } else if (isBefore(bookingData.returnDateTime, bookingData.pickupDateTime!)) {
+        errors.returnDate = t('travelInfo.errors.invalidReturnTime');
+      }
     }
 
-    if (!validateDates(bookingData.pickupDateTime, bookingData.returnDateTime)) {
-      alert(t('errors.invalidDates'));
+    if (bookingData.pickup && bookingData.destination && 
+        bookingData.pickup.value.place_id === bookingData.destination.value.place_id) {
+      errors.destination = t('travelInfo.errors.invalidRoute');
+    }
+
+    setValidationErrors(errors);
+
+    if (Object.keys(errors).length > 0) {
       return;
     }
 
     // Save flight info and remarks
-    const updatedData = {
+    const updatedData: BookingData = {
       ...bookingData,
       flightNumber: bookingData.flightNumber || '',
       remarks: bookingData.remarks || ''
@@ -294,7 +316,7 @@ export const TravelInfoPage = () => {
         </div>
       </div>
       <div className="w-full space-y-1">
-        <span className="block text-sm font-medium text-gray-600">From</span>
+        <span className="block text-sm font-medium text-gray-600">{t('booking.from')}</span>
         <LocationInput
           value={bookingData?.pickup || null}
           onChange={(place) => {
@@ -387,7 +409,7 @@ export const TravelInfoPage = () => {
         </div>
       </div>
       <div className="w-full space-y-1">
-        <span className="block text-sm font-medium text-gray-600">To</span>
+        <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
         <LocationInput
           value={bookingData?.destination || null}
           onChange={(place) => {
@@ -505,33 +527,42 @@ export const TravelInfoPage = () => {
               <div className="space-y-6">
                 <div className="space-y-4 border-b border-gray-200 pb-6">
                   <h3 className="text-base font-medium text-gray-900">{t('travelInfo.pickupSection')}</h3>
-                  <DateSelector
-                    label={t('hero.pickupDateTime')}
-                    value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
-                    onChange={(date) => {
-                      if (!bookingData) return;
-                      const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
+                <DateSelector
+                  label={t('hero.pickupDateTime')}
+                  value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
+                  onChange={(date) => {
+                    if (!bookingData) return;
+                    const dateString = date ? date.toISOString(). slice(0, 16).replace('T', ' ') : '';
 
-                      if (!validateDates(dateString, bookingData.returnDateTime)) {
-                        alert(t('errors.invalidPickupTime'));
-                        return;
-                      }
+                    if (!validateDates(dateString, bookingData.returnDateTime)) {
+                      alert(t('errors.invalidPickupTime'));
+                      return;
+                    }
 
-                      setBookingData({
-                        ...bookingData,
-                        pickupDateTime: dateString
-                      });
-                    }}
-                    placeholder={t('hero.pickupDateTime')}
-                  />
+                    setBookingData({
+                      ...bookingData,
+                      pickupDateTime: dateString
+                    });
+                  }}
+                  placeholder={t('hero.pickupDateTime')}
+                />
+                {validationErrors.pickupDate && (
+                  <span className="text-red-500 text-sm mt-1">{validationErrors.pickupDate}</span>
+                )}
                 </div>
 
                 <div className="space-y-4 sm:space-y-6 relative">
                   <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
                       {renderPickupLocation()}
+                      {validationErrors.locations && (
+                        <span className="text-red-500 text-sm mt-1">{validationErrors.locations}</span>
+                      )}
                       {renderStopovers()}
                       {renderAddStopoverButton()}
                       {renderDestination()}
+                      {validationErrors.dates && (
+                        <span className="text-red-500 text-sm mt-1">{validationErrors.dates}</span>
+                      )}
                 </div>
               </div>
 
@@ -549,11 +580,6 @@ export const TravelInfoPage = () => {
                           if (!bookingData) return;
                           const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
 
-                          if (!validateDates(bookingData.pickupDateTime, dateString)) {
-                            alert(t('errors.invalidReturnTime'));
-                            return;
-                          }
-
                           setBookingData({
                             ...bookingData,
                             returnDateTime: dateString
@@ -561,6 +587,9 @@ export const TravelInfoPage = () => {
                         }}
                         placeholder={t('hero.returnPlaceholder')}
                       />
+                      {validationErrors.returnDate && (
+                        <span className="text-red-500 text-sm mt-1">{validationErrors.returnDate}</span>
+                      )}
                     </div>
 
                     <div className="space-y-4 sm:space-y-6 relative">
