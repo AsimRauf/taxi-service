@@ -140,7 +140,7 @@ export const TravelInfoPage = () => {
         segments[1]?.distance || '0 km'
       );
 
-      const basePrice = calculatedPrices[updatedData.vehicle] || 0;
+      const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
       const finalPrice = checked ? basePrice * 2 : basePrice;
 
       const finalData = {
@@ -185,7 +185,7 @@ export const TravelInfoPage = () => {
       );
 
       // Calculate base price first
-      const basePrice = calculatedPrices[updatedData.vehicle] || 0;
+      const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
       
       // Double the price if it's a return trip using isReturn flag
       const finalPrice = updatedData.isReturn ? basePrice * 2 : basePrice;
