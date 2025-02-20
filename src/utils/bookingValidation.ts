@@ -15,37 +15,37 @@ export const validateBookingForm = (formData: BookingFormData, translations: Web
     const errors: ValidationErrors = {}
 
     if (!formData.pickup) {
-        errors.pickup = translations.errors.requiredLocations
+        errors.pickup = translations.travelInfo.errors.requiredLocations
     }
 
     if (!formData.destination) {
-        errors.destination = translations.errors.requiredLocations
+        errors.destination = translations.travelInfo.errors.requiredLocations
     }
 
     if (!formData.pickupDate) {
-        errors.pickupDate = translations.errors.pickupDateRequired
+        errors.pickupDate = translations.travelInfo.errors.pickupDateRequired
     } else {
         const now = new Date()
         if (formData.pickupDate < now) {
-            errors.pickupDate = translations.errors.invalidPickupTime
+            errors.pickupDate = translations.travelInfo.errors.invalidPickupTime
         }
     }
 
     if (formData.travelers < 1 || formData.travelers > 8) {
-        errors.travelers = translations.errors.invalidPassengers
+        errors.travelers = translations.travelInfo.errors.invalidPassengers
     }
 
     if (formData.isReturn) {
         if (!formData.returnDate) {
-            errors.returnDate = translations.errors.returnDateRequired
+            errors.returnDate = translations.travelInfo.errors.returnDateRequired
         } else if (formData.returnDate < formData.pickupDate!) {
-            errors.returnDate = translations.errors.invalidReturnTime
+            errors.returnDate = translations.travelInfo.errors.invalidReturnTime
         }
     }
 
     if (formData.pickup && formData.destination && 
         formData.pickup.value.place_id === formData.destination.value.place_id) {
-        errors.destination = translations.errors.invalidRoute
+        errors.destination = translations.travelInfo.errors.invalidRoute
     }
 
     return {
