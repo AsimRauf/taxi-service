@@ -86,7 +86,11 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     totalPrice: t('booking.totalPrice'),
     returnIncluded: t('booking.returnIncluded'),
     back: t('booking.back'),
-    bookNow: t('booking.bookNow')
+    bookNow: t('booking.bookNow'),
+    via: t('booking.via')
+  },
+  units: {
+    km: t('units.km')
   },
   locale: locale
 });
