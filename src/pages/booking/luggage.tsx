@@ -25,6 +25,9 @@ interface BookingData {
     hasLuggage: boolean;
     passengers: number;
     luggage?: LuggageFormData;
+    vehicle: 'regular' | 'van' | null;
+    price: number;
+    isFixedPrice: boolean;
 }
 
 const LuggageIcon = ({ type }: { type: string }) => {
@@ -216,7 +219,8 @@ export const LuggagePage = () => {
         const bookingData: BookingData = JSON.parse(savedData);
         const updatedData: BookingData = {
           ...bookingData,
-          luggage: luggageData
+          luggage: luggageData,
+          vehicle: null // Reset selected vehicle when luggage changes
         };
       
         localStorage.setItem('bookingData', JSON.stringify(updatedData));

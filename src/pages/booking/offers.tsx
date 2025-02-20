@@ -66,9 +66,10 @@ const VehicleCard = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${!isAvailable ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-md'
-                } ${isSelected ? 'ring-2 ring-primary' : ''}`}
-            onClick={() => isAvailable && onSelect()}
+            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${
+                !isAvailable ? 'hidden' : 'cursor-pointer hover:shadow-md'
+            } ${isSelected ? 'ring-2 ring-primary' : ''}`}
+            onClick={onSelect}
         >
             <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
                 <div className="w-16 h-16 sm:w-24 sm:h-24 relative shrink-0 mx-auto sm:mx-0">

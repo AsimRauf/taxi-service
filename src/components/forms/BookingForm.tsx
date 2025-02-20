@@ -72,7 +72,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                         golfBag: 0, waterSports: 0
                     }
                 },
-                vehicle: 'regular',
+                vehicle: null,
                 isReturn: formData.isReturn,
                 price: 0,
                 isFixedPrice: false

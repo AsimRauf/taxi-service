@@ -47,7 +47,7 @@ export interface BookingData {
   luggage: LuggageFormData;
 
   // Added by offers.tsx
-  vehicle: 'regular' | 'van';
+  vehicle: 'regular' | 'van' | null;
   price: number;
   isFixedPrice: boolean;
 

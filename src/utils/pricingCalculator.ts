@@ -20,6 +20,7 @@ export const determineVehicleAvailability = (
     const { regularLuggage, specialLuggage } = luggageData;
     const totalLarge = regularLuggage.large;
     const totalSmall = regularLuggage.small;
+    const totalHandLuggage = regularLuggage.handLuggage;
     const totalSpecialItems = Object.values(specialLuggage).reduce((sum, val) => sum + val, 0);
 
     const result = {
@@ -27,12 +28,36 @@ export const determineVehicleAvailability = (
         van: true
     };
 
-    // Regular taxi limitations
+    // Regular taxi limitations based on new criteria
+    const combinedLuggage = totalLarge + totalSmall;
+    
+    // Hide regular taxi if:
+    // 1. More than 3 large bags
+    // 2. More than 4 small bags
+    // 3. Combined luggage > 3 (except when 3 small + 1 large)
     if (
-        passengers > 4 || 
-        totalLarge + totalSmall > 3 ||
+        passengers > 4 ||
+        totalLarge > 3 ||
+        totalSmall > 4 ||
+        (combinedLuggage > 3 && !(totalSmall === 3 && totalLarge === 1)) ||
         totalSpecialItems > 0
     ) {
+        result.regular = false;
+    }
+
+    // Van limitations
+    if (
+        passengers > 8 ||
+        totalLarge > 8 ||
+        totalSmall > 11 ||
+        totalHandLuggage > 8 ||
+        totalSpecialItems > 3
+    ) {
+        result.van = false;
+    }
+
+    // If only van is available, ensure regular is not selectable
+    if (!result.regular && result.van) {
         result.regular = false;
     }
 
