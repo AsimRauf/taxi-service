@@ -48,7 +48,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             );
 
             if (!formData.pickup || !formData.destination) {
-                throw new Error(translations.errors.requiredLocations);
+                throw new Error(translations.travelInfo.errors.requiredLocations);
             }
 
             const bookingData: BookingData = {
@@ -82,7 +82,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
             console.error('Error processing booking:', error);
-            alert(translations.errors.invalidRoute);
+            alert(translations.travelInfo.errors.invalidRoute);
         }
     };
 
@@ -96,7 +96,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
 
     const addStopover = () => {
         if (formData.stopovers.length >= 3) {
-            alert(translations.errors.maxStopovers);
+            alert(translations.travelInfo.errors.maxStopovers);
             return;
         }
         setFormData(prev => ({
