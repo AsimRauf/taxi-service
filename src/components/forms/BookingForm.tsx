@@ -82,7 +82,10 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
             console.error('Error processing booking:', error);
-            alert(translations.travelInfo.errors.invalidRoute);
+            setValidationErrors(prev => ({
+                ...prev,
+                route: translations.travelInfo.errors.invalidRoute
+            }));
         }
     };
 
@@ -96,12 +99,19 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
 
     const addStopover = () => {
         if (formData.stopovers.length >= 3) {
-            alert(translations.travelInfo.errors.maxStopovers);
+            setValidationErrors(prev => ({
+                ...prev,
+                stopovers: translations.travelInfo.errors.maxStopovers
+            }));
             return;
         }
         setFormData(prev => ({
             ...prev,
             stopovers: [...prev.stopovers, null] as Location[]
+        }));
+        setValidationErrors(prev => ({
+            ...prev,
+            stopovers: undefined
         }));
     };
 
@@ -182,34 +192,35 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
     );
 
     const renderDestination = () => (
-        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-            <div className="flex justify-center pt-8">
-                <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-20">
-                    <MapPin className="text-white" size={16} />
+        <>
+            <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                <div className="flex justify-center pt-8">
+                    <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-20">
+                        <MapPin className="text-white" size={16} />
+                    </div>
+                </div>
+                <div className="w-full space-y-1">
+                    <span className="block text-sm font-medium text-gray-600">{translations.booking.to}</span>
+                    <LocationInput
+                        value={formData.destination}
+                        onChange={(place) => handleLocationSelect(place, 'destination', formData, setFormData, translations)}
+                        placeholder={translations.hero.destinationPlaceholder}
+                        translations={translations}
+                        onClear={() => setFormData(prev => ({ ...prev, destination: null }))}
+                    />
+                </div>
+                <div className="flex justify-center pt-7">
+                    <button
+                        type="button"
+                        onClick={swapLocations}
+                        className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
+                        title={translations.hero.swapLocations}
+                    >
+                        <ArrowUpDown size={20} className="text-secondary" />
+                    </button>
                 </div>
             </div>
-            <div className="w-full space-y-1">
-                <span className="block text-sm font-medium text-gray-600">{translations.booking.to}</span>
-                <LocationInput
-                    value={formData.destination}
-                    onChange={(place) => handleLocationSelect(place, 'destination', formData, setFormData, translations)}
-                    placeholder={translations.hero.destinationPlaceholder}
-                    translations={translations}
-                    onClear={() => setFormData(prev => ({ ...prev, destination: null }))}
-                />
-                {validationErrors.destination && <span className="text-red-500 text-sm">{validationErrors.destination}</span>}
-            </div>
-            <div className="flex justify-center pt-7">
-                <button
-                    type="button"
-                    onClick={swapLocations}
-                    className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
-                    title={translations.hero.swapLocations}
-                >
-                    <ArrowUpDown size={20} className="text-secondary" />
-                </button>
-            </div>
-        </div>
+        </>
     );
 
     const renderAddStopoverButton = () => (
@@ -241,7 +252,11 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                     {renderAddStopoverButton()}
                     {renderDestination()}
                 </div>
-
+                {validationErrors.destination && (
+                        <div className="relative ml-[29px] xs:ml-[14px] sm:ml-[24px] lg:ml-[59px] mt-[-20px] top-[-24px]">
+                            <span className="text-red-500 text-sm">{validationErrors.destination}</span>
+                        </div>
+                    )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
                     <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
                         <LuggageCheckbox
