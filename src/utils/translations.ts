@@ -1,7 +1,6 @@
 import { WebsiteTranslations } from '@/types/translations';
 import { TFunction } from 'next-i18next';
 
-
 export const createTranslationsObject = (t: TFunction, locale: string): WebsiteTranslations => ({
   travelInfo: {
     errors: {
