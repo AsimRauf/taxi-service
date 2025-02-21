@@ -54,4 +54,16 @@ export interface BookingData {
   // Added by travel-info.tsx
   flightNumber?: string;
   remarks?: string;
+
+  // Added by personal-info.tsx
+  contactInfo?: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    additionalPhoneNumber?: string;
+  };
+  bookingForOther?: {
+    fullName: string;
+    phoneNumber: string;
+  };
 }
