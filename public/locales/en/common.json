@@ -53,6 +53,31 @@
     "navigation": {
       "saved": "Saved progress",
       "continue": "Continue where you left off"
+    },
+    "personalInfo": {
+      "title": "Personal Information",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "Enter your email address",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "Enter your phone number",
+      "additionalPhone": "Additional Phone Number",
+      "additionalPhonePlaceholder": "Enter additional phone number",
+      "bookingForOther": "Booking for someone else?",
+      "otherFullName": "Passenger's Full Name",
+      "otherFullNamePlaceholder": "Enter passenger's full name",
+      "otherPhoneNumber": "Passenger's Phone Number",
+      "otherPhonePlaceholder": "Enter passenger's phone number",
+      "continue": "Continue",
+      "errors": {
+        "fullNameRequired": "Full name is required",
+        "emailRequired": "Email is required",
+        "invalidEmail": "Please enter a valid email address",
+        "phoneRequired": "Phone number is required",
+        "otherFullNameRequired": "Passenger's full name is required",
+        "otherPhoneRequired": "Passenger's phone number is required"
+      }
     }
   },
   "luggage": {
@@ -189,17 +214,17 @@
     "returnTotalPrice": "Total with return: €{{price}}",
     "returnTripNote": "For return trips, the price shown is per direction. The total price includes both journeys."
   },
-    "units": {
-        "km": "km"
-    },
-    "travelInfo": {
-      "title": "Travel Information",
-      "airportCaution": "Always check with your airline what time you should be at the airport.",
-      "returnRoute": "Return Route",
-      "returnRouteInfo": "This is your return journey route",
-      "via": "Via",
-      "pickupSection": "Outbound Journey",
-      "returnSection": "Return Journey",
+  "units": {
+    "km": "km"
+  },
+  "travelInfo": {
+    "title": "Travel Information",
+    "airportCaution": "Always check with your airline what time you should be at the airport.",
+    "returnRoute": "Return Route",
+    "returnRouteInfo": "This is your return journey route",
+    "via": "Via",
+    "pickupSection": "Outbound Journey",
+    "returnSection": "Return Journey",
     "rideDetails": "Your Ride",
     "totalPassengers": "{{count}} passengers",
     "optional": "optional",

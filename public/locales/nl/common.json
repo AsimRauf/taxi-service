@@ -53,6 +53,31 @@
     "navigation": {
       "saved": "Voortgang opgeslagen",
       "continue": "Ga verder waar u gebleven bent"
+    },
+    "personalInfo": {
+      "title": "Persoonlijke Informatie",
+      "fullName": "Volledige Naam",
+      "fullNamePlaceholder": "Vul uw volledige naam in",
+      "email": "E-mailadres",
+      "emailPlaceholder": "Vul uw e-mailadres in",
+      "phoneNumber": "Telefoonnummer",
+      "phonePlaceholder": "Vul uw telefoonnummer in",
+      "additionalPhone": "Extra Telefoonnummer",
+      "additionalPhonePlaceholder": "Vul een extra telefoonnummer in",
+      "bookingForOther": "Boekt u voor iemand anders?",
+      "otherFullName": "Passagier's Volledige Naam",
+      "otherFullNamePlaceholder": "Vul de volledige naam van de passagier in",
+      "otherPhoneNumber": "Passagier's Telefoonnummer",
+      "otherPhonePlaceholder": "Vul het telefoonnummer van de passagier in",
+      "continue": "Doorgaan",
+      "errors": {
+        "fullNameRequired": "Volledige naam is verplicht",
+        "emailRequired": "E-mailadres is verplicht",
+        "invalidEmail": "Vul een geldig e-mailadres in",
+        "phoneRequired": "Telefoonnummer is verplicht",
+        "otherFullNameRequired": "Volledige naam van de passagier is verplicht",
+        "otherPhoneRequired": "Telefoonnummer van de passagier is verplicht"
+      }
     }
   },
   "luggage": {
@@ -189,12 +214,12 @@
     "returnTotalPrice": "Totaal met retour: €{{price}}",
     "returnTripNote": "Voor retourritten is de getoonde prijs per richting. De totaalprijs is inclusief beide ritten."
   },
-    "travelInfo": {
-      "title": "Reisinformatie",
-      "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
-      "returnRoute": "Retourroute",
-      "returnRouteInfo": "Dit is uw terugreis route",
-      "via": "Via",
+  "travelInfo": {
+    "title": "Reisinformatie",
+    "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
+    "returnRoute": "Retourroute",
+    "returnRouteInfo": "Dit is uw terugreis route",
+    "via": "Via",
     "rideDetails": "Uw Rit",
     "totalPassengers": "{{count}} passagiers",
     "flightNumber": "Vluchtnummer",
