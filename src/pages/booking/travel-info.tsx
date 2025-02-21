@@ -495,7 +495,7 @@ export const TravelInfoPage = () => {
                 {t('travelInfo.rideDetails')}
               </h3>
               <div className="space-y-1">
-                <div className="text-xl sm:text-2xl font-bold text-primary">
+                  <div className="text-xl sm:text-2xl font-bold text-primary">
                   €{bookingData?.price?.toFixed(2) || '0.00'}
                   {bookingData?.returnDateTime !== null && bookingData?.price && (
                     <span className="text-sm text-gray-500 ml-2">
