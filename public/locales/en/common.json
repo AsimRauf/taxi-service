@@ -69,6 +69,7 @@
       "otherFullNamePlaceholder": "Enter passenger's full name",
       "otherPhoneNumber": "Passenger's Phone Number",
       "otherPhonePlaceholder": "Enter passenger's phone number",
+      "addAdditionalPhone": "Add additional phone number",
       "continue": "Continue",
       "errors": {
         "fullNameRequired": "Full name is required",
@@ -141,6 +142,7 @@
     "back": "Back to Details"
   },
   "auth": {
+    "registrationError": "Registration failed. Please try again.",
     "signInTitle": "Welcome back",
     "signInMessage": "Sign in to access your account and manage your taxi bookings.",
     "signingIn": "Signing in...",
@@ -216,6 +218,9 @@
   },
   "units": {
     "km": "km"
+  },
+  "common": {
+    "loading": "Loading..."
   },
   "travelInfo": {
     "title": "Travel Information",

@@ -47,7 +47,7 @@ export interface WebsiteTranslations {
       password: string  
       phoneNumber: string
       confirmPassword: string
-  
+      registrationError: string
     }
     hero: {
       title: string
@@ -88,9 +88,37 @@ export interface WebsiteTranslations {
       returnIncluded: string
       back: string
       bookNow: string
+      personalInfo: {
+        title: string
+        fullName: string
+        fullNamePlaceholder: string
+        email: string
+        emailPlaceholder: string
+        phoneNumber: string
+        phonePlaceholder: string
+        additionalPhone: string
+        additionalPhonePlaceholder: string
+        bookingForOther: string
+        otherFullName: string
+        otherFullNamePlaceholder: string
+        otherPhoneNumber: string
+        otherPhonePlaceholder: string
+        addAdditionalPhone: string
+        continue: string
+        errors: {
+          fullNameRequired: string
+          emailRequired: string
+          invalidEmail: string
+          phoneRequired: string
+          otherFullNameRequired: string
+          otherPhoneRequired: string
+        }
+      }
     },
     units: {
       km: string
+    },
+    common: {
+      loading: string
     }
-  }
-  
+}

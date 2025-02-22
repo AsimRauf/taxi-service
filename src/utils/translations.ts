@@ -48,7 +48,8 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     signin: t('auth.signin'),
     password: t('auth.password'),
     phoneNumber: t('auth.phoneNumber'),
-    confirmPassword: t('auth.confirmPassword')
+    confirmPassword: t('auth.confirmPassword'),
+    registrationError: t('auth.registrationError')
   },
   hero: {
     title: t('hero.title'),
@@ -88,10 +89,39 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     returnIncluded: t('booking.returnIncluded'),
     back: t('booking.back'),
     bookNow: t('booking.bookNow'),
-    via: t('booking.via')
+    via: t('booking.via'),
+    personalInfo: {
+      title: t('booking.personalInfo.title'),
+      fullName: t('booking.personalInfo.fullName'),
+      fullNamePlaceholder: t('booking.personalInfo.fullNamePlaceholder'),
+      email: t('booking.personalInfo.email'),
+      emailPlaceholder: t('booking.personalInfo.emailPlaceholder'),
+      phoneNumber: t('booking.personalInfo.phoneNumber'),
+      phonePlaceholder: t('booking.personalInfo.phonePlaceholder'),
+      additionalPhone: t('booking.personalInfo.additionalPhone'),
+      additionalPhonePlaceholder: t('booking.personalInfo.additionalPhonePlaceholder'),
+      bookingForOther: t('booking.personalInfo.bookingForOther'),
+      otherFullName: t('booking.personalInfo.otherFullName'),
+      otherFullNamePlaceholder: t('booking.personalInfo.otherFullNamePlaceholder'),
+      otherPhoneNumber: t('booking.personalInfo.otherPhoneNumber'),
+      otherPhonePlaceholder: t('booking.personalInfo.otherPhonePlaceholder'),
+      addAdditionalPhone: t('booking.personalInfo.addAdditionalPhone'),
+      continue: t('booking.personalInfo.continue'),
+      errors: {
+        fullNameRequired: t('booking.personalInfo.errors.fullNameRequired'),
+        emailRequired: t('booking.personalInfo.errors.emailRequired'),
+        invalidEmail: t('booking.personalInfo.errors.invalidEmail'),
+        phoneRequired: t('booking.personalInfo.errors.phoneRequired'),
+        otherFullNameRequired: t('booking.personalInfo.errors.otherFullNameRequired'),
+        otherPhoneRequired: t('booking.personalInfo.errors.otherPhoneRequired')
+      }
+    }
   },
   units: {
     km: t('units.km')
+  },
+  common: {
+    loading: t('common.loading')
   },
   locale: locale
 });
