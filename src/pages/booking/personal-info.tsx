@@ -8,7 +8,7 @@ import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
 import { BookingData, Location } from '@/types/booking';
-import { LocationInput } from '@/components/forms/booking/LocationInput'; // Ensure LocationInput is imported
+import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
 
 interface BookingFormProps {
@@ -103,7 +103,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || ''
       });
     }
-  }, [router.asPath, user]);
+  }, [router, user]); // Added 'router' to the dependency array
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -122,13 +122,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
       router.push('/booking/travel-info');
       return;
     }
-
-
-    if (!currentBookingData) {
-      router.push('/booking/travel-info');
-      return;
-    }
-
+  
     // Validation checks
     if (!personalInfo.fullName) {
       newErrors.fullName = t('booking.personalInfo.errors.fullNameRequired');
@@ -146,7 +140,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         example: '+31123456789'
       });
     }
-
+  
     if (personalInfo.additionalPhone) {
       const additionalPhoneFormatted = personalInfo.additionalPhone.replace('+31', '');
       if (!validatePhoneNumber(additionalPhoneFormatted)) {
@@ -156,7 +150,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         });
       }
     }
-
+  
     if (personalInfo.bookingForOther) {
       if (!personalInfo.otherFullName) {
         newErrors.otherFullName = t('booking.personalInfo.errors.otherFullNameRequired');
@@ -170,7 +164,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         });
       }
     }
-
+  
     if (!user) {
       if (!personalInfo.password) {
         newErrors.password = t('auth.passwordRequired');
@@ -181,14 +175,14 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         newErrors.confirmPassword = t('auth.passwordMatch');
       }
     }
-
+  
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-
+  
     setIsLoading(true);
-
+  
     try {
       if (!user && personalInfo.password) {
         await register({
@@ -198,7 +192,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           password: personalInfo.password
         });
       }
-
+  
       if (bookingData) {
         const updatedBookingData: BookingData = {
           ...currentBookingData,
@@ -229,18 +223,19 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
               ''
           } : undefined
         };
-
+  
         console.log('Updated Booking Data:', updatedBookingData);
         console.dir(updatedBookingData, { depth: null, colors: true });
-
+  
         localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
-
+  
         // Verify saved data
         const verifyData = localStorage.getItem('bookingData');
         console.log('Verified Saved Data:', JSON.parse(verifyData!));
         router.push('/booking/payment');
       }
     } catch (error) {
+      console.error('Error during registration or booking update:', error); // Log the error
       setErrors({ form: t('auth.registrationError') });
     } finally {
       setIsLoading(false);
@@ -469,7 +464,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                 <div className="space-y-6 pl-6 border-l-2 border-gray-100">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <UserCheck className="w-5 h-5 text-primary" /> {/* Corrected icon usage */}
+                      <UserCheck className="w-5 h-5 text-primary" />
                       <h3 className="text-lg font-medium text-gray-900">
                         {t('booking.personalInfo.otherFullName')}
                       </h3>
