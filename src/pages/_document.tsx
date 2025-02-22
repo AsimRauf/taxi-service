@@ -1,16 +1,15 @@
-import { Html, Head, Main, NextScript } from 'next/document'
+import { Html, Head, Main, NextScript } from 'next/document';
+
 export default function Document() {
-  // Default to 'nl' as the initial language
-  
   return (
     <Html>
       <Head>
-        
+        {/* No need to include Google Maps script here */}
       </Head>
       <body>
         <Main />
         <NextScript />
       </body>
     </Html>
-  )
+  );
 }
