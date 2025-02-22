@@ -36,7 +36,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       user: {
         id: user._id.toString(),
         name: user.name,
-        email: user.email
+        email: user.email,
+        phoneNumber: user.phoneNumber
       }
     })
   } catch (error) {

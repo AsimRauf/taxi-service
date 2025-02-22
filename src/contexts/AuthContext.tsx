@@ -8,12 +8,20 @@ interface User {
   phoneNumber: string
 }
 
+interface RegisterParams {
+  name: string
+  email: string
+  phoneNumber: string
+  password: string
+}
+
 interface AuthContextType {
   user: User | null
   token: string | null
   login: (token: string, user: User) => void
   logout: () => void
   isLoading: boolean
+  register: (params: RegisterParams) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType)
@@ -64,8 +72,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return null
   }
 
+  const register = async ({ name, email, phoneNumber, password }: RegisterParams) => {
+    try {
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, phoneNumber, password }),
+      })
+
+      if (!response.ok) {
+        throw new Error('Registration failed')
+        
+      }
+
+      const { token, user } = await response.json()
+      login(token, user)
+    } catch (error) {
+      console.error('Registration error:', error)
+      throw error
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, logout, isLoading, register }}>
       {children}
     </AuthContext.Provider>
   )

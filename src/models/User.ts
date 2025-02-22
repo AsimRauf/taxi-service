@@ -14,9 +14,16 @@ const UserSchema = new mongoose.Schema({
     unique: true,
     validate: {
       validator: function(v: string) {
-        return /^\+31[0-9]{11}$/.test(v)
+        console.log('Validating phone number:', v, 'Length:', v.length)
+        console.log('Character codes:', Array.from(v).map(c => c.charCodeAt(0)))
+        const isValid = /^\+31[0-9]{9}$/.test(v) && v.length === 12
+        console.log('Validation result:', isValid)
+        if (!isValid) {
+          console.log('Validation failed for:', v)
+        }
+        return isValid
       },
-      message: 'Please enter a valid Netherlands phone number'
+      message: 'Please enter a valid Netherlands phone number in the format +31XXXXXXXXX (12 digits total)'
     }
   },
   name: {

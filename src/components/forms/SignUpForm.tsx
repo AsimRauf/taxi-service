@@ -44,7 +44,7 @@ export const SignUpForm = () => {
 
         if (!formData.phoneNumber) {
             newErrors.phoneNumber = t('auth.phoneRequired')
-        } else if (!/^[0-9]{11}$/.test(formData.phoneNumber)) {
+        } else if (!/^[0-9]{9}$/.test(formData.phoneNumber)) {
             newErrors.phoneNumber = t('auth.invalidPhone')
         }
 
@@ -210,7 +210,11 @@ export const SignUpForm = () => {
                                             className={`block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
                                                 }`}
                                             value={formData.phoneNumber}
-                                            onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                                            onChange={(e) => {
+                                              // Only allow numbers and limit to 9 digits
+                                              const digits = e.target.value.replace(/\D/g, '').slice(0, 9)
+                                              setFormData({ ...formData, phoneNumber: digits })
+                                            }}
                                         />
                                     </div>
                                     {errors.phoneNumber && (
