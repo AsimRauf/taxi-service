@@ -27,7 +27,7 @@ interface PersonalInfoData {
   password?: string;
   confirmPassword?: string;
   companyName?: string;
-  businessAddress?: Location; // Updated to ensure it is not null
+  businessAddress?: Location;
 }
 
 const PersonalInfoPage = ({ translations }: BookingFormProps) => {
@@ -49,7 +49,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     password: '',
     confirmPassword: '',
     companyName: '',
-    businessAddress: undefined, // Initialize as undefined
+    businessAddress: undefined,
   });
 
   useEffect(() => {
@@ -63,10 +63,26 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
     setBookingData(parsedData);
 
+    // Enhanced data restoration
+    const initialPersonalInfo = {
+      bookingType: parsedData.bookingType || 'individual',
+      fullName: '',
+      email: '',
+      phoneNumber: '',
+      additionalPhone: '',
+      bookingForOther: false,
+      otherFullName: '',
+      otherPhoneNumber: '',
+      password: '',
+      confirmPassword: '',
+      companyName: parsedData.businessInfo?.companyName || '',
+      businessAddress: parsedData.businessInfo?.businessAddress || undefined,
+    };
+
     if (user) {
       const formattedPhone = user.phoneNumber ? user.phoneNumber.replace('+31', '') : '';
-      setPersonalInfo(prev => ({
-        ...prev,
+      setPersonalInfo({
+        ...initialPersonalInfo,
         fullName: user.name,
         email: user.email,
         phoneNumber: formattedPhone,
@@ -74,10 +90,10 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         otherFullName: parsedData.bookingForOther?.fullName || '',
         otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || '',
         additionalPhone: parsedData.contactInfo?.additionalPhoneNumber?.replace('+31', '') || ''
-      }));
+      });
     } else if (parsedData.contactInfo) {
-      setPersonalInfo(prev => ({
-        ...prev,
+      setPersonalInfo({
+        ...initialPersonalInfo,
         fullName: parsedData.contactInfo?.fullName || '',
         email: parsedData.contactInfo?.email || '',
         phoneNumber: parsedData.contactInfo?.phoneNumber?.replace('+31', '') || '',
@@ -85,7 +101,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         bookingForOther: !!parsedData.bookingForOther,
         otherFullName: parsedData.bookingForOther?.fullName || '',
         otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || ''
-      }));
+      });
     }
   }, [router.asPath, user]);
 
@@ -101,6 +117,12 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     const newErrors: Record<string, string> = {};
     const savedData = localStorage.getItem('bookingData');
     const currentBookingData: BookingData | null = savedData ? JSON.parse(savedData) : null;
+  
+    if (!currentBookingData) {
+      router.push('/booking/travel-info');
+      return;
+    }
+
 
     if (!currentBookingData) {
       router.push('/booking/travel-info');
@@ -183,7 +205,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           bookingType: personalInfo.bookingType,
           businessInfo: personalInfo.bookingType === 'business' && personalInfo.businessAddress ? {
             companyName: personalInfo.companyName || '',
-            businessAddress: personalInfo.businessAddress // Now businessAddress is guaranteed to be Location
+            businessAddress: personalInfo.businessAddress // Ensure businessAddress is included
           } : undefined,
           contactInfo: {
             fullName: personalInfo.fullName,
@@ -208,7 +230,14 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           } : undefined
         };
 
+        console.log('Updated Booking Data:', updatedBookingData);
+        console.dir(updatedBookingData, { depth: null, colors: true });
+
         localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+
+        // Verify saved data
+        const verifyData = localStorage.getItem('bookingData');
+        console.log('Verified Saved Data:', JSON.parse(verifyData!));
         router.push('/booking/payment');
       }
     } catch (error) {
