@@ -7,8 +7,16 @@ import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff } from 'lucide-react';
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { BookingData, Location } from '@/types/booking';
+import { LocationInput } from '@/components/forms/booking/LocationInput'; // Ensure LocationInput is imported
+import { WebsiteTranslations } from '@/types/translations';
+
+interface BookingFormProps {
+  translations: WebsiteTranslations;
+}
 
 interface PersonalInfoData {
+  bookingType: 'individual' | 'business';
   fullName: string;
   email: string;
   phoneNumber: string;
@@ -18,59 +26,88 @@ interface PersonalInfoData {
   otherPhoneNumber?: string;
   password?: string;
   confirmPassword?: string;
+  companyName?: string;
+  businessAddress?: Location; // Updated to ensure it is not null
 }
 
-const PersonalInfoPage = () => {
-  const { t } = useTranslation('common'); // Specify the namespace
-
-  // Log translation keys
-  console.log('Translation Keys:');
-  console.log('Title:', t('booking.personalInfo.title')); // Updated to use the correct namespace
-  console.log('Full Name:', t('booking.personalInfo.fullName')); // Updated to use the correct namespace
-  console.log('Email:', t('booking.personalInfo.email')); // Updated to use the correct namespace
-  console.log('Phone Number:', t('booking.personalInfo.phoneNumber')); // Updated to use the correct namespace
-  console.log('Additional Phone:', t('booking.personalInfo.additionalPhone')); // Updated to use the correct namespace
-  console.log('Booking for Other:', t('booking.personalInfo.bookingForOther')); // Updated to use the correct namespace
-  console.log('Back:', t('booking.back')); // Updated to use the correct namespace
-  console.log('Continue:', t('booking.personalInfo.continue')); // Updated to use the correct namespace
-
+const PersonalInfoPage = ({ translations }: BookingFormProps) => {
+  const { t } = useTranslation('common');
+  const { i18n } = useTranslation();
   const router = useRouter();
   const { user, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
+    bookingType: 'individual',
     fullName: user?.name || '',
     email: user?.email || '',
-    phoneNumber: user?.phoneNumber || '',
+    phoneNumber: user?.phoneNumber?.replace('+31', '') || '',
     additionalPhone: '',
     bookingForOther: false,
     otherFullName: '',
     otherPhoneNumber: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    companyName: '',
+    businessAddress: undefined, // Initialize as undefined
   });
 
   useEffect(() => {
+    const savedData = localStorage.getItem('bookingData');
+    const parsedData: BookingData | null = savedData ? JSON.parse(savedData) : null;
+
+    if (!parsedData?.pickupDateTime || !parsedData?.destination) {
+      router.push('/booking/travel-info');
+      return;
+    }
+
+    setBookingData(parsedData);
+
     if (user) {
       const formattedPhone = user.phoneNumber ? user.phoneNumber.replace('+31', '') : '';
       setPersonalInfo(prev => ({
         ...prev,
         fullName: user.name,
         email: user.email,
-        phoneNumber: formattedPhone
+        phoneNumber: formattedPhone,
+        bookingForOther: parsedData.bookingForOther ? true : false,
+        otherFullName: parsedData.bookingForOther?.fullName || '',
+        otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || '',
+        additionalPhone: parsedData.contactInfo?.additionalPhoneNumber?.replace('+31', '') || ''
+      }));
+    } else if (parsedData.contactInfo) {
+      setPersonalInfo(prev => ({
+        ...prev,
+        fullName: parsedData.contactInfo?.fullName || '',
+        email: parsedData.contactInfo?.email || '',
+        phoneNumber: parsedData.contactInfo?.phoneNumber?.replace('+31', '') || '',
+        additionalPhone: parsedData.contactInfo?.additionalPhoneNumber?.replace('+31', '') || '',
+        bookingForOther: !!parsedData.bookingForOther,
+        otherFullName: parsedData.bookingForOther?.fullName || '',
+        otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || ''
       }));
     }
-  }, [user]);
+  }, [router.asPath, user]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
   const validatePhoneNumber = (phone: string) => {
-    return !!phone && /^\d{9}$/.test(phone);
+    const fullNumber = phone.startsWith('+31') ? phone : `+31${phone}`;
+    return fullNumber.length === 12 && /^\+31\d{9}$/.test(fullNumber);
   };
 
   const handleContinue = async () => {
     const newErrors: Record<string, string> = {};
+    const savedData = localStorage.getItem('bookingData');
+    const currentBookingData: BookingData | null = savedData ? JSON.parse(savedData) : null;
 
+    if (!currentBookingData) {
+      router.push('/booking/travel-info');
+      return;
+    }
+
+    // Validation checks
     if (!personalInfo.fullName) {
       newErrors.fullName = t('booking.personalInfo.errors.fullNameRequired');
     }
@@ -82,19 +119,19 @@ const PersonalInfoPage = () => {
     if (!personalInfo.phoneNumber) {
       newErrors.phoneNumber = t('booking.personalInfo.errors.phoneRequired');
     } else if (!validatePhoneNumber(personalInfo.phoneNumber)) {
+      newErrors.phoneNumber = t('booking.personalInfo.errors.invalidPhone', {
+        format: '+31XXXXXXXXX',
+        example: '+31123456789'
+      });
     }
 
-    if (!user) {
-      if (!personalInfo.password) {
-        newErrors.password = t('auth.passwordRequired');
-      } else if (personalInfo.password.length < 8) {
-        newErrors.password = t('auth.passwordLength');
-      }
-
-      if (!personalInfo.confirmPassword) {
-        newErrors.confirmPassword = t('auth.passwordMatch');
-      } else if (personalInfo.password !== personalInfo.confirmPassword) {
-        newErrors.confirmPassword = t('auth.passwordMatch');
+    if (personalInfo.additionalPhone) {
+      const additionalPhoneFormatted = personalInfo.additionalPhone.replace('+31', '');
+      if (!validatePhoneNumber(additionalPhoneFormatted)) {
+        newErrors.additionalPhone = t('booking.personalInfo.errors.invalidPhone', {
+          format: '+31XXXXXXXXX',
+          example: '+31123456789'
+        });
       }
     }
 
@@ -112,6 +149,17 @@ const PersonalInfoPage = () => {
       }
     }
 
+    if (!user) {
+      if (!personalInfo.password) {
+        newErrors.password = t('auth.passwordRequired');
+      } else if (personalInfo.password.length < 8) {
+        newErrors.password = t('auth.passwordLength');
+      }
+      if (personalInfo.password !== personalInfo.confirmPassword) {
+        newErrors.confirmPassword = t('auth.passwordMatch');
+      }
+    }
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -120,22 +168,50 @@ const PersonalInfoPage = () => {
     setIsLoading(true);
 
     try {
-      if (!user) {
-        try {
-          await register({
-            name: personalInfo.fullName,
-            email: personalInfo.email,
-            phoneNumber: `+31${personalInfo.phoneNumber}`,
-            password: personalInfo.password!
-          });
-        } catch {
-          setErrors({ form: t('auth.registrationError') });
-          return;
-        }
+      if (!user && personalInfo.password) {
+        await register({
+          name: personalInfo.fullName,
+          email: personalInfo.email,
+          phoneNumber: `+31${personalInfo.phoneNumber}`,
+          password: personalInfo.password
+        });
       }
 
-      router.push('/booking/payment');
-    } catch {
+      if (bookingData) {
+        const updatedBookingData: BookingData = {
+          ...currentBookingData,
+          bookingType: personalInfo.bookingType,
+          businessInfo: personalInfo.bookingType === 'business' && personalInfo.businessAddress ? {
+            companyName: personalInfo.companyName || '',
+            businessAddress: personalInfo.businessAddress // Now businessAddress is guaranteed to be Location
+          } : undefined,
+          contactInfo: {
+            fullName: personalInfo.fullName,
+            email: personalInfo.email,
+            phoneNumber: personalInfo.phoneNumber.startsWith('+31') ?
+              personalInfo.phoneNumber :
+              `+31${personalInfo.phoneNumber}`,
+            additionalPhoneNumber: personalInfo.additionalPhone ?
+              (personalInfo.additionalPhone.startsWith('+31') ?
+                personalInfo.additionalPhone :
+                `+31${personalInfo.additionalPhone}`) :
+              undefined,
+            hasAdditionalPhone: !!personalInfo.additionalPhone
+          },
+          bookingForOther: personalInfo.bookingForOther ? {
+            fullName: personalInfo.otherFullName || '',
+            phoneNumber: personalInfo.otherPhoneNumber ?
+              (personalInfo.otherPhoneNumber.startsWith('+31') ?
+                personalInfo.otherPhoneNumber :
+                `+31${personalInfo.otherPhoneNumber}`) :
+              ''
+          } : undefined
+        };
+
+        localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+        router.push('/booking/payment');
+      }
+    } catch (error) {
       setErrors({ form: t('auth.registrationError') });
     } finally {
       setIsLoading(false);
@@ -155,6 +231,28 @@ const PersonalInfoPage = () => {
           <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-6">
             {t('booking.personalInfo.title')}
           </h2>
+
+          {/* Booking Type Selection */}
+          <div className="flex gap-4 mb-8">
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                checked={personalInfo.bookingType === 'individual'}
+                onChange={() => setPersonalInfo({ ...personalInfo, bookingType: 'individual' })}
+                className="w-4 h-4 text-primary"
+              />
+              <span>{t('booking.personalInfo.individual')}</span>
+            </label>
+            <label className="flex items-center gap-2">
+              <input
+                type="radio"
+                checked={personalInfo.bookingType === 'business'}
+                onChange={() => setPersonalInfo({ ...personalInfo, bookingType: 'business' })}
+                className="w-4 h-4 text-primary"
+              />
+              <span>{t('booking.personalInfo.business')}</span>
+            </label>
+          </div>
 
           <div className="space-y-6">
             {/* Name and Phone in single row */}
@@ -191,8 +289,8 @@ const PersonalInfoPage = () => {
                     type="tel"
                     value={personalInfo.phoneNumber || ''}
                     onChange={(e) => {
-                      const digits = e.target.value.replace(/\D/g, '').slice(0, 9)
-                      setPersonalInfo({ ...personalInfo, phoneNumber: digits })
+                      const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                      setPersonalInfo({ ...personalInfo, phoneNumber: digits });
                     }}
                     placeholder="XXXXXXXXX"
                     className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
@@ -226,18 +324,20 @@ const PersonalInfoPage = () => {
                   <input
                     type="checkbox"
                     checked={!!personalInfo.additionalPhone}
-                    onChange={(e) => setPersonalInfo({
-                      ...personalInfo,
-                      additionalPhone: e.target.checked ? '+31' : ''
-                    })}
+                    onChange={(e) => {
+                      setPersonalInfo({
+                        ...personalInfo,
+                        additionalPhone: e.target.checked ? '+31' : ''
+                      });
+                    }}
                     className="w-4 h-4 text-primary rounded border-gray-300 focus:ring-primary"
                   />
                   <span className="text-lg font-medium text-gray-900">
                     {t('booking.personalInfo.addAdditionalPhone')}
                   </span>
                 </label>
-                
-                {personalInfo.additionalPhone && (
+
+                {!!personalInfo.additionalPhone && (
                   <div className="flex rounded-lg shadow-sm">
                     <span className="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       +31
@@ -246,8 +346,8 @@ const PersonalInfoPage = () => {
                       type="tel"
                       value={personalInfo.additionalPhone?.replace('+31', '') || ''}
                       onChange={(e) => {
-                        const digits = e.target.value.replace(/\D/g, '').slice(0, 9)
-                        setPersonalInfo({ ...personalInfo, additionalPhone: `+31${digits}` })
+                        const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                        setPersonalInfo({ ...personalInfo, additionalPhone: digits });
                       }}
                       placeholder="XXXXXXXXX"
                       className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
@@ -340,7 +440,7 @@ const PersonalInfoPage = () => {
                 <div className="space-y-6 pl-6 border-l-2 border-gray-100">
                   <div className="space-y-2">
                     <div className="flex items-center gap-3">
-                      <UserCheck className="w-5 h-5 text-primary" />
+                      <UserCheck className="w-5 h-5 text-primary" /> {/* Corrected icon usage */}
                       <h3 className="text-lg font-medium text-gray-900">
                         {t('booking.personalInfo.otherFullName')}
                       </h3>
@@ -370,8 +470,8 @@ const PersonalInfoPage = () => {
                         type="tel"
                         value={personalInfo.otherPhoneNumber?.replace('+31', '') || ''}
                         onChange={(e) => {
-                          const digits = e.target.value.replace(/\D/g, '').slice(0, 9)
-                          setPersonalInfo({ ...personalInfo, otherPhoneNumber: `+31${digits}` })
+                          const digits = e.target.value.replace(/\D/g, '').slice(0, 9);
+                          setPersonalInfo({ ...personalInfo, otherPhoneNumber: `+31${digits}` });
                         }}
                         placeholder="XXXXXXXXX"
                         className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
@@ -382,6 +482,55 @@ const PersonalInfoPage = () => {
                 </div>
               )}
             </div>
+
+            {/* Company Name and Business Address Fields */}
+            {personalInfo.bookingType === 'business' && (
+              <div className="space-y-2">
+                <div className="space-y-2">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {t('booking.personalInfo.companyName')}
+                  </h3>
+                  <input
+                    type="text"
+                    value={personalInfo.companyName}
+                    onChange={(e) => setPersonalInfo({ ...personalInfo, companyName: e.target.value })}
+                    placeholder={t('booking.personalInfo.companyNamePlaceholder')}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  />
+                </div>
+
+                <h3 className="text-lg font-medium text-gray-900">
+                  {t('booking.personalInfo.businessAddress')}
+                </h3>
+                <LocationInput
+                  value={personalInfo.businessAddress || null}
+                  onChange={(place) => {
+                    if (place) {
+                      const location: Location = {
+                        label: place.value.structured_formatting.main_text,
+                        description: place.value.description,
+                        mainAddress: place.value.description,
+                        secondaryAddress: place.value.structured_formatting.secondary_text,
+                        value: {
+                          place_id: place.value.place_id,
+                          description: place.value.description,
+                          structured_formatting: {
+                            main_text: place.value.structured_formatting.main_text,
+                            secondary_text: place.value.structured_formatting.secondary_text,
+                          },
+                        },
+                      };
+                      setPersonalInfo({ ...personalInfo, businessAddress: location });
+                    } else {
+                      setPersonalInfo({ ...personalInfo, businessAddress: undefined });
+                    }
+                  }}
+                  placeholder={t('booking.personalInfo.businessAddressPlaceholder')}
+                  translations={{ ...translations, locale: i18n.language }}
+                  onClear={() => setPersonalInfo({ ...personalInfo, businessAddress: undefined })}
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between mt-8">

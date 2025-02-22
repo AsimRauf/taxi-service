@@ -1,5 +1,6 @@
 // Booking types
 import { LuggageFormData } from "./luggage"
+
 export interface Location {
   description: string
   label: string
@@ -24,6 +25,7 @@ export interface BookingFormData {
   pickupDate: Date | undefined
   isReturn: boolean
   returnDate: Date | undefined
+  bookingType: 'individual' | 'business'; // Add bookingType to BookingFormData
 }
 
 export interface BookingData {
@@ -61,9 +63,15 @@ export interface BookingData {
     email: string;
     phoneNumber: string;
     additionalPhoneNumber?: string;
+    hasAdditionalPhone: boolean; 
   };
   bookingForOther?: {
     fullName: string;
     phoneNumber: string;
+  };
+  bookingType: 'individual' | 'business';
+  businessInfo?: {
+    companyName: string;
+    businessAddress: Location;
   };
 }
