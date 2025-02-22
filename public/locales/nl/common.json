@@ -174,7 +174,9 @@
     "stepTwoDesc": "Stel je accountbeveiliging in",
     "continue": "Doorgaan",
     "back": "Terug",
-    "welcomeMessage": "Begin je reis met ons. Maak een account aan voor gepersonaliseerde taxidiensten en exclusieve voordelen."
+    "welcomeMessage": "Begin je reis met ons. Maak een account aan voor gepersonaliseerde taxidiensten en exclusieve voordelen.",
+    "passwordPlaceholder": "Voer uw wachtwoord in",
+    "confirmPasswordPlaceholder": "Bevestig uw wachtwoord"
   },
   "offers": {
     "title": "Kies Uw Voertuig",
@@ -248,3 +250,4 @@
     }
   }
 }
+
