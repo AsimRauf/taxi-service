@@ -77,8 +77,23 @@
         "invalidEmail": "Please enter a valid email address",
         "phoneRequired": "Phone number is required",
         "otherFullNameRequired": "Passenger's full name is required",
-        "otherPhoneRequired": "Passenger's phone number is required"
-      }
+        "otherPhoneRequired": "Passenger's phone number is required",
+        "invalidPhone": "Please enter a valid phone number",
+        "passwordRequired": "Password is required",
+        "passwordLength": "Password must be at least 8 characters",
+      "passwordMatch": "Passwords do not match"
+      },
+      "individual": "Individual",
+      "business": "Business",
+      "passengerFullName": "Passenger's Full Name",
+      "passengerFullNamePlaceholder": "Enter passenger's full name",
+      "passengerPhoneNumber": "Passenger's Phone Number",
+      "passengerPhonePlaceholder": "Enter passenger's phone number",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "businessAddress": "Business Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
     }
   },
   "luggage": {
