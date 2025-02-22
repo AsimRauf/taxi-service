@@ -79,7 +79,13 @@
         "phoneRequired": "Telefoonnummer is verplicht",
         "otherFullNameRequired": "Volledige naam van de passagier is verplicht",
         "otherPhoneRequired": "Telefoonnummer van de passagier is verplicht"
-      }
+      },
+      "individual": "Individu",
+      "business": "Zakelijk",
+      "companyName": "Bedrijfsnaam",
+      "companyNamePlaceholder": "Voer uw bedrijfsnaam in",
+      "businessAddress": "Bedrijfsadres",
+      "businessAddressPlaceholder": "Voer het bedrijfsadres in"
     }
   },
   "luggage": {
@@ -250,4 +256,3 @@
     }
   }
 }
-

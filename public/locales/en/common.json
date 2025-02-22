@@ -183,6 +183,8 @@
     "password": "Password",
     "phoneNumber": "Phone Number",
     "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Confirm your password",
+    "passwordPlaceholder": "Enter your password",
     "personalInfo": "Personal Information",
     "stepOneDesc": "Let's start with your basic details",
     "securityInfo": "Security Details",
