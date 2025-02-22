@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
-import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff, MapPin } from 'lucide-react'; // Import MapPin
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -32,7 +32,7 @@ interface PersonalInfoData {
 
 const PersonalInfoPage = ({ translations }: BookingFormProps) => {
   const { t } = useTranslation('common');
-  const { i18n } = useTranslation();
+  const i18n = useTranslation('common').i18n;
   const router = useRouter();
   const { user, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -63,7 +63,6 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
     setBookingData(parsedData);
 
-    // Enhanced data restoration
     const initialPersonalInfo = {
       bookingType: parsedData.bookingType || 'individual',
       fullName: '',
@@ -103,7 +102,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         otherPhoneNumber: parsedData.bookingForOther?.phoneNumber?.replace('+31', '') || ''
       });
     }
-  }, [router, user]); // Added 'router' to the dependency array
+  }, [router, user]);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -117,12 +116,12 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     const newErrors: Record<string, string> = {};
     const savedData = localStorage.getItem('bookingData');
     const currentBookingData: BookingData | null = savedData ? JSON.parse(savedData) : null;
-  
+
     if (!currentBookingData) {
       router.push('/booking/travel-info');
       return;
     }
-  
+
     // Validation checks
     if (!personalInfo.fullName) {
       newErrors.fullName = t('booking.personalInfo.errors.fullNameRequired');
@@ -140,7 +139,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         example: '+31123456789'
       });
     }
-  
+
     if (personalInfo.additionalPhone) {
       const additionalPhoneFormatted = personalInfo.additionalPhone.replace('+31', '');
       if (!validatePhoneNumber(additionalPhoneFormatted)) {
@@ -150,7 +149,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         });
       }
     }
-  
+
     if (personalInfo.bookingForOther) {
       if (!personalInfo.otherFullName) {
         newErrors.otherFullName = t('booking.personalInfo.errors.otherFullNameRequired');
@@ -164,7 +163,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         });
       }
     }
-  
+
     if (!user) {
       if (!personalInfo.password) {
         newErrors.password = t('auth.passwordRequired');
@@ -175,14 +174,14 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         newErrors.confirmPassword = t('auth.passwordMatch');
       }
     }
-  
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-  
+
     setIsLoading(true);
-  
+
     try {
       if (!user && personalInfo.password) {
         await register({
@@ -192,7 +191,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           password: personalInfo.password
         });
       }
-  
+
       if (bookingData) {
         const updatedBookingData: BookingData = {
           ...currentBookingData,
@@ -223,12 +222,12 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
               ''
           } : undefined
         };
-  
+
         console.log('Updated Booking Data:', updatedBookingData);
         console.dir(updatedBookingData, { depth: null, colors: true });
-  
+
         localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
-  
+
         // Verify saved data
         const verifyData = localStorage.getItem('bookingData');
         console.log('Verified Saved Data:', JSON.parse(verifyData!));
@@ -258,29 +257,23 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
           {/* Booking Type Selection */}
           <div className="flex gap-4 mb-8">
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={personalInfo.bookingType === 'individual'}
-                onChange={() => setPersonalInfo({ ...personalInfo, bookingType: 'individual' })}
-                className="w-4 h-4 text-primary"
-              />
-              <span>{t('booking.personalInfo.individual')}</span>
-            </label>
-            <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                checked={personalInfo.bookingType === 'business'}
-                onChange={() => setPersonalInfo({ ...personalInfo, bookingType: 'business' })}
-                className="w-4 h-4 text-primary"
-              />
-              <span>{t('booking.personalInfo.business')}</span>
-            </label>
+            <button
+              className={`flex-1 py-2 rounded-lg text-center ${personalInfo.bookingType === 'individual' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setPersonalInfo({ ...personalInfo, bookingType: 'individual' })}
+            >
+              {t('booking.personalInfo.individual')}
+            </button>
+            <button
+              className={`flex-1 py-2 rounded-lg text-center ${personalInfo.bookingType === 'business' ? 'bg-primary text-white' : 'bg-gray-200 text-gray-700'}`}
+              onClick={() => setPersonalInfo({ ...personalInfo, bookingType: 'business' })}
+            >
+              {t('booking.personalInfo.business')}
+            </button>
           </div>
 
           <div className="space-y-6">
             {/* Name and Phone in single row */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <User className="w-5 h-5 text-primary" />
@@ -293,7 +286,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                   value={personalInfo.fullName}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, fullName: e.target.value })}
                   placeholder={t('booking.personalInfo.fullNamePlaceholder')}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                 />
                 {errors.fullName && <p className="text-red-500 text-sm">{errors.fullName}</p>}
               </div>
@@ -306,7 +299,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                   </h3>
                 </div>
                 <div className="flex rounded-lg shadow-sm">
-                  <span className="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                  <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                     +31
                   </span>
                   <input
@@ -317,7 +310,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                       setPersonalInfo({ ...personalInfo, phoneNumber: digits });
                     }}
                     placeholder="XXXXXXXXX"
-                    className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                    className="block w-full border rounded-r-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                   />
                 </div>
                 {errors.phoneNumber && <p className="text-red-500 text-sm">{errors.phoneNumber}</p>}
@@ -325,7 +318,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
             </div>
 
             {/* Email and Additional Phone */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5 text-primary" />
@@ -338,7 +331,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                   value={personalInfo.email}
                   onChange={(e) => setPersonalInfo({ ...personalInfo, email: e.target.value })}
                   placeholder={t('booking.personalInfo.emailPlaceholder')}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                  className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                 />
                 {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
               </div>
@@ -363,7 +356,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
                 {!!personalInfo.additionalPhone && (
                   <div className="flex rounded-lg shadow-sm">
-                    <span className="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                    <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                       +31
                     </span>
                     <input
@@ -374,7 +367,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                         setPersonalInfo({ ...personalInfo, additionalPhone: digits });
                       }}
                       placeholder="XXXXXXXXX"
-                      className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                      className="block w-full border rounded-r-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                     />
                   </div>
                 )}
@@ -383,7 +376,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
             {/* Password fields for new users */}
             {!user && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <Lock className="w-5 h-5 text-primary" />
@@ -397,7 +390,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                       value={personalInfo.password}
                       onChange={(e) => setPersonalInfo({ ...personalInfo, password: e.target.value })}
                       placeholder={t('auth.passwordPlaceholder')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                     />
                     <button
                       type="button"
@@ -427,7 +420,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                       value={personalInfo.confirmPassword}
                       onChange={(e) => setPersonalInfo({ ...personalInfo, confirmPassword: e.target.value })}
                       placeholder={t('auth.confirmPasswordPlaceholder')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                     />
                     <button
                       type="button"
@@ -474,7 +467,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                       value={personalInfo.otherFullName}
                       onChange={(e) => setPersonalInfo({ ...personalInfo, otherFullName: e.target.value })}
                       placeholder={t('booking.personalInfo.otherFullNamePlaceholder')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                     />
                     {errors.otherFullName && <p className="text-red-500 text-sm">{errors.otherFullName}</p>}
                   </div>
@@ -487,7 +480,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                       </h3>
                     </div>
                     <div className="flex rounded-lg shadow-sm">
-                      <span className="inline-flex items-center px-4 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                      <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
                         +31
                       </span>
                       <input
@@ -498,7 +491,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                           setPersonalInfo({ ...personalInfo, otherPhoneNumber: `+31${digits}` });
                         }}
                         placeholder="XXXXXXXXX"
-                        className="block w-full border rounded-r-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+                        className="block w-full border rounded-r-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
                       />
                     </div>
                     {errors.otherPhoneNumber && <p className="text-red-500 text-sm">{errors.otherPhoneNumber}</p>}
@@ -509,50 +502,58 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
             {/* Company Name and Business Address Fields */}
             {personalInfo.bookingType === 'business' && (
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    {t('booking.personalInfo.companyName')}
-                  </h3>
+                  <div className="flex items-center gap-3">
+                    <User className="w-5 h-5 text-primary" /> {/* Icon for Company Name */}
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {t('booking.personalInfo.companyName')}
+                    </h3>
+                  </div>
                   <input
                     type="text"
                     value={personalInfo.companyName}
                     onChange={(e) => setPersonalInfo({ ...personalInfo, companyName: e.target.value })}
                     placeholder={t('booking.personalInfo.companyNamePlaceholder')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
                   />
                 </div>
 
-                <h3 className="text-lg font-medium text-gray-900">
-                  {t('booking.personalInfo.businessAddress')}
-                </h3>
-                <LocationInput
-                  value={personalInfo.businessAddress || null}
-                  onChange={(place) => {
-                    if (place) {
-                      const location: Location = {
-                        label: place.value.structured_formatting.main_text,
-                        description: place.value.description,
-                        mainAddress: place.value.description,
-                        secondaryAddress: place.value.structured_formatting.secondary_text,
-                        value: {
-                          place_id: place.value.place_id,
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-5 h-5 text-primary" /> {/* Icon for Business Address */}
+                    <h3 className="text-lg font-medium text-gray-900">
+                      {t('booking.personalInfo.businessAddress')}
+                    </h3>
+                  </div>
+                  <LocationInput
+                    value={personalInfo.businessAddress || null}
+                    onChange={(place) => {
+                      if (place) {
+                        const location: Location = {
+                          label: place.value.structured_formatting.main_text,
                           description: place.value.description,
-                          structured_formatting: {
-                            main_text: place.value.structured_formatting.main_text,
-                            secondary_text: place.value.structured_formatting.secondary_text,
+                          mainAddress: place.value.description,
+                          secondaryAddress: place.value.structured_formatting.secondary_text,
+                          value: {
+                            place_id: place.value.place_id,
+                            description: place.value.description,
+                            structured_formatting: {
+                              main_text: place.value.structured_formatting.main_text,
+                              secondary_text: place.value.structured_formatting.secondary_text,
+                            },
                           },
-                        },
-                      };
-                      setPersonalInfo({ ...personalInfo, businessAddress: location });
-                    } else {
-                      setPersonalInfo({ ...personalInfo, businessAddress: undefined });
-                    }
-                  }}
-                  placeholder={t('booking.personalInfo.businessAddressPlaceholder')}
-                  translations={{ ...translations, locale: i18n.language }}
-                  onClear={() => setPersonalInfo({ ...personalInfo, businessAddress: undefined })}
-                />
+                        };
+                        setPersonalInfo({ ...personalInfo, businessAddress: location });
+                      } else {
+                        setPersonalInfo({ ...personalInfo, businessAddress: undefined });
+                      }
+                    }}
+                    placeholder={t('booking.personalInfo.businessAddressPlaceholder')}
+                    translations={{ ...translations, locale: i18n.language }}
+                    onClear={() => setPersonalInfo({ ...personalInfo, businessAddress: undefined })}
+                  />
+                </div>
               </div>
             )}
           </div>
