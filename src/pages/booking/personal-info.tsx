@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
-import { User, Phone, Mail, UserCheck, PhoneCall, Lock, Eye, EyeOff } from 'lucide-react';
+import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff } from 'lucide-react';
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -128,19 +128,15 @@ const PersonalInfoPage = () => {
             phoneNumber: `+31${personalInfo.phoneNumber}`,
             password: personalInfo.password!
           });
-        } catch (error) {
+        } catch {
           setErrors({ form: t('auth.registrationError') });
           return;
         }
       }
 
       router.push('/booking/payment');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        setErrors({ form: error.message || t('auth.registrationError') });
-      } else {
-        setErrors({ form: t('auth.registrationError') });
-      }
+    } catch {
+      setErrors({ form: t('auth.registrationError') });
     } finally {
       setIsLoading(false);
     }
