@@ -1,4 +1,3 @@
-// LocationInput component with all imports and interface definitions
 import dynamic from 'next/dynamic'
 import { createGooglePlacesConfig } from '@/config/googlePlaces'
 import { Location } from '@/types/booking'
@@ -58,7 +57,6 @@ interface GooglePlaceValue {
         }
       }
     } : null
-    console.log(translations.locale)
 
     return (
       <div className="w-full min-h-[60px]">

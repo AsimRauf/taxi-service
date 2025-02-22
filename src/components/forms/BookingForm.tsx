@@ -26,7 +26,8 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
         destination: null,
         hasLuggage: false,
         travelers: 1,
-        pickupDate: undefined,
+    pickupDate: undefined,
+    bookingType: 'individual', // Default value for booking type
         isReturn: false,
         returnDate: undefined,
     });
@@ -75,6 +76,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                 vehicle: null,
                 isReturn: formData.isReturn,
                 price: 0,
+                bookingType: formData.bookingType, // Include bookingType in booking data
                 isFixedPrice: false
             };
 
