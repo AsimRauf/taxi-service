@@ -1,10 +1,7 @@
 import { useState } from 'react';
-import { SingleValue } from 'react-select';
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
 import { LocationInput } from './booking/LocationInput';
 import { Location, BookingFormData, BookingData } from '@/types/booking';
-import { WebsiteTranslations } from '@/types/translations';
-import type { SelectOption } from '@/hooks/useLocationSelect';
 import { handleLocationSelect } from '@/hooks/useLocationSelect';
 import { LuggageCheckbox } from './booking/LuggageCheckbox';
 import { DateSelector } from './booking/DateSelector';
