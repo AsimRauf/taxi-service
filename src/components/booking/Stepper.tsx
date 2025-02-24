@@ -28,7 +28,7 @@ export const Stepper = ({ currentStep }: StepperProps) => {
         <div className="fixed top-20 lg:mt-10 left-0 right-0 bg-white/90 backdrop-blur-sm shadow-md z-10">
             <div className="max-w-6xl mx-auto px-4 py-4">
                 <div className="relative">
-                    <div className="absolute top-5 left-0 w-full h-0.5 bg-gray-100" />
+                    <div className="absolute top-5 lg:left-2 lg:w-[1090px] w-full h-0.5 bg-gray-100" />
                     <ol className="relative flex justify-between items-center w-full">
                         {steps.map((step) => {
                             const Icon = step.icon;
