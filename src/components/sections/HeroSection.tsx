@@ -1,5 +1,5 @@
 import { BookingForm } from '../forms/BookingForm'
-import  {WebsiteTranslations}  from '@/types/translations'
+import { WebsiteTranslations } from '@/types/translations'
 
 interface HeroSectionProps {
   translations: WebsiteTranslations
@@ -21,11 +21,9 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
           </div>
           
           <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-4 sm:p-6 md:p-8">
-            <BookingForm translations={translations} />
+            <BookingForm />
           </div>
         </div>
       </div>
     )
-  }
-
-  
+}
