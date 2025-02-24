@@ -87,8 +87,8 @@ export const TravelInfoPage = () => {
       }
     }
 
-    if (bookingData.pickup && bookingData.destination && 
-        bookingData.pickup.value.place_id === bookingData.destination.value.place_id) {
+    if (bookingData.pickup && bookingData.destination &&
+      bookingData.pickup.value.place_id === bookingData.destination.value.place_id) {
       errors.destination = t('travelInfo.errors.invalidRoute');
     }
 
@@ -126,9 +126,9 @@ export const TravelInfoPage = () => {
       const segments = await calculateSegmentDistances(
         updatedData.pickup,
         updatedData.destination,
-        (updatedData.stopovers || []).filter(stopover => 
-          stopover && 
-          stopover.mainAddress && 
+        (updatedData.stopovers || []).filter(stopover =>
+          stopover &&
+          stopover.mainAddress &&
           stopover.mainAddress.length > 0
         )
       );
@@ -165,12 +165,12 @@ export const TravelInfoPage = () => {
     if (!updatedData.pickup?.mainAddress || !updatedData.destination?.mainAddress) return;
 
     try {
-      const validStopovers = (updatedData.stopovers || []).filter(stopover => 
-        stopover && 
-        stopover.mainAddress && 
+      const validStopovers = (updatedData.stopovers || []).filter(stopover =>
+        stopover &&
+        stopover.mainAddress &&
         stopover.mainAddress.length > 0
       );
-      
+
       const segments = await calculateSegmentDistances(
         updatedData.pickup,
         updatedData.destination,
@@ -186,7 +186,7 @@ export const TravelInfoPage = () => {
 
       // Calculate base price first
       const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
-      
+
       // Double the price if it's a return trip using isReturn flag
       const finalPrice = updatedData.isReturn ? basePrice * 2 : basePrice;
 
@@ -219,7 +219,7 @@ export const TravelInfoPage = () => {
     } else if (type === 'pickup') {
       updatedData.pickup = newLocation || {} as Location;
       updatedData.sourceAddress = newLocation?.mainAddress || '';
-      
+
       // Check if pickup and destination are the same
       if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.destination?.mainAddress) {
         alert(t('errors.duplicateLocation'));
@@ -228,7 +228,7 @@ export const TravelInfoPage = () => {
     } else if (type === 'destination') {
       updatedData.destination = newLocation || {} as Location;
       updatedData.destinationAddress = newLocation?.mainAddress || '';
-      
+
       // Check if pickup and destination are the same
       if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.pickup?.mainAddress) {
         alert(t('errors.duplicateLocation'));
@@ -258,16 +258,16 @@ export const TravelInfoPage = () => {
 
   const addStopover = () => {
     if (!bookingData) return;
-    
+
     // Initialize stopovers array if it doesn't exist
     const currentStopovers = bookingData.stopovers || [];
-    
+
     // Check maximum stopovers
     if (currentStopovers.length >= 3) {
       alert(t('errors.maxStopovers'));
       return;
     }
-    
+
     const updatedData: BookingData = {
       ...bookingData,
       stopovers: [
@@ -326,6 +326,7 @@ export const TravelInfoPage = () => {
               label: place.label,
               mainAddress: place.value.description,
               description: place.value.description,
+              secondaryAddress: place.value.structured_formatting?.secondary_text || '',
               value: {
                 place_id: place.value.place_id,
                 description: place.value.description,
@@ -372,6 +373,7 @@ export const TravelInfoPage = () => {
                   label: place.label,
                   mainAddress: place.value.description,
                   description: place.value.description,
+                  secondaryAddress: place.value.structured_formatting?.secondary_text || '',
                   value: {
                     place_id: place.value.place_id,
                     description: place.value.description,
@@ -382,9 +384,7 @@ export const TravelInfoPage = () => {
               }}
               placeholder={`${t('hero.stopover')} ${index + 1}`}
               translations={translations}
-              onClear={() => {
-                handleLocationUpdate(null, 'stopover', index);
-              }}
+              onClear={() => handleLocationUpdate(null, 'stopover', index)}
             />
           </div>
           <div className="flex justify-center pt-8">
@@ -419,6 +419,7 @@ export const TravelInfoPage = () => {
               label: place.label,
               mainAddress: place.value.description,
               description: place.value.description,
+              secondaryAddress: place.value.structured_formatting?.secondary_text || '',
               value: {
                 place_id: place.value.place_id,
                 description: place.value.description,
@@ -495,7 +496,7 @@ export const TravelInfoPage = () => {
                 {t('travelInfo.rideDetails')}
               </h3>
               <div className="space-y-1">
-                  <div className="text-xl sm:text-2xl font-bold text-primary">
+                <div className="text-xl sm:text-2xl font-bold text-primary">
                   €{bookingData?.price?.toFixed(2) || '0.00'}
                   {bookingData?.returnDateTime !== null && bookingData?.price && (
                     <span className="text-sm text-gray-500 ml-2">
@@ -527,42 +528,42 @@ export const TravelInfoPage = () => {
               <div className="space-y-6">
                 <div className="space-y-4 border-b border-gray-200 pb-6">
                   <h3 className="text-base font-medium text-gray-900">{t('travelInfo.pickupSection')}</h3>
-                <DateSelector
-                  label={t('hero.pickupDateTime')}
-                  value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
-                  onChange={(date) => {
-                    if (!bookingData) return;
-                    const dateString = date ? date.toISOString(). slice(0, 16).replace('T', ' ') : '';
+                  <DateSelector
+                    label={t('hero.pickupDateTime')}
+                    value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
+                    onChange={(date) => {
+                      if (!bookingData) return;
+                      const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
 
-                    if (!validateDates(dateString, bookingData.returnDateTime)) {
-                      alert(t('errors.invalidPickupTime'));
-                      return;
-                    }
+                      if (!validateDates(dateString, bookingData.returnDateTime)) {
+                        alert(t('errors.invalidPickupTime'));
+                        return;
+                      }
 
-                    setBookingData({
-                      ...bookingData,
-                      pickupDateTime: dateString
-                    });
-                  }}
-                  placeholder={t('hero.pickupDateTime')}
-                />
-                {validationErrors.pickupDate && (
-                  <span className="text-red-500 text-sm mt-1">{validationErrors.pickupDate}</span>
-                )}
+                      setBookingData({
+                        ...bookingData,
+                        pickupDateTime: dateString
+                      });
+                    }}
+                    placeholder={t('hero.pickupDateTime')}
+                  />
+                  {validationErrors.pickupDate && (
+                    <span className="text-red-500 text-sm mt-1">{validationErrors.pickupDate}</span>
+                  )}
                 </div>
 
                 <div className="space-y-4 sm:space-y-6 relative">
                   <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80" />
-                      {renderPickupLocation()}
-                      {validationErrors.locations && (
-                        <span className="text-red-500 text-sm mt-1">{validationErrors.locations}</span>
-                      )}
-                      {renderStopovers()}
-                      {renderAddStopoverButton()}
-                      {renderDestination()}
-                      {validationErrors.dates && (
-                        <span className="text-red-500 text-sm mt-1">{validationErrors.dates}</span>
-                      )}
+                  {renderPickupLocation()}
+                  {validationErrors.locations && (
+                    <span className="text-red-500 text-sm mt-1">{validationErrors.locations}</span>
+                  )}
+                  {renderStopovers()}
+                  {renderAddStopoverButton()}
+                  {renderDestination()}
+                  {validationErrors.dates && (
+                    <span className="text-red-500 text-sm mt-1">{validationErrors.dates}</span>
+                  )}
                 </div>
               </div>
 
