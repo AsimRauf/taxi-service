@@ -13,21 +13,22 @@ import { format } from 'date-fns';
 import { validateBookingForm, ValidationErrors } from '@/utils/bookingValidation';
 import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { useRouter } from 'next/router';
+import { createTranslationsObject } from '@/utils/translations';
+import { useTranslation } from 'next-i18next';
 
-interface BookingFormProps {
-    translations: WebsiteTranslations;
-}
 
-export const BookingForm = ({ translations }: BookingFormProps) => {
+export const BookingForm = () => {
+    const { t } = useTranslation();
     const router = useRouter();
+    const translations = createTranslationsObject(t, router.locale || 'en');
     const [formData, setFormData] = useState<BookingFormData>({
         pickup: null,
         stopovers: [],
         destination: null,
         hasLuggage: false,
         travelers: 1,
-    pickupDate: undefined,
-    bookingType: 'individual', // Default value for booking type
+        pickupDate: undefined,
+        bookingType: 'individual', // Default value for booking type
         isReturn: false,
         returnDate: undefined,
     });
@@ -135,9 +136,8 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                 <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
                 <LocationInput
                     value={formData.pickup}
-                    onChange={(place: SingleValue<SelectOption>) =>
-                        handleLocationSelect(place, 'pickup', formData, setFormData, translations)}
-                    placeholder={translations.hero.pickupPlaceholder}
+                    onChange={(place) => handleLocationSelect(place, 'pickup', formData, setFormData, translations)}
+                    placeholder={t('hero.pickupPlaceholder')}
                     translations={translations}
                     onClear={() => setFormData(prev => ({ ...prev, pickup: null }))}
                 />
@@ -161,7 +161,7 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
             {formData.stopovers.map((stopover, index) => (
                 <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
                     <div className="flex justify-center pt-8">
-                <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-20">
+                        <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-20">
                             <MapPin className="text-white" size={12} />
                         </div>
                     </div>
@@ -255,10 +255,10 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                     {renderDestination()}
                 </div>
                 {validationErrors.destination && (
-                        <div className="relative ml-[29px] xs:ml-[14px] sm:ml-[24px] lg:ml-[59px] mt-[-20px] top-[-24px]">
-                            <span className="text-red-500 text-sm">{validationErrors.destination}</span>
-                        </div>
-                    )}
+                    <div className="relative ml-[29px] xs:ml-[14px] sm:ml-[24px] lg:ml-[59px] mt-[-20px] top-[-24px]">
+                        <span className="text-red-500 text-sm">{validationErrors.destination}</span>
+                    </div>
+                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
                     <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
                         <LuggageCheckbox
@@ -303,8 +303,8 @@ export const BookingForm = ({ translations }: BookingFormProps) => {
                             {formData.isReturn && (
                                 <DateSelector
                                     label={translations.hero.returnDateTime}
-                            value={formData.returnDate || null}
-                            onChange={(date) => setFormData(prev => ({ ...prev, returnDate: date || undefined }))}
+                                    value={formData.returnDate || null}
+                                    onChange={(date) => setFormData(prev => ({ ...prev, returnDate: date || undefined }))}
                                 />
                             )}
                             {validationErrors.returnDate && <span className="text-red-500 text-sm">{validationErrors.returnDate}</span>}
