@@ -1,5 +1,4 @@
 {
-  "locale": "nl",
   "nav": {
     "login": "Inloggen",
     "services": "Onze Diensten",
@@ -11,39 +10,39 @@
     "signOut": "Uitloggen"
   },
   "hero": {
-    "title": "Boek uw rit met vertrouwen",
-    "subtitle": "Professionele taxiservice voor al uw vervoersbehoeften",
+    "title": "Boek Uw Rit met Vertrouwen",
+    "subtitle": "Professionele taxi service voor al uw vervoersbehoeften",
     "pickupPlaceholder": "Voer ophaallocatie in",
     "destinationPlaceholder": "Voer bestemming in",
-    "addStopover": "Tussenstop toevoegen",
-    "swapLocations": "Locaties wisselen",
+    "addStopover": "Voeg tussenstop toe",
+    "swapLocations": "Locaties verwisselen",
     "stopover": "Tussenstop",
-    "removeStopover": "Tussenstop verwijderen",
-    "pickupDateTime": "Ophaaldatum & tijd",
-    "returnDateTime": "Retourdatum & tijd",
+    "removeStopover": "Verwijder tussenstop",
+    "pickupDateTime": "Ophaaldatum & Tijd",
+    "returnDateTime": "Retourdatum & Tijd",
     "returnTrip": "Retourrit",
     "luggage": "Ik heb bagage",
-    "travelers": "Aantal reizigers",
-    "calculate": "Prijs berekenen",
+    "travelers": "Aantal Reizigers",
+    "calculate": "Prijs Berekenen",
     "returnPlaceholder": "Selecteer retourdatum en tijd"
   },
   "booking": {
-    "title": "Comfort Taxiservice",
+    "title": "Comfort Taxi Service",
     "from": "Van",
     "to": "Naar",
     "via": "Via",
     "distance": "Afstand",
-    "duration": "Reistijd",
+    "duration": "Duur",
     "passengers": "Passagiers",
     "luggage": "Bagage",
     "yes": "Ja",
     "no": "Nee",
     "pickupTime": "Ophaaltijd",
     "returnTime": "Retourtijd",
-    "totalPrice": "Totaalprijs",
-    "returnIncluded": "*Retourrit inbegrepen in totaalprijs",
+    "totalPrice": "Totale Prijs",
+    "returnIncluded": "*Retourreis inbegrepen in totale prijs",
     "back": "Terug",
-    "bookNow": "Nu Boeken",
+    "bookNow": "Boek Nu",
     "steps": {
       "luggage": "Bagage",
       "offers": "Aanbiedingen",
@@ -52,54 +51,63 @@
       "incomplete": "Voltooi eerst de vorige stappen"
     },
     "navigation": {
-      "saved": "Voortgang opgeslagen",
-      "continue": "Ga verder waar u gebleven bent"
+      "saved": "Opgeslagen voortgang",
+      "continue": "Ga verder waar je was gebleven"
     },
     "personalInfo": {
       "title": "Persoonlijke Informatie",
       "fullName": "Volledige Naam",
-      "fullNamePlaceholder": "Vul uw volledige naam in",
+      "fullNamePlaceholder": "Voer uw volledige naam in",
       "email": "E-mailadres",
-      "emailPlaceholder": "Vul uw e-mailadres in",
+      "emailPlaceholder": "Voer uw e-mailadres in",
       "phoneNumber": "Telefoonnummer",
-      "phonePlaceholder": "Vul uw telefoonnummer in",
-      "addAdditionalPhone": "Voeg een extra telefoonnummer toe", 
+      "phonePlaceholder": "Voer uw telefoonnummer in",
       "additionalPhone": "Extra Telefoonnummer",
-      "additionalPhonePlaceholder": "Vul een extra telefoonnummer in",
+      "additionalPhonePlaceholder": "Voer extra telefoonnummer in",
       "bookingForOther": "Boekt u voor iemand anders?",
-      "otherFullName": "Passagier's Volledige Naam",
-      "otherFullNamePlaceholder": "Vul de volledige naam van de passagier in",
-      "otherPhoneNumber": "Passagier's Telefoonnummer",
-      "otherPhonePlaceholder": "Vul het telefoonnummer van de passagier in",
+      "otherFullName": "Volledige Naam van Passagier",
+      "otherFullNamePlaceholder": "Voer volledige naam van passagier in",
+      "otherPhoneNumber": "Telefoonnummer van Passagier",
+      "otherPhonePlaceholder": "Voer telefoonnummer van passagier in",
+      "addAdditionalPhone": "Voeg extra telefoonnummer toe",
       "continue": "Doorgaan",
       "errors": {
         "fullNameRequired": "Volledige naam is verplicht",
-        "emailRequired": "E-mailadres is verplicht",
-        "invalidEmail": "Vul een geldig e-mailadres in",
+        "emailRequired": "E-mail is verplicht",
+        "invalidEmail": "Voer een geldig e-mailadres in",
         "phoneRequired": "Telefoonnummer is verplicht",
-        "otherFullNameRequired": "Volledige naam van de passagier is verplicht",
-        "otherPhoneRequired": "Telefoonnummer van de passagier is verplicht"
+        "otherFullNameRequired": "Volledige naam van passagier is verplicht",
+        "otherPhoneRequired": "Telefoonnummer van passagier is verplicht",
+        "invalidPhone": "Voer een geldig telefoonnummer in",
+        "passwordRequired": "Wachtwoord is verplicht",
+        "passwordLength": "Wachtwoord moet minimaal 8 tekens zijn",
+        "passwordMatch": "Wachtwoorden komen niet overeen"
       },
       "individual": "Individu",
       "business": "Zakelijk",
+      "passengerFullName": "Volledige Naam van Passagier",
+      "passengerFullNamePlaceholder": "Voer volledige naam van passagier in",
+      "passengerPhoneNumber": "Telefoonnummer van Passagier",
+      "passengerPhonePlaceholder": "Voer telefoonnummer van passagier in",
       "companyName": "Bedrijfsnaam",
       "companyNamePlaceholder": "Voer uw bedrijfsnaam in",
       "businessAddress": "Bedrijfsadres",
-      "businessAddressPlaceholder": "Voer het bedrijfsadres in"
+      "password": "Wachtwoord",
+      "confirmPassword": "Bevestig Wachtwoord"
     }
   },
   "luggage": {
-    "title": "Bagage Details",
+    "title": "Bagagegegevens",
     "regularLuggage": "Reguliere Bagage",
     "specialItems": "Speciale Items",
     "large": {
-      "title": "Grote koffer",
+      "title": "Grote ingecheckte koffer",
       "dimensions": "85cm x 55cm x 35cm",
       "max": "Maximaal 8 stuks",
       "description": "Perfect voor langere reizen"
     },
     "small": {
-      "title": "Kleine koffer",
+      "title": "Kleine ingecheckte koffer",
       "dimensions": "55cm x 45cm x 25cm",
       "max": "Maximaal 11 stuks",
       "description": "Ideaal voor kortere reizen"
@@ -107,152 +115,186 @@
     "hand": {
       "title": "Handbagage",
       "dimensions": "40cm x 30cm x 20cm",
-      "description": "Handtas, rugzak, etc.",
+      "description": "Handtas, rugzak, enz.",
       "max": "Maximaal 8 stuks"
     },
     "special": {
       "foldableWheelchair": {
-        "title": "Opvouwbare rolstoel",
-        "description": "Handmatige rolstoel die opgevouwen kan worden"
+        "title": "Vouwbare rolstoel",
+        "description": "Handmatige rolstoel die kan worden opgevouwen"
       },
       "rollator": {
         "title": "Rollator",
-        "description": "Loophulpmiddel met wielen"
+        "description": "Loophulp met wielen"
       },
       "pets": {
         "title": "Huisdieren",
-        "description": "In geschikte reisbenches"
+        "description": "In geschikte reisdragers"
       },
       "bicycle": {
         "title": "Fiets",
         "description": "Standaard of vouwfiets"
       },
       "winterSports": {
-        "title": "Wintersport",
+        "title": "Winter sporten",
         "description": "Ski- of snowboarduitrusting"
       },
       "stroller": {
         "title": "Kinderwagen",
-        "description": "Kinderwagen of buggy"
+        "description": "Babywagen of kinderwagen"
       },
       "golfBag": {
-        "title": "Golftas",
+        "title": "Golfbag",
         "description": "Standaard golfuitrusting tas"
       },
       "waterSports": {
         "title": "Watersport",
-        "description": "Surfplank of vergelijkbare uitrusting"
+        "description": "Surfboard of vergelijkbare uitrusting"
       },
       "maxTotal": "Maximaal 3 speciale items in totaal"
     },
-    "continue": "Doorgaan naar Aanbiedingen",
-    "back": "Terug naar Details"
+    "continue": "Ga verder naar Aanbiedingen",
+    "back": "Terug naar Gegevens"
   },
   "auth": {
+    "registrationError": "Registratie mislukt. Probeer het opnieuw.",
     "signInTitle": "Welkom terug",
-    "signInMessage": "Log in om toegang te krijgen tot je account en je taxiritten te beheren.",
+    "signInMessage": "Log in om toegang te krijgen tot uw account en uw taxi boekingen te beheren.",
     "signingIn": "Inloggen...",
     "signIn": "Inloggen",
-    "noAccount": "Nog geen account?",
-    "invalidCredentials": "Ongeldige e-mail of wachtwoord",
+    "noAccount": "Heeft u geen account?",
+    "invalidCredentials": "Ongeldig e-mailadres of wachtwoord",
     "unknownError": "Er is een onbekende fout opgetreden",
-    "createAccount": "Maak je account aan",
-    "fullName": "Volledige naam",
+    "createAccount": "Maak uw account aan",
+    "fullName": "Volledige Naam",
     "nameRequired": "Naam is verplicht",
     "emailRequired": "E-mail is verplicht",
     "invalidEmail": "Ongeldig e-mailadres",
     "phoneRequired": "Telefoonnummer is verplicht",
     "invalidPhone": "Ongeldig telefoonnummer",
     "passwordRequired": "Wachtwoord is verplicht",
-    "passwordLength": "Wachtwoord moet minimaal 8 tekens bevatten",
+    "passwordLength": "Wachtwoord moet minimaal 8 tekens zijn",
     "passwordMatch": "Wachtwoorden komen niet overeen",
     "genericError": "Er is iets misgegaan",
     "creating": "Account aanmaken...",
-    "create": "Account aanmaken",
-    "haveAccount": "Heb je al een account?",
+    "create": "Account Aanmaken",
+    "haveAccount": "Heeft u al een account?",
     "signin": "Inloggen",
     "password": "Wachtwoord",
     "phoneNumber": "Telefoonnummer",
-    "confirmPassword": "Bevestig wachtwoord",
-    "personalInfo": "Persoonlijke informatie",
-    "stepOneDesc": "Laten we beginnen met je basisgegevens",
+    "confirmPassword": "Bevestig Wachtwoord",
+    "confirmPasswordPlaceholder": "Bevestig uw wachtwoord",
+    "passwordPlaceholder": "Voer uw wachtwoord in",
+    "personalInfo": "Persoonlijke Informatie",
+    "stepOneDesc": "Laten we beginnen met uw basisgegevens",
     "securityInfo": "Beveiligingsgegevens",
-    "stepTwoDesc": "Stel je accountbeveiliging in",
+    "stepTwoDesc": "Stel uw accountbeveiliging in",
     "continue": "Doorgaan",
     "back": "Terug",
-    "welcomeMessage": "Begin je reis met ons. Maak een account aan voor gepersonaliseerde taxidiensten en exclusieve voordelen.",
-    "passwordPlaceholder": "Voer uw wachtwoord in",
-    "confirmPasswordPlaceholder": "Bevestig uw wachtwoord"
+    "welcomeMessage": "Begin uw reis met ons. Maak een account aan om toegang te krijgen tot gepersonaliseerde taxi diensten en exclusieve voordelen."
   },
   "offers": {
-    "title": "Kies Uw Voertuig",
+    "title": "Selecteer Uw Voertuig",
     "subtitle": "Kies het perfecte voertuig voor uw reis",
     "regularTaxi": {
-      "name": "Gewone Taxi",
+      "name": "Reguliere Taxi",
       "features": {
         "passengers": "Tot 4 passagiers",
         "luggage": "Tot 3 grote koffers",
         "freeTransport": "Gratis bagagevervoer",
         "doorService": "Deur-tot-deur service",
-        "fixedPrice": "Vaste prijsgarantie"
+        "fixedPrice": "Vaste prijs garantie"
       }
     },
     "vanTaxi": {
-      "name": "Van Taxi",
+      "name": "Bus Taxi",
       "features": {
         "passengers": "Tot 8 passagiers",
         "luggage": "Tot 8 grote koffers",
         "freeTransport": "Gratis bagagevervoer",
         "doorService": "Deur-tot-deur service",
-        "fixedPrice": "Vaste prijsgarantie",
+        "fixedPrice": "Vaste prijs garantie",
         "extraSpace": "Extra ruimte voor speciale items"
       }
     },
     "select": "Selecteer",
     "selected": "Geselecteerd",
-    "continue": "Doorgaan naar Reisinformatie",
+    "continue": "Ga verder naar Reisinformatie",
     "back": "Terug naar Bagage",
     "priceInfo": {
       "fixed": "Vaste Prijs",
       "estimated": "Geschatte Prijs",
-      "includes": "Prijs inclusief",
-      "allTaxes": "Alle belastingen en toeslagen",
+      "includes": "Prijs omvat",
+      "allTaxes": "Alle belastingen en kosten",
       "freeCancellation": "Gratis annulering",
       "luggageIncluded": "Bagage inbegrepen"
     },
-    "oneWayPrice": "(enkele reis prijs)",
+    "oneWayPrice": "(prijs voor enkele reis)",
     "returnTotalPrice": "Totaal met retour: €{{price}}",
-    "returnTripNote": "Voor retourritten is de getoonde prijs per richting. De totaalprijs is inclusief beide ritten."
+    "returnTripNote": "Voor retourreizen is de weergegeven prijs per richting. De totale prijs omvat beide ritten."
+  },
+  "units": {
+    "km": "km"
+  },
+  "common": {
+    "loading": "Laden..."
   },
   "travelInfo": {
     "title": "Reisinformatie",
     "airportCaution": "Controleer altijd bij uw luchtvaartmaatschappij hoe laat u op de luchthaven moet zijn.",
     "returnRoute": "Retourroute",
-    "returnRouteInfo": "Dit is uw terugreis route",
+    "returnRouteInfo": "Dit is uw retourreisroute",
     "via": "Via",
+    "pickupSection": "Heenreis",
+    "returnSection": "Retourreis",
     "rideDetails": "Uw Rit",
     "totalPassengers": "{{count}} passagiers",
-    "flightNumber": "Vluchtnummer",
-    "optional": "(optioneel)",
-    "remarks": "Aanvullende Opmerkingen",
-    "flightNumberPlaceholder": "Voer uw vluchtnummer in bij reis van/naar vliegveld",
-    "remarksPlaceholder": "Speciale verzoeken, voorkeuren of andere belangrijke informatie",
-    "continue": "Doorgaan naar Persoonlijke Informatie",
+    "optional": "optioneel",
+    "continue": "Ga verder naar Persoonlijke Informatie",
+    "flightNumberPlaceholder": "Voer uw vlucht nummer in",
+    "remarksPlaceholder": "Eventuele speciale verzoeken of aanvullende informatie?",
     "errors": {
-      "requiredLocations": "Vul alstublieft zowel ophaal- als bestemmingslocatie in",
+      "requiredLocations": "Voer zowel ophaal- als bestemmingslocaties in",
       "invalidPrice": "Ongeldige prijsberekening. Controleer uw route",
       "invalidPickupTime": "Ophaaltijd moet minimaal 2 uur vanaf nu zijn",
-      "invalidReturnTime": "Retourtijd moet na de ophaaltijd zijn",
-      "invalidDates": "Controleer uw ophaal- en retourdatums",
+      "invalidReturnTime": "Retourtijd moet na ophaaltijd zijn",
+      "invalidDates": "Controleer uw ophaal- en retourdata",
       "pickupDateRequired": "Ophaaldatum en tijd zijn verplicht",
-      "returnDateRequired": "Retourdatum en tijd zijn verplicht voor retourritten",
-      "invalidStopover": "Voer een geldige tussenstop locatie in",
+      "returnDateRequired": "Retourdatum en tijd zijn verplicht voor retourreizen",
+      "invalidStopover": "Voer een geldige tussenstoplocatie in",
       "maxStopovers": "Maximaal 3 tussenstops toegestaan",
-      "duplicateLocation": "Ophaal- en bestemmingslocatie kunnen niet hetzelfde zijn",
-      "invalidPassengers": "Selecteer het aantal passagiers",
+      "duplicateLocation": "Ophaal- en bestemmingslocaties kunnen niet hetzelfde zijn",
+      "invalidPassengers": "Selecteer aantal passagiers",
       "invalidLuggage": "Geef aan of u bagage heeft",
       "invalidVehicle": "Selecteer een voertuigtype",
       "invalidRoute": "Kan route niet berekenen. Controleer uw locaties"
-    }
+    },
+    "flightNumber": "Vlucht Nummer",
+    "remarks": "Aanvullende Opmerkingen"
+  },
+  "overview": {
+    "outbound": "Heenreis",
+    "return": "Retour",
+    "schedule": "Schema",
+    "pickup": "Ophalen",
+    "passengerDetails": "Passagiersgegevens",
+    "bookedBy": "Boek gedaan door",
+    "passenger": "Passagier",
+    "luggage": "Bagage",
+    "flightNumber": "Vlucht Nummer",
+    "additionalNotes": "Aanvullende Opmerkingen",
+    "actions": "Acties",
+    "editRoute": "Bewerk Route",
+    "editLuggage": "Bewerk Bagage",
+    "editVehicle": "Bewerk Voertuig",
+    "editPersonalInfo": "Bewerk Persoonlijke Info",
+    "duplicate": "Dupliceren",
+    "delete": "Verwijderen",
+    "regularTaxi": "Reguliere Taxi",
+    "vanTaxi": "Bus Taxi",
+    "hideDetails": "Details Verbergen",
+    "showDetails": "Details Tonen",
+    "noBookings": "Geen boekingen beschikbaar.",
+    "title": "Overzicht"
   }
 }
