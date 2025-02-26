@@ -7,9 +7,11 @@ import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff, MapPin } from 'lucide-
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
+import { v4 as uuidv4 } from 'uuid';
 import { BookingData, Location } from '@/types/booking';
 import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
+
 
 interface BookingFormProps {
   translations: WebsiteTranslations;
@@ -59,6 +61,11 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     if (!parsedData?.pickupDateTime || !parsedData?.destination) {
       router.push('/booking/travel-info');
       return;
+    }
+
+    if (!parsedData.destination?.mainAddress?.toLowerCase().includes('airport')) {
+      parsedData.flightNumber = '';
+      localStorage.setItem('bookingData', JSON.stringify(parsedData));
     }
 
     setBookingData(parsedData);
@@ -193,12 +200,16 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
       }
 
       if (bookingData) {
-        const updatedBookingData: BookingData = {
+        const editingId = localStorage.getItem('editingBookingId');
+        const bookingId = editingId || uuidv4();
+
+        const updatedBookingData = {
           ...currentBookingData,
+          id: bookingId,
           bookingType: personalInfo.bookingType,
           businessInfo: personalInfo.bookingType === 'business' && personalInfo.businessAddress ? {
             companyName: personalInfo.companyName || '',
-            businessAddress: personalInfo.businessAddress // Ensure businessAddress is included
+            businessAddress: personalInfo.businessAddress
           } : undefined,
           contactInfo: {
             fullName: personalInfo.fullName,
@@ -223,15 +234,24 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           } : undefined
         };
 
-        console.log('Updated Booking Data:', updatedBookingData);
-        console.dir(updatedBookingData, { depth: null, colors: true });
+        const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
 
-        localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+        if (editingId) {
+          // Update existing booking
+          const bookingIndex = existingBookings.findIndex((b: BookingData) => b.id === editingId);
+          if (bookingIndex !== -1) {
+            existingBookings[bookingIndex] = updatedBookingData;
+          }
+        } else {
+          // Add new booking
+          existingBookings.push(updatedBookingData);
+        }
 
-        // Verify saved data
-        const verifyData = localStorage.getItem('bookingData');
-        console.log('Verified Saved Data:', JSON.parse(verifyData!));
-        router.push('/booking/payment');
+        localStorage.setItem('allBookings', JSON.stringify(existingBookings));
+        localStorage.removeItem('editingBookingId');
+        localStorage.removeItem('bookingData');
+
+        router.push('/booking/overview');
       }
     } catch (error) {
       console.error('Error during registration or booking update:', error); // Log the error
