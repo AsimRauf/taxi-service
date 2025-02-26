@@ -190,72 +190,58 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     setIsLoading(true);
 
     try {
+      // Keep track of registration status
+      let registrationSuccessful = false;
+
       if (!user && personalInfo.password) {
-        await register({
-          name: personalInfo.fullName,
+        try {
+          await register({
+            name: personalInfo.fullName,
+            email: personalInfo.email,
+            phoneNumber: `+31${personalInfo.phoneNumber}`,
+            password: personalInfo.password
+          });
+          registrationSuccessful = true;
+        } catch (error) {
+          setErrors({ form: t('auth.registrationError') });
+          setIsLoading(false);
+          return;
+        }
+      }
+
+      // Update booking data before navigation
+      const updatedBookingData = {
+        ...bookingData,
+        contactInfo: {
+          fullName: personalInfo.fullName,
           email: personalInfo.email,
           phoneNumber: `+31${personalInfo.phoneNumber}`,
-          password: personalInfo.password
-        });
+          additionalPhoneNumber: personalInfo.additionalPhone ? 
+            `+31${personalInfo.additionalPhone}` : undefined,
+        },
+        bookingForOther: personalInfo.bookingForOther ? {
+          fullName: personalInfo.otherFullName,
+          phoneNumber: `+31${personalInfo.otherPhoneNumber}`,
+        } : undefined,
+        businessInfo: personalInfo.bookingType === 'business' ? {
+          companyName: personalInfo.companyName,
+          businessAddress: personalInfo.businessAddress,
+        } : undefined,
+      };
+
+      // Save to localStorage
+      localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+
+      // Important: Wait a brief moment after registration to ensure auth context is updated
+      if (registrationSuccessful) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
 
-      if (bookingData) {
-        const editingId = localStorage.getItem('editingBookingId');
-        const bookingId = editingId || uuidv4();
-
-        const updatedBookingData = {
-          ...currentBookingData,
-          id: bookingId,
-          bookingType: personalInfo.bookingType,
-          businessInfo: personalInfo.bookingType === 'business' && personalInfo.businessAddress ? {
-            companyName: personalInfo.companyName || '',
-            businessAddress: personalInfo.businessAddress
-          } : undefined,
-          contactInfo: {
-            fullName: personalInfo.fullName,
-            email: personalInfo.email,
-            phoneNumber: personalInfo.phoneNumber.startsWith('+31') ?
-              personalInfo.phoneNumber :
-              `+31${personalInfo.phoneNumber}`,
-            additionalPhoneNumber: personalInfo.additionalPhone ?
-              (personalInfo.additionalPhone.startsWith('+31') ?
-                personalInfo.additionalPhone :
-                `+31${personalInfo.additionalPhone}`) :
-              undefined,
-            hasAdditionalPhone: !!personalInfo.additionalPhone
-          },
-          bookingForOther: personalInfo.bookingForOther ? {
-            fullName: personalInfo.otherFullName || '',
-            phoneNumber: personalInfo.otherPhoneNumber ?
-              (personalInfo.otherPhoneNumber.startsWith('+31') ?
-                personalInfo.otherPhoneNumber :
-                `+31${personalInfo.otherPhoneNumber}`) :
-              ''
-          } : undefined
-        };
-
-        const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
-
-        if (editingId) {
-          // Update existing booking
-          const bookingIndex = existingBookings.findIndex((b: BookingData) => b.id === editingId);
-          if (bookingIndex !== -1) {
-            existingBookings[bookingIndex] = updatedBookingData;
-          }
-        } else {
-          // Add new booking
-          existingBookings.push(updatedBookingData);
-        }
-
-        localStorage.setItem('allBookings', JSON.stringify(existingBookings));
-        localStorage.removeItem('editingBookingId');
-        localStorage.removeItem('bookingData');
-
-        router.push('/booking/overview');
-      }
+      // Navigate to overview
+      router.push('/booking/overview');
     } catch (error) {
-      console.error('Error during registration or booking update:', error); // Log the error
-      setErrors({ form: t('auth.registrationError') });
+      console.error('Booking error:', error);
+      setErrors({ form: t('booking.error.generic') });
     } finally {
       setIsLoading(false);
     }
