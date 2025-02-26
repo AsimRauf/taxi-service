@@ -11,6 +11,7 @@
   },
   "hero": {
     "title": "Book Your Ride with Confidence",
+    "formTitle": "Your Booking Details",
     "subtitle": "Professional taxi service for all your transportation needs",
     "pickupPlaceholder": "Enter pickup location",
     "destinationPlaceholder": "Enter destination",

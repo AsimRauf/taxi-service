@@ -53,11 +53,9 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
   },
   hero: {
     title: t('hero.title'),
-    subtitle: t('hero.subtitle'),
     formTitle: t('hero.formTitle'),
-    pickup: t('hero.pickup'),
+    subtitle: t('hero.subtitle'),
     pickupPlaceholder: t('hero.pickupPlaceholder'),
-    destination: t('hero.destination'),
     destinationPlaceholder: t('hero.destinationPlaceholder'),
     addStopover: t('hero.addStopover'),
     swapLocations: t('hero.swapLocations'),
@@ -68,8 +66,6 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     returnDateTime: t('hero.returnDateTime'),
     luggage: t('hero.luggage'),
     travelers: t('hero.travelers'),
-    person: t('hero.person'),
-    people: t('hero.people'),
     calculate: t('hero.calculate'),
     returnPlaceholder: t('hero.returnPlaceholder')
   },
@@ -117,11 +113,136 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
       }
     }
   },
+  luggage: {
+    title: t('luggage.title'),
+    regularLuggage: t('luggage.regularLuggage'),
+    specialItems: t('luggage.specialItems'),
+    large: {
+      title: t('luggage.large.title'),
+      dimensions: t('luggage.large.dimensions'),
+      max: t('luggage.large.max'),
+      description: t('luggage.large.description')
+    },
+    small: {
+      title: t('luggage.small.title'),
+      dimensions: t('luggage.small.dimensions'),
+      max: t('luggage.small.max'),
+      description: t('luggage.small.description')
+    },
+    hand: {
+      title: t('luggage.hand.title'),
+      dimensions: t('luggage.hand.dimensions'),
+      description: t('luggage.hand.description'),
+      max: t('luggage.hand.max')
+    },
+    special: {
+      foldableWheelchair: {
+        title: t('luggage.special.foldableWheelchair.title'),
+        description: t('luggage.special.foldableWheelchair.description')
+      },
+      rollator: {
+        title: t('luggage.special.rollator.title'),
+        description: t('luggage.special.rollator.description')
+      },
+      pets: {
+        title: t('luggage.special.pets.title'),
+        description: t('luggage.special.pets.description')
+      },
+      bicycle: {
+        title: t('luggage.special.bicycle.title'),
+        description: t('luggage.special.bicycle.description')
+      },
+      winterSports: {
+        title: t('luggage.special.winterSports.title'),
+        description: t('luggage.special.winterSports.description')
+      },
+      stroller: {
+        title: t('luggage.special.stroller.title'),
+        description: t('luggage.special.stroller.description')
+      },
+      golfBag: {
+        title: t('luggage.special.golfBag.title'),
+        description: t('luggage.special.golfBag.description')
+      },
+      waterSports: {
+        title: t('luggage.special.waterSports.title'),
+        description: t('luggage.special.waterSports.description')
+      },
+      maxTotal: t('luggage.special.maxTotal')
+    },
+    continue: t('luggage.continue'),
+    back: t('luggage.back')
+  },
+  offers: {
+    title: t('offers.title'),
+    subtitle: t('offers.subtitle'),
+    regularTaxi: {
+      name: t('offers.regularTaxi.name'),
+      features: {
+        passengers: t('offers.regularTaxi.features.passengers'),
+        luggage: t('offers.regularTaxi.features.luggage'),
+        freeTransport: t('offers.regularTaxi.features.freeTransport'),
+        doorService: t('offers.regularTaxi.features.doorService'),
+        fixedPrice: t('offers.regularTaxi.features.fixedPrice')
+      }
+    },
+    vanTaxi: {
+      name: t('offers.vanTaxi.name'),
+      features: {
+        passengers: t('offers.vanTaxi.features.passengers'),
+        luggage: t('offers.vanTaxi.features.luggage'),
+        freeTransport: t('offers.vanTaxi.features.freeTransport'),
+        doorService: t('offers.vanTaxi.features.doorService'),
+        fixedPrice: t('offers.vanTaxi.features.fixedPrice'),
+        extraSpace: t('offers.vanTaxi.features.extraSpace')
+      }
+    },
+    select: t('offers.select'),
+    selected: t('offers.selected'),
+    continue: t('offers.continue'),
+    back: t('offers.back'),
+    priceInfo: {
+      fixed: t('offers.priceInfo.fixed'),
+      estimated: t('offers.priceInfo.estimated'),
+      includes: t('offers.priceInfo.includes'),
+      allTaxes: t('offers.priceInfo.allTaxes'),
+      freeCancellation: t('offers.priceInfo.freeCancellation'),
+      luggageIncluded: t('offers.priceInfo.luggageIncluded')
+    },
+    oneWayPrice: t('offers.oneWayPrice'),
+    returnTotalPrice: t('offers.returnTotalPrice'),
+    returnTripNote: t('offers.returnTripNote')
+  },
   units: {
     km: t('units.km')
   },
   common: {
     loading: t('common.loading')
+  },
+  overview: {
+    outbound: t('overview.outbound'),
+    return: t('overview.return'),
+    schedule: t('overview.schedule'),
+    pickup: t('overview.pickup'),
+    passengerDetails: t('overview.passengerDetails'),
+    bookedBy: t('overview.bookedBy'),
+    passenger: t('overview.passenger'),
+    luggage: t('overview.luggage'),
+    flightNumber: t('overview.flightNumber'),
+    additionalNotes: t('overview.additionalNotes'),
+    actions: t('overview.actions'),
+    editRoute: t('overview.editRoute'),
+    editLuggage: t('overview.editLuggage'),
+    editVehicle: t('overview.editVehicle'),
+    editPersonalInfo: t('overview.editPersonalInfo'),
+    duplicate: t('overview.duplicate'),
+    delete: t('overview.delete'),
+    regularTaxi: t('overview.regularTaxi'),
+    vanTaxi: t('overview.vanTaxi'),
+    hideDetails: t('overview.hideDetails'),
+    showDetails: t('overview.showDetails'),
+    noBookings: t('overview.noBookings'),
+    title: t('overview.title')
   },
   locale: locale
 });

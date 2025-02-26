@@ -52,6 +52,7 @@ export interface WebsiteTranslations {
   hero: {
     title: string;
     subtitle: string;
+    formTitle: string;
     pickupPlaceholder: string;
     destinationPlaceholder: string;
     addStopover: string;
