@@ -51,6 +51,7 @@ export const BookingForm = () => {
             }
 
             const bookingData: BookingData = {
+                id: new Date().getTime().toString(), 
                 pickup: formData.pickup,
                 destination: formData.destination,
                 stopovers: formData.stopovers,
