@@ -7,11 +7,10 @@
     "service1": "Taxi Service",
     "service2": "Business Transport",
     "profile": "Profile",
-    "signOut": "Sign out"
+    "signOut": "Sign Out"
   },
   "hero": {
     "title": "Book Your Ride with Confidence",
-    "formTitle": "Your Booking Details",
     "subtitle": "Professional taxi service for all your transportation needs",
     "pickupPlaceholder": "Enter pickup location",
     "destinationPlaceholder": "Enter destination",
@@ -25,6 +24,7 @@
     "luggage": "I have luggage",
     "travelers": "Number of Travelers",
     "calculate": "Calculate Price",
+    "formTitle": "Your Booking Details",
     "returnPlaceholder": "Select return date and time"
   },
   "booking": {
@@ -41,15 +41,15 @@
     "pickupTime": "Pickup Time",
     "returnTime": "Return Time",
     "totalPrice": "Total Price",
-    "returnIncluded": "*Return journey included in total price",
+    "returnIncluded": "*Return trip included in total price",
     "back": "Back",
     "bookNow": "Book Now",
     "steps": {
       "luggage": "Luggage",
       "offers": "Offers",
-      "travel-info": "Travel Info",
-      "personal-info": "Personal Info",
-      "incomplete": "Please complete previous steps first"
+      "travel-info": "Travel Information",
+      "personal-info": "Personal Information",
+      "incomplete": "Please complete the previous steps first"
     },
     "navigation": {
       "saved": "Saved progress",
@@ -65,7 +65,7 @@
       "phonePlaceholder": "Enter your phone number",
       "additionalPhone": "Additional Phone Number",
       "additionalPhonePlaceholder": "Enter additional phone number",
-      "bookingForOther": "Booking for someone else?",
+      "bookingForOther": "Are you booking for someone else?",
       "otherFullName": "Passenger's Full Name",
       "otherFullNamePlaceholder": "Enter passenger's full name",
       "otherPhoneNumber": "Passenger's Phone Number",
@@ -75,14 +75,14 @@
       "errors": {
         "fullNameRequired": "Full name is required",
         "emailRequired": "Email is required",
-        "invalidEmail": "Please enter a valid email address",
+        "invalidEmail": "Enter a valid email address",
         "phoneRequired": "Phone number is required",
         "otherFullNameRequired": "Passenger's full name is required",
         "otherPhoneRequired": "Passenger's phone number is required",
-        "invalidPhone": "Please enter a valid phone number",
+        "invalidPhone": "Enter a valid phone number",
         "passwordRequired": "Password is required",
-        "passwordLength": "Password must be at least 8 characters",
-      "passwordMatch": "Passwords do not match"
+        "passwordLength": "Password must be at least 8 characters long",
+        "passwordMatch": "Passwords do not match"
       },
       "individual": "Individual",
       "business": "Business",
@@ -102,26 +102,26 @@
     "regularLuggage": "Regular Luggage",
     "specialItems": "Special Items",
     "large": {
-      "title": "Large checked case",
+      "title": "Large Checked Suitcase",
       "dimensions": "85cm x 55cm x 35cm",
       "max": "Maximum 8 pieces",
       "description": "Perfect for longer trips"
     },
     "small": {
-      "title": "Small checked case",
+      "title": "Small Checked Suitcase",
       "dimensions": "55cm x 45cm x 25cm",
       "max": "Maximum 11 pieces",
       "description": "Ideal for shorter trips"
     },
     "hand": {
-      "title": "Hand luggage",
+      "title": "Hand Luggage",
       "dimensions": "40cm x 30cm x 20cm",
       "description": "Handbag, backpack, etc.",
       "max": "Maximum 8 pieces"
     },
     "special": {
       "foldableWheelchair": {
-        "title": "Foldable wheelchair",
+        "title": "Foldable Wheelchair",
         "description": "Manual wheelchair that can be folded"
       },
       "rollator": {
@@ -130,26 +130,26 @@
       },
       "pets": {
         "title": "Pets",
-        "description": "In appropriate travel carriers"
+        "description": "In suitable travel carriers"
       },
       "bicycle": {
         "title": "Bicycle",
-        "description": "Standard or foldable bicycle"
+        "description": "Standard or folding bike"
       },
       "winterSports": {
-        "title": "Winter sports",
+        "title": "Winter Sports",
         "description": "Ski or snowboard equipment"
       },
       "stroller": {
         "title": "Stroller",
-        "description": "Baby carriage or pushchair"
+        "description": "Baby carriage or stroller"
       },
       "golfBag": {
-        "title": "Golf bag",
+        "title": "Golf Bag",
         "description": "Standard golf equipment bag"
       },
       "waterSports": {
-        "title": "Water sports",
+        "title": "Water Sports",
         "description": "Surfboard or similar equipment"
       },
       "maxTotal": "Maximum 3 special items in total"
@@ -160,9 +160,9 @@
   "auth": {
     "registrationError": "Registration failed. Please try again.",
     "signInTitle": "Welcome back",
-    "signInMessage": "Sign in to access your account and manage your taxi bookings.",
+    "signInMessage": "Log in to access your account and manage your taxi bookings.",
     "signingIn": "Signing in...",
-    "signIn": "Sign in",
+    "signIn": "Login",
     "noAccount": "Don't have an account?",
     "invalidCredentials": "Invalid email or password",
     "unknownError": "An unknown error occurred",
@@ -174,21 +174,21 @@
     "phoneRequired": "Phone number is required",
     "invalidPhone": "Invalid phone number",
     "passwordRequired": "Password is required",
-    "passwordLength": "Password must be at least 8 characters",
+    "passwordLength": "Password must be at least 8 characters long",
     "passwordMatch": "Passwords do not match",
     "genericError": "Something went wrong",
     "creating": "Creating account...",
     "create": "Create Account",
     "haveAccount": "Already have an account?",
-    "signin": "Sign in",
+    "signin": "Login",
     "password": "Password",
     "phoneNumber": "Phone Number",
     "confirmPassword": "Confirm Password",
     "confirmPasswordPlaceholder": "Confirm your password",
     "passwordPlaceholder": "Enter your password",
     "personalInfo": "Personal Information",
-    "stepOneDesc": "Let's start with your basic details",
-    "securityInfo": "Security Details",
+    "stepOneDesc": "Let's start with your basic information",
+    "securityInfo": "Security Information",
     "stepTwoDesc": "Set up your account security",
     "continue": "Continue",
     "back": "Back",
@@ -196,7 +196,7 @@
   },
   "offers": {
     "title": "Select Your Vehicle",
-    "subtitle": "Choose the perfect vehicle for your journey",
+    "subtitle": "Choose the perfect vehicle for your trip",
     "regularTaxi": {
       "name": "Regular Taxi",
       "features": {
@@ -220,7 +220,7 @@
     },
     "select": "Select",
     "selected": "Selected",
-    "continue": "Continue to Travel Info",
+    "continue": "Continue to Travel Information",
     "back": "Back to Luggage",
     "priceInfo": {
       "fixed": "Fixed Price",
@@ -230,9 +230,9 @@
       "freeCancellation": "Free cancellation",
       "luggageIncluded": "Luggage included"
     },
-    "oneWayPrice": "(one-way price)",
+    "oneWayPrice": "(price for one-way trip)",
     "returnTotalPrice": "Total with return: €{{price}}",
-    "returnTripNote": "For return trips, the price shown is per direction. The total price includes both journeys."
+    "returnTripNote": "For return trips, the displayed price is per direction. The total price includes both trips."
   },
   "units": {
     "km": "km"
@@ -242,12 +242,12 @@
   },
   "travelInfo": {
     "title": "Travel Information",
-    "airportCaution": "Always check with your airline what time you should be at the airport.",
+    "airportCaution": "Always check with your airline how early you should be at the airport.",
     "returnRoute": "Return Route",
-    "returnRouteInfo": "This is your return journey route",
+    "returnRouteInfo": "This is your return trip route",
     "via": "Via",
-    "pickupSection": "Outbound Journey",
-    "returnSection": "Return Journey",
+    "pickupSection": "Outbound Trip",
+    "returnSection": "Return Trip",
     "rideDetails": "Your Ride",
     "totalPassengers": "{{count}} passengers",
     "optional": "optional",
@@ -255,22 +255,47 @@
     "flightNumberPlaceholder": "Enter your flight number",
     "remarksPlaceholder": "Any special requests or additional information?",
     "errors": {
-      "requiredLocations": "Please provide both pickup and destination locations",
-      "invalidPrice": "Invalid price calculation. Please check your route",
+      "requiredLocations": "Enter both pickup and destination locations",
+      "invalidPrice": "Invalid price calculation. Check your route",
       "invalidPickupTime": "Pickup time must be at least 2 hours from now",
       "invalidReturnTime": "Return time must be after pickup time",
-      "invalidDates": "Please check your pickup and return dates",
-      "pickupDateRequired": "Pickup date and time is required",
-      "returnDateRequired": "Return date and time is required for return trips",
-      "invalidStopover": "Please provide a valid stopover location",
+      "invalidDates": "Check your pickup and return dates",
+      "pickupDateRequired": "Pickup date and time are required",
+      "returnDateRequired": "Return date and time are required for return trips",
+      "invalidStopover": "Enter a valid stopover location",
       "maxStopovers": "Maximum 3 stopovers allowed",
       "duplicateLocation": "Pickup and destination locations cannot be the same",
-      "invalidPassengers": "Please select number of passengers",
-      "invalidLuggage": "Please specify if you have luggage",
-      "invalidVehicle": "Please select a vehicle type",
-      "invalidRoute": "Unable to calculate route. Please check your locations"
+      "invalidPassengers": "Select number of passengers",
+      "invalidLuggage": "Indicate whether you have luggage",
+      "invalidVehicle": "Select a vehicle type",
+      "invalidRoute": "Cannot calculate route. Check your locations"
     },
     "flightNumber": "Flight Number",
-    "remarks": "Additional Notes"
+    "remarks": "Additional Remarks"
+  },
+  "overview": {
+    "outbound": "Outbound Trip",
+    "return": "Return",
+    "schedule": "Schedule",
+    "pickup": "Pickup",
+    "passengerDetails": "Passenger Details",
+    "bookedBy": "Booked By",
+    "passenger": "Passenger",
+    "luggage": "Luggage",
+    "flightNumber": "Flight Number",
+    "additionalNotes": "Additional Notes",
+    "actions": "Actions",
+    "editRoute": "Edit Route",
+    "editLuggage": "Edit Luggage",
+    "editVehicle": "Edit Vehicle",
+    "editPersonalInfo": "Edit Personal Info",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "regularTaxi": "Regular Taxi",
+    "vanTaxi": "Van Taxi",
+    "hideDetails": "Hide Details",
+    "showDetails": "Show Details",
+    "noBookings": "No bookings available.",
+    "title": "Overview"
   }
 }
