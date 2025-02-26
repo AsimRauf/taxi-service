@@ -229,15 +229,33 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         } : undefined,
       };
 
-      // Save to localStorage
-      localStorage.setItem('bookingData', JSON.stringify(updatedBookingData));
+      
+  
+      // Get existing bookings
+      const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      
+      // Check if we're editing an existing booking
+      const editingId = localStorage.getItem('editingBookingId');
+      
+      if (editingId) {
+        // Update existing booking
+        const updatedBookings = existingBookings.map((booking: { id: string }) => 
+          booking.id === editingId ? updatedBookingData : booking        );
+        localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+      } else {
+        // Add new booking
+        const newBookings = [...existingBookings, updatedBookingData];
+        localStorage.setItem('allBookings', JSON.stringify(newBookings));
+      }
+  
+      // Clear temporary booking data
+      localStorage.removeItem('bookingData');
+      localStorage.removeItem('editingBookingId');
 
-      // Important: Wait a brief moment after registration to ensure auth context is updated
       if (registrationSuccessful) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
-
-      // Navigate to overview
+  
       router.push('/booking/overview');
     } catch (error) {
       console.error('Booking error:', error);
