@@ -29,6 +29,7 @@ export interface BookingFormData {
 }
 
 export interface BookingData {
+    id: string; // Add id property for unique identification
   // Location data
   pickup: Location;
   destination: Location;
