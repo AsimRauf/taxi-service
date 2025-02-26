@@ -229,6 +229,11 @@ export const TravelInfoPage = () => {
       updatedData.destination = newLocation || {} as Location;
       updatedData.destinationAddress = newLocation?.mainAddress || '';
 
+      // Clear flight number if destination is not an airport
+      if (!newLocation?.mainAddress?.toLowerCase().includes('airport')) {
+        updatedData.flightNumber = '';
+      }
+
       // Check if pickup and destination are the same
       if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.pickup?.mainAddress) {
         alert(t('errors.duplicateLocation'));
