@@ -35,21 +35,30 @@ export const handleLocationSelect = async (
     setFormData: React.Dispatch<React.SetStateAction<BookingFormData>>,
     translations: WebsiteTranslations,
     index?: number
-) => {    if (!selected) {
-        if (type === 'stopover' && typeof index === 'number') {
-            const newStopovers = [...formData.stopovers]
-            newStopovers[index] = null as unknown as Location
-            setFormData({ ...formData, stopovers: newStopovers })
-        } else {
-            setFormData({ ...formData, [type]: null })
-        }
-        return
+) => {
+    // Add error handling for geocoding failures
+    if (!selected?.value?.place_id) {
+        console.error('Invalid location selection');
+        return;
     }
 
-    const geocoder = new google.maps.Geocoder()
-    const mainLocale = translations.locale
-    const secondaryLocale = mainLocale === 'nl' ? 'en' : 'nl'
+    console.log('Selected location:', selected); // Debugging line
+    if (!selected) {
+        if (type === 'stopover' && typeof index === 'number') {
+            const newStopovers = [...formData.stopovers];
+            newStopovers[index] = null as unknown as Location;
+            setFormData({ ...formData, stopovers: newStopovers });
+        } else {
+            setFormData({ ...formData, [type]: null });
+        }
+        return;
+    }
 
+    const geocoder = new google.maps.Geocoder();
+    const mainLocale = translations.locale;
+    const secondaryLocale = mainLocale === 'nl' ? 'en' : 'nl';
+
+    // Add loading state handling
     try {
         const [mainResult, secondaryResult] = await Promise.all([
             geocoder.geocode({
@@ -60,7 +69,7 @@ export const handleLocationSelect = async (
                 placeId: selected.value.place_id,
                 language: secondaryLocale
             })
-        ])
+        ]);
 
         const enrichedLocation: Location = {
             label: selected.value.structured_formatting.main_text,
@@ -71,20 +80,23 @@ export const handleLocationSelect = async (
                 description: selected.value.description,
                 structured_formatting: {
                     main_text: selected.value.structured_formatting.main_text,
-                    secondary_text: selected.value.structured_formatting.secondary_text
+                    secondary_text: selected.value.structured_formatting.secondary_text,
+                    place_id: selected.value.place_id
                 }
             },
             description: ''
-        }
+        };
 
         if (type === 'stopover' && typeof index === 'number') {
-            const newStopovers = [...formData.stopovers]
-            newStopovers[index] = enrichedLocation
-            setFormData({ ...formData, stopovers: newStopovers })
+            const newStopovers = [...formData.stopovers];
+            newStopovers[index] = enrichedLocation;
+            setFormData({ ...formData, stopovers: newStopovers });
         } else {
-            setFormData({ ...formData, [type]: enrichedLocation })
+            setFormData({ ...formData, [type]: enrichedLocation });
         }
     } catch (error) {
-        console.error('Error fetching address details:', error)
+        console.error('Geocoding error:', error);
+        // Add user-friendly error handling
+        throw new Error( 'Location lookup failed');
     }
-}
+};

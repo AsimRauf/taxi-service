@@ -30,16 +30,30 @@ export const BookingForm = () => {
         returnDate: undefined,
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+    const [,setIsLoading] = useState(false);
+
+    const handleLocationUpdate = (location: Location, type: 'pickup' | 'destination') => {
+        setFormData(prev => ({
+            ...prev,
+            [type]: location
+        }));
+        // Clear validation errors when input changes
+        setValidationErrors(prev => ({
+            ...prev,
+            [type]: undefined
+        }));
+    };
 
     const handleCalculate = async () => {
-        const { isValid, errors } = validateBookingForm(formData, translations);
-        setValidationErrors(errors);
-
-        if (!isValid) {
-            return; // Stop further processing if the form is invalid
-        }
-
+        setIsLoading(true);
         try {
+            const { isValid, errors } = validateBookingForm(formData, translations);
+            setValidationErrors(errors);
+
+            if (!isValid) {
+                return;
+            }
+
             const segments = await calculateSegmentDistances(
                 formData.pickup,
                 formData.destination,
@@ -82,11 +96,13 @@ export const BookingForm = () => {
             localStorage.setItem('bookingData', JSON.stringify(bookingData));
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
-            console.error('Error processing booking:', error);
+            console.error('Booking calculation error:', error);
             setValidationErrors(prev => ({
                 ...prev,
-                route: translations.travelInfo.errors.invalidRoute
+                general: 'translations.travelInfo.errors.generalError'
             }));
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -134,7 +150,22 @@ export const BookingForm = () => {
                 <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
                 <LocationInput
                     value={formData.pickup}
-                    onChange={(place) => handleLocationSelect(place, 'pickup', formData, setFormData, translations)}
+                    onChange={(place) => {
+                        if (!place) return;
+                        const location: Location = {
+                          ...place.value,
+                          label: place.label,
+                          mainAddress: place.value.description,
+                          description: place.value.description,
+                          secondaryAddress: place.value.structured_formatting?.secondary_text || '',
+                          value: {
+                            place_id: place.value.place_id,
+                            description: place.value.description,
+                            structured_formatting: place.value.structured_formatting
+                          }
+                        };
+                        handleLocationUpdate(location, 'pickup');
+                      }}
                     placeholder={t('hero.pickupPlaceholder')}
                     translations={translations}
                     onClear={() => setFormData(prev => ({ ...prev, pickup: null }))}

@@ -10,6 +10,7 @@ export interface Location {
     structured_formatting: {
       main_text: string
       secondary_text: string
+      place_id: string
     }
   }
   mainAddress?: string

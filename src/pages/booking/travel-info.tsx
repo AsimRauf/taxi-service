@@ -285,7 +285,8 @@ export const TravelInfoPage = () => {
             description: '',
             structured_formatting: {
               main_text: '',
-              secondary_text: ''
+              secondary_text: '',
+              place_id: '',
             }
           },
           mainAddress: '',

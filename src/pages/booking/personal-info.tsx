@@ -7,7 +7,6 @@ import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff, MapPin } from 'lucide-
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
-import { v4 as uuidv4 } from 'uuid';
 import { BookingData, Location } from '@/types/booking';
 import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
@@ -203,6 +202,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           });
           registrationSuccessful = true;
         } catch (error) {
+          console.error('Registration error:', error);
           setErrors({ form: t('auth.registrationError') });
           setIsLoading(false);
           return;
@@ -547,6 +547,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                             structured_formatting: {
                               main_text: place.value.structured_formatting.main_text,
                               secondary_text: place.value.structured_formatting.secondary_text,
+                              place_id: place.value.place_id,
                             },
                           },
                         };
