@@ -4,6 +4,7 @@ import { appWithTranslation } from 'next-i18next'
 import Layout from '@/components/Layout'
 import { Suspense, useEffect, useRef } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { EditProvider } from '@/contexts/EditContext'
 
 declare global {
   interface Window {
@@ -37,9 +38,11 @@ function App({ Component, pageProps }: AppProps) {
     <>
       <Suspense fallback="loading">
         <AuthProvider>
+          <EditProvider>
           <Layout>
             <Component {...pageProps} />
           </Layout>
+          </EditProvider>
         </AuthProvider>
       </Suspense>
     </>
