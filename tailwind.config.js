@@ -15,6 +15,10 @@ module.exports = {
         sans: ['Poppins', 'sans-serif'],
         heading: ['Poppins', 'sans-serif'],
       },
+      screens: {
+        'xs': '400px',
+        // ...other breakpoints
+      },
     },
   },
   plugins: [],
