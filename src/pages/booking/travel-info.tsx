@@ -14,10 +14,13 @@ import { calculatePrice } from '@/utils/pricingCalculator';
 import { Plane, ArrowRight } from 'lucide-react';
 import { DateSelector } from '@/components/forms/booking/DateSelector';
 import { isBefore, addHours } from 'date-fns';
+import { useEdit } from '@/contexts/EditContext';
+
 
 export const TravelInfoPage = () => {
   const router = useRouter();
   const { t } = useTranslation();
+  const { isEditing, editingBookingId, setEditMode } = useEdit();
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const translations = createTranslationsObject(t, router.locale || 'en');
@@ -104,9 +107,22 @@ export const TravelInfoPage = () => {
       flightNumber: bookingData.flightNumber || '',
       remarks: bookingData.remarks || ''
     };
-    localStorage.setItem('bookingData', JSON.stringify(updatedData));
 
-    router.push('/booking/personal-info');
+    if (isEditing && editingBookingId) {
+      const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+      const updatedBookings = allBookings.map((booking: BookingData) => {
+        if (booking.id === editingBookingId) {
+          return updatedData;
+        }
+        return booking;
+      });
+      localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+      setEditMode(null);
+      router.push('/booking/overview');
+    } else {
+      localStorage.setItem('bookingData', JSON.stringify(updatedData));
+      router.push('/booking/personal-info');
+    }
   };
 
   const handleReturnTripChange = async (checked: boolean) => {
@@ -202,6 +218,15 @@ export const TravelInfoPage = () => {
       localStorage.setItem('bookingData', JSON.stringify(finalData));
     } catch (error) {
       console.error('Error updating route:', error);
+    }
+  };
+
+  const handleBack = () => {
+    if (isEditing) {
+      setEditMode(null);
+      router.push('/booking/overview');
+    } else {
+      router.back();
     }
   };
 
@@ -466,8 +491,16 @@ export const TravelInfoPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
       <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-14">
-        <Stepper currentStep="travel-info" />
-
+        {isEditing ? (
+          <button
+            onClick={handleBack}
+            className="text-white hover:text-gray-200 transition-colors mb-6"
+          >
+            ← {t('common.backToOverview')}
+          </button>
+        ) : (
+          <Stepper currentStep="travel-info" />
+        )}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -657,12 +690,18 @@ export const TravelInfoPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-8 flex justify-end">
+          <div className="mt-8 flex justify-between">
+            <button
+              onClick={handleBack}
+              className="px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              {isEditing ? t('common.backToOverview') : t('travelInfo.back')}
+            </button>
             <button
               onClick={handleContinue}
               className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors"
             >
-              {t('travelInfo.continue')}
+              {isEditing ? t('common.update') : t('travelInfo.continue')}
               <ArrowRight size={18} />
             </button>
           </div>
