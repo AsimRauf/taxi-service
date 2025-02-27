@@ -94,7 +94,6 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
     </head>
     <body>
         <div class="header">
-            <img src="${process.env.NEXT_PUBLIC_BASE_URL}/images/logo.png" alt="Taxi Service Logo" class="logo">
             <h1>Booking Confirmation</h1>
         </div>
         
