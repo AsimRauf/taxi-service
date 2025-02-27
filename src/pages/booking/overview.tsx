@@ -132,11 +132,11 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
 const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess }: BookingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDuplicateSnackbar, setShowDuplicateSnackbar] = useState(false);
+  const [isBooking, setIsBooking] = useState(false);
   const { t } = useTranslation();
   const { user } = useAuth();
   const router = useRouter();
 
-const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
 
 const handleBookNow = async () => {
   if (!user) {
@@ -145,6 +145,7 @@ const handleBookNow = async () => {
       return;
   }
 
+  setIsBooking(true);
   try {
       // Create a new object with only the needed fields
       const finalBookingData = {
@@ -164,6 +165,7 @@ const handleBookNow = async () => {
 
       if (response.status === 409) {
           setShowDuplicateSnackbar(true);
+          setIsBooking(false);
           return;
       }
 
@@ -175,7 +177,8 @@ const handleBookNow = async () => {
       router.push('/booking/success');
   } catch (error) {
       console.error('Booking error:', error);
-      alert('Failed to create booking');
+      setIsBooking(false);
+      alert(t('booking.errors.createFailed'));
   }
 };
 
@@ -299,12 +302,24 @@ const handleBookNow = async () => {
 
               <button
                 onClick={handleBookNow}
-                className="flex-1 flex items-center justify-center gap-1 px-2 xs:px-3 py-2 text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+                disabled={isBooking}
+                className="flex-1 flex items-center justify-center gap-1 px-2 xs:px-3 py-2 text-white bg-primary hover:bg-primary/90 disabled:bg-gray-400 rounded-lg transition-colors"
               >
-                <Calendar className="w-3 h-3 xs:w-4 xs:h-4" />
-                <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
-                  {t('overview.bookNow')}
-                </span>
+                {isBooking ? (
+                  <>
+                    <div className="w-3 h-3 xs:w-4 xs:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
+                      {t('overview.booking')}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <Calendar className="w-3 h-3 xs:w-4 xs:h-4" />
+                    <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
+                      {t('overview.bookNow')}
+                    </span>
+                  </>
+                )}
               </button>
             </div>
           </div>
