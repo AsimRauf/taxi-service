@@ -8,6 +8,11 @@ import { LogOut, UserCircle } from 'lucide-react'
 import { ChevronDownIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/contexts/AuthContext'
 
+// Add this utility function at the top of the component
+const truncateText = (text: string, maxLength: number = 8) => {
+    return text.length > maxLength ? `${text.slice(0, maxLength)}...` : text;
+};
+
 export const Navbar = () => {
     const router = useRouter()
     const { t } = useTranslation('common', { useSuspense: false })
@@ -20,11 +25,12 @@ export const Navbar = () => {
     }
 
     return (
-        <div className="w-full px-2 sm:px-4 py-3 sm:py-6 fixed top-0 left-0 right-0 z-50 bg-white/0 backdrop-blur-sm">
-            <nav className="max-w-7xl mx-auto bg-white rounded-full shadow-lg px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border border-secondary/20">
-                {/* Logo */}
+        // Update the navbar container for better small screen handling
+        <div className="w-full px-1 xs:px-2 sm:px-4 py-1 xs:py-2 sm:py-4 fixed top-0 left-0 right-0 z-50 bg-white/0 backdrop-blur-sm">
+            <nav className="max-w-7xl mx-auto bg-white rounded-full shadow-lg px-1.5 xs:px-2 sm:px-6 py-1.5 xs:py-2 sm:py-3 flex items-center justify-between border border-secondary/20">
+                {/* Logo - Make it smaller on tiny screens */}
                 <div className="flex-shrink-0">
-                    <Link href="/" className="font-montserrat text-xl sm:text-2xl font-bold text-secondary whitespace-nowrap">
+                    <Link href="/" className="font-montserrat text-base xs:text-lg sm:text-xl font-bold text-secondary whitespace-nowrap">
                         <span className="text-primary">Taxi</span>Service
                     </Link>
                 </div>
@@ -74,19 +80,23 @@ export const Navbar = () => {
                 </div>
 
                 {/* Right Side - Language & Auth */}
-                <div className="flex items-center gap-2 sm:gap-4">
+                {/* Update the right side elements */}
+                <div className="flex items-center gap-1 xs:gap-2 sm:gap-4">
+                    {/* Language Selector - Make it more compact */}
                     <Popover className="relative">
-                        <Popover.Button className="flex items-center space-x-1 bg-primary/10 rounded-full px-2 sm:px-4 py-1.5 sm:py-2 text-secondary hover:bg-primary/20 transition-all">
+                        <Popover.Button className="flex items-center space-x-1 bg-primary/10 rounded-full px-1.5 xs:px-2 sm:px-4 py-1 xs:py-1.5 sm:py-2 text-secondary hover:bg-primary/20 transition-all">
                             <ReactCountryFlag
                                 countryCode={router.locale === 'nl' ? 'NL' : 'GB'}
                                 svg
                                 style={{
-                                    width: '1.2em',
-                                    height: '1.2em',
+                                    width: '1em',
+                                    height: '1em',
                                 }}
                             />
-                            <span className="font-medium text-sm sm:text-base">{router.locale === 'nl' ? 'NL' : 'EN'}</span>
-                            <ChevronDownIcon className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <span className="font-medium text-xs xs:text-sm">
+                                {router.locale === 'nl' ? 'NL' : 'EN'}
+                            </span>
+                            <ChevronDownIcon className="h-3 w-3 xs:h-4 xs:w-4" />
                         </Popover.Button>
 
                         <Transition
@@ -133,12 +143,15 @@ export const Navbar = () => {
                         </Transition>
                     </Popover>
 
+                    {/* User Profile Button - Make it consistent with language selector */}
                     {isLoggedIn ? (
                         <Popover className="relative">
-                            <Popover.Button className="flex items-center space-x-2 bg-primary/10 rounded-full px-4 py-2 text-secondary hover:bg-primary/20 transition-all">
-                                <UserCircle className="h-5 w-5" />
-                                <span className="font-medium">{user.name}</span>
-                                <ChevronDownIcon className="h-4 w-4" />
+                            <Popover.Button className="flex items-center space-x-1 bg-primary/10 rounded-full px-1.5 xs:px-2 sm:px-4 py-1 xs:py-1.5 sm:py-2 text-secondary hover:bg-primary/20 transition-all">
+                                <UserCircle className="h-4 w-4 xs:h-5 xs:w-5" />
+                                <span className="font-medium text-xs xs:text-sm max-w-[50px] xs:max-w-[70px] sm:max-w-[100px] truncate">
+                                    {truncateText(user.name)}
+                                </span>
+                                <ChevronDownIcon className="h-3 w-3 xs:h-4 xs:w-4" />
                             </Popover.Button>
 
                             <Transition
@@ -173,25 +186,29 @@ export const Navbar = () => {
                             </Transition>
                         </Popover>
                     ) : (
-                        <Link href="/auth/signin" className="hidden md:block bg-secondary text-white px-6 py-2 rounded-full hover:bg-secondary/90 transition-colors">
-                            {t('nav.login')}
+                        <Link
+                            href="/auth/signin"
+                            className="hidden md:flex items-center space-x-1 bg-secondary text-white rounded-full px-1.5 xs:px-2 sm:px-4 py-1 xs:py-1.5 sm:py-2 hover:bg-secondary/90 transition-colors"
+                        >
+                            <span className="text-xs xs:text-sm whitespace-nowrap">{t('nav.login')}</span>
                         </Link>
                     )}
 
+                    {/* Mobile Menu Button - Make it consistent */}
                     <button
                         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden rounded-full p-1.5 sm:p-2 text-secondary hover:bg-primary/10"
+                        className="md:hidden rounded-full p-1 xs:p-1.5 sm:p-2 text-secondary hover:bg-primary/10"
                     >
                         {isMobileMenuOpen ? (
-                            <XMarkIcon className="h-5 w-5 sm:h-6 sm:w-6" />
+                            <XMarkIcon className="h-4 w-4 xs:h-5 xs:w-5" />
                         ) : (
-                            <Bars3Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                            <Bars3Icon className="h-4 w-4 xs:h-5 xs:w-5" />
                         )}
                     </button>
                 </div>
 
                 {/* Mobile Menu */}
-                <div className={`absolute left-2 right-2 top-20 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+                <div className={`absolute left-2 right-2 top-10 mt-2 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
                     <Transition
                         show={isMobileMenuOpen}
                         enter="transition ease-out duration-200"
@@ -203,11 +220,14 @@ export const Navbar = () => {
                     >
                         <div className="bg-white shadow-lg rounded-2xl border border-secondary/10">
                             <div className="flex flex-col py-2">
+                                {/* Update mobile menu user section */}
                                 {isLoggedIn && (
-                                    <div className="px-4 py-2 border-b border-gray-200">
+                                    <div className="px-3 py-2 border-b border-gray-200">
                                         <div className="flex items-center space-x-2">
-                                            <UserCircle className="h-5 w-5 text-gray-500" />
-                                            <span className="text-sm font-medium text-gray-700">{user.name}</span>
+                                            <UserCircle className="h-4 w-4 text-gray-500" />
+                                            <span className="text-xs xs:text-sm font-medium text-gray-700 truncate">
+                                                {truncateText(user.name, 15)}
+                                            </span>
                                         </div>
                                     </div>
                                 )}
