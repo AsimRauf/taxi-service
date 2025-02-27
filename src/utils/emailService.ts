@@ -7,12 +7,12 @@ const createTransporter = () => {
     const isProduction = process.env.NODE_ENV === 'production';
     
     return nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT),
+        host: process.env.SMTP_HOST || 'smtp.hostinger.com',
+        port: Number(process.env.SMTP_PORT) || 587,
         secure: false, // true for 465, false for other ports
         auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD,
+            user: process.env.SMTP_USER || 'your-email@hostinger.com',
+            pass: process.env.SMTP_PASSWORD || 'your-hostinger-password',
         },
         tls: {
             // Do not fail on invalid certs
@@ -33,7 +33,7 @@ export async function sendBookingConfirmation(booking: BookingData) {
         });
 
         const mailOptions = {
-            from: `"Taxi Service" <${process.env.SMTP_USER}>`,
+            from: `"Taxi Service" <${process.env.SMTP_USER || 'your-email@hostinger.com'}>`,
             to: booking.contactInfo?.email,
             subject: `Booking Confirmation - #${booking.clientBookingId}`,
             html: createBookingConfirmationEmail(booking),
