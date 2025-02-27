@@ -30,8 +30,7 @@ export interface BookingFormData {
 }
 
 export interface BookingData {
-    id: string; // Add id property for unique identification
-  // Location data
+  id: string; // Add id property for unique identification
   pickup: Location;
   destination: Location;
   stopovers: Location[];
