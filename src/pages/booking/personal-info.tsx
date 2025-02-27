@@ -10,6 +10,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { BookingData, Location } from '@/types/booking';
 import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
+import { useEdit } from '@/contexts/EditContext';
+
 
 
 interface BookingFormProps {
@@ -34,6 +36,7 @@ interface PersonalInfoData {
 const PersonalInfoPage = ({ translations }: BookingFormProps) => {
   const { t } = useTranslation('common');
   const i18n = useTranslation('common').i18n;
+  const { isEditing, editingBookingId, setEditMode } = useEdit();
   const router = useRouter();
   const { user, register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
@@ -61,6 +64,8 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
       router.push('/booking/travel-info');
       return;
     }
+
+
 
     if (!parsedData.destination?.mainAddress?.toLowerCase().includes('airport')) {
       parsedData.flightNumber = '';
@@ -112,6 +117,14 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const handleBack = () => {
+    if (isEditing) {
+      setEditMode(null);
+      router.push('/booking/overview');
+    } else {
+      router.back();
+    }
+  };
 
   const validatePhoneNumber = (phone: string) => {
     const fullNumber = phone.startsWith('+31') ? phone : `+31${phone}`;
@@ -212,11 +225,12 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
       // Update booking data before navigation
       const updatedBookingData = {
         ...bookingData,
+        id: editingBookingId || bookingData?.id, // Preserve original ID when editing
         contactInfo: {
           fullName: personalInfo.fullName,
           email: personalInfo.email,
           phoneNumber: `+31${personalInfo.phoneNumber}`,
-          additionalPhoneNumber: personalInfo.additionalPhone ? 
+          additionalPhoneNumber: personalInfo.additionalPhone ?
             `+31${personalInfo.additionalPhone}` : undefined,
         },
         bookingForOther: personalInfo.bookingForOther ? {
@@ -229,46 +243,42 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         } : undefined,
       };
 
-      
-  
-      // Get existing bookings
       const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
-      
-      // Check if we're editing an existing booking
-      const editingId = localStorage.getItem('editingBookingId');
-      
-      if (editingId) {
+
+      if (isEditing && editingBookingId) {
         // Update existing booking
-        const updatedBookings = existingBookings.map((booking: { id: string }) => 
-          booking.id === editingId ? updatedBookingData : booking        );
+        const updatedBookings = existingBookings.map((booking: BookingData) =>
+          booking.id === editingBookingId ? updatedBookingData : booking
+        );
         localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+        setEditMode(null);
       } else {
         // Add new booking
         const newBookings = [...existingBookings, updatedBookingData];
         localStorage.setItem('allBookings', JSON.stringify(newBookings));
       }
-  
-      // Clear temporary booking data
-      localStorage.removeItem('bookingData');
-      localStorage.removeItem('editingBookingId');
 
-      if (registrationSuccessful) {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-  
+      localStorage.removeItem('bookingData');
       router.push('/booking/overview');
     } catch (error) {
       console.error('Booking error:', error);
       setErrors({ form: t('booking.error.generic') });
-    } finally {
-      setIsLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
       <div className="max-w-4xl mx-auto px-4 flex flex-col items-center mt-8">
-        <Stepper currentStep="personal-info" />
+        {isEditing ? (
+          <button
+            onClick={handleBack}
+            className="text-white hover:text-gray-200 transition-colors mb-6"
+          >
+            ← {t('common.backToOverview')}
+          </button>
+        ) : (
+          <Stepper currentStep="personal-info" />
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -585,17 +595,17 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
 
           <div className="flex justify-between mt-8">
             <button
-              onClick={() => router.back()}
+              onClick={handleBack}
               className="px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
             >
-              {t('booking.back')}
+              {isEditing ? t('common.backToOverview') : t('booking.back')}
             </button>
             <button
               onClick={handleContinue}
               disabled={isLoading}
               className="bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? t('common.loading') : t('booking.personalInfo.continue')}
+              {isLoading ? t('common.loading') : isEditing ? t('common.update') : t('booking.personalInfo.continue')}
             </button>
           </div>
         </motion.div>
