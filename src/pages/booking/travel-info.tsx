@@ -571,21 +571,23 @@ export const TravelInfoPage = () => {
                     label={t('hero.pickupDateTime')}
                     value={bookingData?.pickupDateTime ? new Date(bookingData.pickupDateTime.replace(' ', 'T')) : null}
                     onChange={(date) => {
-                      if (!bookingData) return;
-                      const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
+                      if (!bookingData || !date) return;
 
-                      if (!validateDates(dateString, bookingData.returnDateTime)) {
-                        alert(t('errors.invalidPickupTime'));
-                        return;
-                      }
+                      // Adjust for timezone offset
+                      const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                      const dateString = localDate.toISOString().slice(0, 16).replace('T', ' ');
 
-                      setBookingData({
+                      const updatedData = {
                         ...bookingData,
                         pickupDateTime: dateString
-                      });
+                      };
+
+                      setBookingData(updatedData);
+                      localStorage.setItem('bookingData', JSON.stringify(updatedData));
                     }}
                     placeholder={t('hero.pickupDateTime')}
                   />
+
                   {validationErrors.pickupDate && (
                     <span className="text-red-500 text-sm mt-1">{validationErrors.pickupDate}</span>
                   )}
