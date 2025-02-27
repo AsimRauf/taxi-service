@@ -1,4 +1,5 @@
 // Booking types
+import { Types } from "mongoose"
 import { LuggageFormData } from "./luggage"
 
 export interface Location {
@@ -30,6 +31,7 @@ export interface BookingFormData {
 }
 
 export interface BookingData {
+  _id?: Types.ObjectId;
   id: string; // Add id property for unique identification
   pickup: Location;
   destination: Location;

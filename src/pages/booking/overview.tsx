@@ -4,9 +4,10 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
-import { v4 as uuidv4 } from 'uuid';
+import { generateBookingId } from '@/utils/generateId';
 import { useEdit } from '@/contexts/EditContext';
 import { Popover, Transition } from '@headlessui/react';
+import { useAuth } from '@/contexts/AuthContext';
 import {
   MoreVertical,
   Trash2,
@@ -31,6 +32,7 @@ import {
   User
 } from 'lucide-react';
 import { BookingData } from '@/types/booking';
+import { Snackbar } from '@/components/ui/Snackbar';
 
 const LuggageIcon = ({ type }: { type: string }) => {
   switch (type) {
@@ -60,6 +62,7 @@ interface BookingCardProps {
   onDelete: (id: string) => void;
   onDuplicate: (id: string) => void;
   onEdit: (id: string, section: string) => void;
+  onBookingSuccess: (id: string) => void;
 }
 
 interface Address {
@@ -126,235 +129,323 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
 };
 
 
-const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProps) => {
+const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess }: BookingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showDuplicateSnackbar, setShowDuplicateSnackbar] = useState(false);
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const router = useRouter();
+
+const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+
+const handleBookNow = async () => {
+  if (!user) {
+      localStorage.setItem('pendingBooking', JSON.stringify(booking));
+      router.push('/auth/signin');
+      return;
+  }
+
+  try {
+      // Create a new object with only the needed fields
+      const finalBookingData = {
+          ...booking,
+          userId: user.id,
+          clientBookingId: booking.id,
+          status: 'pending'
+      };
+
+      const response = await fetch('/api/bookings/create', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(finalBookingData),
+      });
+
+      if (response.status === 409) {
+          setShowDuplicateSnackbar(true);
+          return;
+      }
+
+      if (!response.ok) {
+          throw new Error('Failed to create booking');
+      }
+
+      onBookingSuccess(booking.id);
+      router.push('/booking/success');
+  } catch (error) {
+      console.error('Booking error:', error);
+      alert('Failed to create booking');
+  }
+};
+
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-lg mb-4"
-    >
-      <div className="p-6">
-        <div className="flex justify-between items-start">
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center gap-2">
-              <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm">
-                #{booking.id.slice(0, 8)}
-              </span>
-              <span className={`px-3 py-1 rounded-full ${booking.isFixedPrice ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>
-                €{booking.price.toFixed(2)}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg inline-block">
-              <Car className="w-4 h-4 text-blue-700" />
-              {booking.vehicle === 'regular' ? t('overview.regularTaxi') : t('overview.vanTaxi')}
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-2">
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center justify-center gap-2 px-3 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors w-full sm:w-auto"
-            >
-              <span className="text-sm font-medium">{isExpanded ? t('overview.hideDetails') : t('overview.showDetails')}</span>
-              <ChevronDown className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-            </button>
-
-            <Popover className="relative w-full sm:w-auto">
-              {() => (
-                <>
-                  <Popover.Button className="flex items-center justify-center gap-2 px-3 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors w-full">
-                    <span className="text-sm font-medium">{t('overview.actions')}</span>
-                    <MoreVertical className="w-4 h-4" />
-                  </Popover.Button>
-                  <Transition
-                    as={Fragment}
-                    enter="transition ease-out duration-200"
-                    enterFrom="opacity-0 translate-y-1"
-                    enterTo="opacity-100 translate-y-0"
-                    leave="transition ease-in duration-150"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-1"
-                  >
-                    <Popover.Panel className="absolute right-0 z-50 mt-2 w-56 transform">
-                      <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
-                        <div className="relative bg-white p-2 space-y-1">
-                          <button
-                            onClick={() => onEdit(booking.id, 'travel-info')}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                          >
-                            <ArrowRight className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editRoute')}</span>
-                          </button>
-                          <button
-                            onClick={() => onEdit(booking.id, 'luggage')}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                          >
-                            <Luggage className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editLuggage')}</span>
-                          </button>
-                          <button
-                            onClick={() => onEdit(booking.id, 'offers')}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                          >
-                            <Car className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editVehicle')}</span>
-                          </button>
-                          <button
-                            onClick={() => onEdit(booking.id, 'personal-info')}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                          >
-                            <User className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editPersonalInfo')}</span>
-                          </button>
-                          <div className="h-px bg-gray-200 my-1" />
-                          <button
-                            onClick={() => onDuplicate(booking.id)}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                          >
-                            <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.duplicate')}</span>
-                          </button>
-                          <button
-                            onClick={() => onDelete(booking.id)}
-                            className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg"
-                          >
-                            <Trash2 className="w-4 h-4 mr-2 flex-shrink-0" />
-                            <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.delete')}</span>
-                          </button>
-                        </div>
-                      </div>
-                    </Popover.Panel>
-                  </Transition>
-                </>
-              )}
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl shadow-lg mb-4"
+      >
+        <div className="p-3 xs:p-4 sm:p-6">
+          {/* Top Row - Booking ID and Actions */}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs xs:text-sm">
+              #{booking.id.slice(0, 8)}
+            </span>
+            
+            <Popover className="relative">
+              <Popover.Button className="flex items-center justify-center gap-1 px-2 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                <span className="text-xs xs:text-sm font-medium whitespace-nowrap">{t('overview.actions')}</span>
+                <MoreVertical className="w-3 h-3 xs:w-4 xs:h-4" />
+              </Popover.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-200"
+                enterFrom="opacity-0 translate-y-1"
+                enterTo="opacity-100 translate-y-0"
+                leave="transition ease-in duration-150"
+                leaveFrom="opacity-100 translate-y-0"
+                leaveTo="opacity-0 translate-y-1"
+              >
+                <Popover.Panel className="absolute right-0 z-50 mt-2 w-56 transform">
+                  <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
+                    <div className="relative bg-white p-2 space-y-1">
+                      <button
+                        onClick={() => onEdit(booking.id, 'travel-info')}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
+                      >
+                        <ArrowRight className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editRoute')}</span>
+                      </button>
+                      <button
+                        onClick={() => onEdit(booking.id, 'luggage')}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
+                      >
+                        <Luggage className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editLuggage')}</span>
+                      </button>
+                      <button
+                        onClick={() => onEdit(booking.id, 'offers')}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
+                      >
+                        <Car className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editVehicle')}</span>
+                      </button>
+                      <button
+                        onClick={() => onEdit(booking.id, 'personal-info')}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
+                      >
+                        <User className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.editPersonalInfo')}</span>
+                      </button>
+                      <div className="h-px bg-gray-200 my-1" />
+                      <button
+                        onClick={() => onDuplicate(booking.id)}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
+                      >
+                        <Copy className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.duplicate')}</span>
+                      </button>
+                      <button
+                        onClick={() => onDelete(booking.id)}
+                        className="flex items-center w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg"
+                      >
+                        <Trash2 className="w-4 h-4 mr-2 flex-shrink-0" />
+                        <span className="flex-1 text-left whitespace-nowrap overflow-hidden text-ellipsis">{t('overview.delete')}</span>
+                      </button>
+                    </div>
+                  </div>
+                </Popover.Panel>
+              </Transition>
             </Popover>
           </div>
-        </div>
 
-        {isExpanded && (
-          <div className="mt-4">
-            <RouteDisplay
-              pickup={booking.pickup}
-              destination={booking.destination}
-              stopovers={booking.stopovers}
-              isReturn={booking.isReturn}
-            />
-            <div className="mt-4">
-              <h4 className="font-medium text-gray-700">{t('overview.schedule')}</h4>
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-primary" />
-                <div>
-                  <p>{t('overview.pickup')}: {formatDateTime(booking.pickupDateTime)}</p>
-                  {booking.isReturn && (
-                    <p className="text-gray-600">{t('overview.return')}: {formatDateTime(booking.returnDateTime)}</p>
+          {/* Middle Row - Vehicle Type */}
+          <div className="flex items-center gap-2 mb-3">
+            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs xs:text-sm">
+              <Car className="w-3 h-3 xs:w-4 xs:h-4 text-blue-700" />
+              <span className="whitespace-nowrap">
+                {booking.vehicle === 'regular' ? t('overview.regularTaxi') : t('overview.vanTaxi')}
+              </span>
+            </div>
+          </div>
+
+          {/* Price and Actions - Reorganized for mobile */}
+          <div className="space-y-3">
+            {/* Price Row */}
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg w-full ${
+              booking.isFixedPrice ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'
+            }`}>
+              <span className="text-lg font-semibold">€{booking.price.toFixed(2)}</span>
+              <span className="text-xs">{booking.isFixedPrice ? t('overview.fixedPrice') : t('overview.estimatedPrice')}</span>
+            </div>
+
+            {/* Actions Row */}
+            <div className="flex items-center gap-2 w-full">
+              <button
+                onClick={() => setIsExpanded(!isExpanded)}
+                className="flex-1 flex items-center justify-center gap-1 px-2 xs:px-3 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
+                  {isExpanded ? t('overview.hideDetails') : t('overview.showDetails')}
+                </span>
+                <ChevronDown 
+                  className={`w-3 h-3 xs:w-4 xs:h-4 transform transition-transform ${
+                    isExpanded ? 'rotate-180' : ''
+                  }`} 
+                />
+              </button>
+
+              <button
+                onClick={handleBookNow}
+                className="flex-1 flex items-center justify-center gap-1 px-2 xs:px-3 py-2 text-white bg-primary hover:bg-primary/90 rounded-lg transition-colors"
+              >
+                <Calendar className="w-3 h-3 xs:w-4 xs:h-4" />
+                <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
+                  {t('overview.bookNow')}
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Expanded content */}
+          {isExpanded && (
+            <div className="mt-4 text-sm border-t pt-4">
+              <RouteDisplay
+                pickup={booking.pickup}
+                destination={booking.destination}
+                stopovers={booking.stopovers}
+                isReturn={booking.isReturn}
+              />
+              <div className="mt-4">
+                <h4 className="font-medium text-gray-700">{t('overview.schedule')}</h4>
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <div>
+                    <p>{t('overview.pickup')}: {formatDateTime(booking.pickupDateTime)}</p>
+                    {booking.isReturn && (
+                      <p className="text-gray-600">{t('overview.return')}: {formatDateTime(booking.returnDateTime)}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="font-medium text-gray-700">{t('overview.passengerDetails')}</h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  {booking.bookingForOther ? (
+                    <>
+                      <div className="mb-3">
+                        <p className="text-sm text-gray-600">{t('overview.bookedBy')}:</p>
+                        <div className="space-y-1">
+                          <p className="font-medium">{booking.contactInfo?.fullName}</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Phone className="w-4 h-4" />
+                            {booking.contactInfo?.phoneNumber}
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Mail className="w-4 h-4" />
+                            {booking.contactInfo?.email}
+                          </div>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600">{t('overview.passenger')}:</p>
+                        <div className="space-y-1">
+                          <p className="font-medium">{booking.bookingForOther.fullName}</p>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Phone className="w-4 h-4" />
+                            {booking.bookingForOther.phoneNumber}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="font-medium">{booking.contactInfo?.fullName}</p>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Mail className="w-4 h-4" />
+                        {booking.contactInfo?.email}
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Phone className="w-4 h-4" />
+                        {booking.contactInfo?.phoneNumber}
+                      </div>
+                      {booking.contactInfo?.additionalPhoneNumber && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                          <Phone className="w-4 h-4" />
+                          {booking.contactInfo.additionalPhoneNumber}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
-            </div>
 
-            <div className="mt-4">
-              <h4 className="font-medium text-gray-700">{t('overview.passengerDetails')}</h4>
-              <div className="bg-gray-50 rounded-lg p-4">
-                {booking.bookingForOther ? (
-                  <>
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-600">{t('overview.bookedBy')}:</p>
-                      <div className="space-y-1">
-                        <p className="font-medium">{booking.contactInfo?.fullName}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Phone className="w-4 h-4" />
-                          {booking.contactInfo?.phoneNumber}
+              <div className="mt-4">
+                <h4 className="font-medium text-gray-700">{t('overview.luggage')}</h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="space-y-3">
+                    {Object.entries(booking.luggage.regularLuggage)
+                      .filter(([, count]) => count > 0)
+                      .map(([luggageType, count]) => (
+                        <div key={luggageType} className="flex items-center gap-3">
+                          <LuggageIcon type={luggageType} />
+                          <span className="text-sm font-medium">
+                            {count}x {t(`luggage.${luggageType}.title`)}
+                          </span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Mail className="w-4 h-4" />
-                          {booking.contactInfo?.email}
+                      ))}
+
+                    {Object.entries(booking.luggage.specialLuggage)
+                      .filter(([, count]) => count > 0)
+                      .map(([luggageType, count]) => (
+                        <div key={luggageType} className="flex items-center gap-3">
+                          <SpecialLuggageIcon type={luggageType} />
+                          <span className="text-sm font-medium">
+                            {count}x {t(`luggage.special.${luggageType}.title`)}
+                          </span>
                         </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-600">{t('overview.passenger')}:</p>
-                      <div className="space-y-1">
-                        <p className="font-medium">{booking.bookingForOther.fullName}</p>
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <Phone className="w-4 h-4" />
-                          {booking.bookingForOther.phoneNumber}
-                        </div>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="font-medium">{booking.contactInfo?.fullName}</p>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Mail className="w-4 h-4" />
-                      {booking.contactInfo?.email}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Phone className="w-4 h-4" />
-                      {booking.contactInfo?.phoneNumber}
-                    </div>
-                    {booking.contactInfo?.additionalPhoneNumber && (
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Phone className="w-4 h-4" />
-                        {booking.contactInfo.additionalPhoneNumber}
-                      </div>
-                    )}
+                      ))}
                   </div>
-                )}
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h4 className="font-medium text-gray-700">{t('overview.luggage')}</h4>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <div className="space-y-3">
-                  {Object.entries(booking.luggage.regularLuggage)
-                    .filter(([, count]) => count > 0)
-                    .map(([luggageType, count]) => (
-                      <div key={luggageType} className="flex items-center gap-3">
-                        <LuggageIcon type={luggageType} />
-                        <span className="text-sm font-medium">
-                          {count}x {t(`luggage.${luggageType}.title`)}
-                        </span>
-                      </div>
-                    ))}
-
-                  {Object.entries(booking.luggage.specialLuggage)
-                    .filter(([, count]) => count > 0)
-                    .map(([luggageType, count]) => (
-                      <div key={luggageType} className="flex items-center gap-3">
-                        <SpecialLuggageIcon type={luggageType} />
-                        <span className="text-sm font-medium">
-                          {count}x {t(`luggage.special.${luggageType}.title`)}
-                        </span>
-                      </div>
-                    ))}
                 </div>
               </div>
-            </div>
 
-            {(booking.flightNumber || booking.remarks) && (
-              <div className="mt-4 border-t pt-4">
-                {booking.flightNumber && (
-                  <div className="mb-4">
-                    <h4 className="font-medium text-gray-700">{t('overview.flightNumber')}</h4>
-                    <p className="text-sm mt-1">{booking.flightNumber}</p>
-                  </div>
-                )}
-                {booking.remarks && (
-                  <div>
-                    <h4 className="font-medium text-gray-700">{t('overview.additionalNotes')}</h4>
-                    <p className="text-sm mt-1">{booking.remarks}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </motion.div>
+              {(booking.flightNumber || booking.remarks) && (
+                <div className="mt-4 border-t pt-4">
+                  {booking.flightNumber && (
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-700">{t('overview.flightNumber')}</h4>
+                      <p className="text-sm mt-1">{booking.flightNumber}</p>
+                    </div>
+                  )}
+                  {booking.remarks && (
+                    <div>
+                      <h4 className="font-medium text-gray-700">{t('overview.additionalNotes')}</h4>
+                      <p className="text-sm mt-1">{booking.remarks}</p>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </motion.div>
+
+      <Snackbar
+        isOpen={showDuplicateSnackbar}
+        onClose={() => setShowDuplicateSnackbar(false)}
+        message={t('booking.errors.duplicateBooking')}
+        action={{
+          label: t('overview.duplicate'),
+          onClick: () => {
+            onDuplicate(booking.id);
+            setShowDuplicateSnackbar(false);
+          }
+        }}
+      />
+    </>
   );
 };
 
@@ -382,7 +473,7 @@ export const OverviewPage = () => {
     if (bookingToDuplicate) {
       const newBooking = {
         ...bookingToDuplicate,
-        id: uuidv4()
+        id: generateBookingId() // Use timestamp-based ID instead of UUID
       };
       const updatedBookings = [...bookings, newBooking];
       setBookings(updatedBookings);
@@ -397,6 +488,12 @@ export const OverviewPage = () => {
       localStorage.setItem('bookingData', JSON.stringify(bookingToEdit));
       router.push(`/booking/${section}`);
     }
+  };
+
+  const handleBookingSuccess = (id: string) => {
+    const updatedBookings = bookings.filter(b => b.id !== id);
+    setBookings(updatedBookings);
+    localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
   };
 
   return (
@@ -425,6 +522,7 @@ export const OverviewPage = () => {
                 onDelete={handleDelete}
                 onDuplicate={handleDuplicate}
                 onEdit={handleEdit}
+                onBookingSuccess={handleBookingSuccess}
               />
             ))
           )}
