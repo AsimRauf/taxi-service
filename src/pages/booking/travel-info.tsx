@@ -13,7 +13,7 @@ import { createTranslationsObject } from '@/utils/translations';
 import { calculatePrice } from '@/utils/pricingCalculator';
 import { Plane, ArrowRight } from 'lucide-react';
 import { DateSelector } from '@/components/forms/booking/DateSelector';
-import { isBefore, addHours } from 'date-fns';
+import { isBefore } from 'date-fns';
 import { useEdit } from '@/contexts/EditContext';
 
 
@@ -43,21 +43,6 @@ export const TravelInfoPage = () => {
     setBookingData(parsedData);
   }, [router]);
 
-  const validateDates = (pickup: string | null, returnDate: string | null): boolean => {
-    if (!pickup) return false;
-
-    const pickupDate = new Date(pickup.replace(' ', 'T'));
-    const minimumDate = addHours(new Date(), 2); // Minimum 2 hours from now
-
-    if (isBefore(pickupDate, minimumDate)) return false;
-
-    if (returnDate) {
-      const returnDateTime = new Date(returnDate.replace(' ', 'T'));
-      if (isBefore(returnDateTime, pickupDate)) return false;
-    }
-
-    return true;
-  };
 
   const handleContinue = () => {
     if (!bookingData) {

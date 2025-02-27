@@ -136,7 +136,10 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     const savedData = localStorage.getItem('bookingData');
     const currentBookingData: BookingData | null = savedData ? JSON.parse(savedData) : null;
 
-    if (!currentBookingData) {
+    // Store booking data in a variable to prevent it from being lost
+    const bookingDataToUse = currentBookingData || bookingData;
+
+    if (!bookingDataToUse) {
       router.push('/booking/travel-info');
       return;
     }
@@ -202,7 +205,6 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     setIsLoading(true);
 
     try {
-      // Keep track of registration status
       let registrationSuccessful = false;
 
       if (!user && personalInfo.password) {
@@ -222,10 +224,10 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         }
       }
 
-      // Update booking data before navigation
+      // Create updated booking data
       const updatedBookingData = {
-        ...bookingData,
-        id: editingBookingId || bookingData?.id, // Preserve original ID when editing
+        ...bookingDataToUse,
+        id: editingBookingId || bookingDataToUse?.id,
         contactInfo: {
           fullName: personalInfo.fullName,
           email: personalInfo.email,
@@ -243,26 +245,37 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         } : undefined,
       };
 
+      // Save to localStorage before any async operations
       const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
 
       if (isEditing && editingBookingId) {
-        // Update existing booking
         const updatedBookings = existingBookings.map((booking: BookingData) =>
           booking.id === editingBookingId ? updatedBookingData : booking
         );
         localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
         setEditMode(null);
       } else {
-        // Add new booking
         const newBookings = [...existingBookings, updatedBookingData];
         localStorage.setItem('allBookings', JSON.stringify(newBookings));
       }
 
-      localStorage.removeItem('bookingData');
-      router.push('/booking/overview');
+      // Ensure we remove bookingData only after successful navigation
+      const navigateToOverview = () => {
+        localStorage.removeItem('bookingData');
+        router.push('/booking/overview');
+      };
+
+      // Add a small delay after registration to ensure auth state is updated
+      if (registrationSuccessful) {
+        setTimeout(navigateToOverview, 500);
+      } else {
+        navigateToOverview();
+      }
+
     } catch (error) {
       console.error('Booking error:', error);
       setErrors({ form: t('booking.error.generic') });
+      setIsLoading(false);
     }
   };
 
