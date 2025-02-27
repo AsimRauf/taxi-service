@@ -25,10 +25,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const populatedBooking = await savedBooking.populate('user', 'name email');
         
         // Send confirmation email asynchronously
-        sendBookingConfirmation(savedBooking).catch(error => {
-            console.error('Email sending failed:', error);
-            // Log to your error tracking service
-        });
+        try {
+            console.log('Attempting to send confirmation email...');
+            await sendBookingConfirmation(savedBooking);
+            console.log('Email sent successfully for booking:', id);
+        } catch (error) {
+            console.error('Email sending failed in API route:', {
+                bookingId: id,
+                error: error instanceof Error ? error.message : 'Unknown error',
+                timestamp: new Date().toISOString()
+            });
+        }
         
         res.status(201).json(populatedBooking);
     } catch (error) {

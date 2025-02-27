@@ -29,28 +29,36 @@ const createTransporter = () => {
 };
 
 export async function sendBookingConfirmation(booking: BookingData) {
+    console.log('Starting email sending process...', {
+        bookingId: booking.clientBookingId,
+        environment: process.env.NODE_ENV
+    });
+
     try {
         const transporter = createTransporter();
         
-        // Add debug logging for production
-        if (process.env.NODE_ENV === 'production') {
-            console.log('SMTP Config:', {
-                host: process.env.SMTP_HOST,
-                port: process.env.SMTP_PORT,
-                user: process.env.SMTP_USER?.substring(0, 3) + '***',
-                hasPassword: !!process.env.SMTP_PASSWORD
-            });
-        }
+        // Enhanced debug logging for all environments
+        console.log('SMTP Config:', {
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            user: process.env.SMTP_USER?.substring(0, 3) + '***',
+            hasPassword: !!process.env.SMTP_PASSWORD,
+            environment: process.env.NODE_ENV,
+            timestamp: new Date().toISOString()
+        });
 
-        // Verify SMTP connection with detailed error logging
+        // Add connection test
+        console.log('Testing SMTP connection...');
         await transporter.verify().catch((err) => {
-            console.error('SMTP Verification Error Details:', {
+            console.error('SMTP Verification Failed:', {
                 code: err.code,
                 command: err.command,
-                response: err.response
+                response: err.response,
+                timestamp: new Date().toISOString()
             });
             throw err;
         });
+        console.log('SMTP connection verified successfully');
 
         const mailOptions = {
             from: `"Taxi Service" <${process.env.SMTP_USER}>`,
@@ -59,10 +67,18 @@ export async function sendBookingConfirmation(booking: BookingData) {
             html: createBookingConfirmationEmail(booking),
         };
 
+        console.log('Sending email with options:', {
+            to: mailOptions.to,
+            subject: mailOptions.subject,
+            timestamp: new Date().toISOString()
+        });
+
         const info = await transporter.sendMail(mailOptions);
         console.log('Email sent successfully:', {
             messageId: info.messageId,
-            recipient: booking.contactInfo?.email
+            recipient: booking.contactInfo?.email,
+            response: info.response,
+            timestamp: new Date().toISOString()
         });
         return info;
 
@@ -73,7 +89,8 @@ export async function sendBookingConfirmation(booking: BookingData) {
             booking: {
                 id: booking.clientBookingId,
                 recipient: booking.contactInfo?.email
-            }
+            },
+            timestamp: new Date().toISOString()
         });
         throw error;
     }
