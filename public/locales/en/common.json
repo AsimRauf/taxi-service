@@ -51,6 +51,11 @@
       "personal-info": "Personal Information",
       "incomplete": "Please complete the previous steps first"
     },
+    "success": {
+      "title": "Booking Confirmed!",
+      "message": "Your taxi booking has been successfully confirmed. You will receive a confirmation email shortly with all the details.",
+      "viewBookings": "View My Bookings"
+    },
     "navigation": {
       "saved": "Saved progress",
       "continue": "Continue where you left off"
@@ -82,7 +87,9 @@
         "invalidPhone": "Enter a valid phone number",
         "passwordRequired": "Password is required",
         "passwordLength": "Password must be at least 8 characters long",
-        "passwordMatch": "Passwords do not match"
+        "passwordMatch": "Passwords do not match",
+        "createFailed": "Failed to create booking. Please try again.",
+        "duplicateBooking": "This booking already exists."
       },
       "individual": "Individual",
       "business": "Business",
@@ -296,6 +303,10 @@
     "hideDetails": "Hide Details",
     "showDetails": "Show Details",
     "noBookings": "No bookings available.",
-    "title": "Overview"
+    "title": "Overview",
+    "booking": "Booking...",
+    "bookNow": "Book Now",
+    "fixedPrice": "Fixed Price",
+    "estimatedPrice": "Estimated Price"
   }
 }

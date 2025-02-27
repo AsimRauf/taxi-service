@@ -95,6 +95,15 @@
       "businessAddress": "Bedrijfsadres",
       "password": "Wachtwoord",
       "confirmPassword": "Bevestig Wachtwoord"
+    },
+    "success": {
+      "title": "Boeking Bevestigd!",
+      "message": "Uw taxiboeking is succesvol bevestigd. U ontvangt binnenkort een bevestigingsmail met alle details.",
+      "viewBookings": "Bekijk Mijn Boekingen"
+    },
+    "errors": {
+      "createFailed": "Boeking maken mislukt. Probeer het opnieuw.",
+      "duplicateBooking": "Deze boeking bestaat al."
     }
   },
   "luggage": {
@@ -296,6 +305,10 @@
     "hideDetails": "Details Verbergen",
     "showDetails": "Details Tonen",
     "noBookings": "Geen boekingen beschikbaar.",
-    "title": "Overzicht"
+    "title": "Overzicht",
+    "booking": "Boeken...",
+    "bookNow": "Nu Boeken",
+    "fixedPrice": "Vaste Prijs",
+    "estimatedPrice": "Geschatte Prijs"
   }
 }
