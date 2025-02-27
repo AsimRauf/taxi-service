@@ -5,6 +5,7 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { v4 as uuidv4 } from 'uuid';
+import { useEdit } from '@/contexts/EditContext';
 import { Popover, Transition } from '@headlessui/react';
 import {
   MoreVertical,
@@ -360,6 +361,7 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
 export const OverviewPage = () => {
   const [bookings, setBookings] = useState<BookingData[]>([]);
   const router = useRouter();
+  const { setEditMode } = useEdit();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -391,8 +393,8 @@ export const OverviewPage = () => {
   const handleEdit = (id: string, section: string) => {
     const bookingToEdit = bookings.find(booking => booking.id === id);
     if (bookingToEdit) {
+      setEditMode(id); // Using EditContext
       localStorage.setItem('bookingData', JSON.stringify(bookingToEdit));
-      localStorage.setItem('editingBookingId', id);
       router.push(`/booking/${section}`);
     }
   };

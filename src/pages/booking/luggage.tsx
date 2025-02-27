@@ -11,10 +11,13 @@ import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { LuggageFormData, RegularLuggage, SpecialLuggage } from '@/types/luggage';
 import { Stepper } from '@/components/booking/Stepper';
+import { useEdit } from '@/contexts/EditContext';
+
 
 
 
 interface BookingData {
+    id: string;
     sourceAddress: string;
     destinationAddress: string;
     directDistance: string;
@@ -133,6 +136,7 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
 
 export const LuggagePage = () => {
     const router = useRouter();
+    const { isEditing, editingBookingId, setEditMode } = useEdit();
     const { t } = useTranslation();
     const [, setBookingData] = useState<BookingData | null>(null);
     const [showSpecialLuggage, setShowSpecialLuggage] = useState(false);
@@ -155,6 +159,16 @@ export const LuggagePage = () => {
     });
 
     useEffect(() => {
+        if (isEditing && editingBookingId) {
+            const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+            const editingBooking = allBookings.find((b: BookingData) => b.id === editingBookingId);
+            if (editingBooking) {
+                setLuggageData(editingBooking.luggage);
+            }
+        }
+    }, [isEditing, editingBookingId]);
+
+    useEffect(() => {
         const savedData = localStorage.getItem('bookingData');
         if (savedData) {
             const parsedData = JSON.parse(savedData);
@@ -168,6 +182,23 @@ export const LuggagePage = () => {
             }
         }
     }, []);
+
+    const handleSave = () => {
+        if (isEditing && editingBookingId) {
+            const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+            const updatedBookings = allBookings.map((booking: BookingData) => {
+                if (booking.id === editingBookingId) {
+                    return { ...booking, luggage: luggageData };
+                }
+                return booking;
+            });
+            localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+            router.push('/booking/overview');
+        } else {
+            handleContinue();
+        }
+    };
+
     const handleRegularLuggageChange = (type: keyof RegularLuggage, value: number) => {
         if (type === 'handLuggage' && value <= 8) {
             setLuggageData(prev => ({
@@ -212,27 +243,45 @@ export const LuggagePage = () => {
         }
     };
 
+    const handleBack = () => {
+        if (isEditing) {
+            setEditMode(null); // Clear edit mode
+            router.push('/booking/overview');
+        } else {
+            router.back();
+        }
+    };
+
     const handleContinue = () => {
         const savedData = localStorage.getItem('bookingData');
         if (!savedData) return;
-      
+
         const bookingData: BookingData = JSON.parse(savedData);
         const updatedData: BookingData = {
-          ...bookingData,
-          luggage: luggageData,
-          vehicle: null // Reset selected vehicle when luggage changes
+            ...bookingData,
+            luggage: luggageData,
+            vehicle: null // Reset selected vehicle when luggage changes
         };
-      
+
         localStorage.setItem('bookingData', JSON.stringify(updatedData));
         router.push('/booking/offers');
-      };
+    };
 
-      
+
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
             <div className="max-w-4xl mx-auto px-4 flex flex-col items-center mt-8">
-                <Stepper currentStep="luggage" />
+                {isEditing ? (
+                    <button
+                        onClick={handleBack}
+                        className="text-white hover:text-gray-200 transition-colors mb-6"
+                    >
+                        ← {t('common.backToOverview')}
+                    </button>
+                ) : (
+                    <Stepper currentStep="luggage" />
+                )}
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -307,11 +356,13 @@ export const LuggagePage = () => {
                             {t('luggage.back')}
                         </button>
                         <button
-                            onClick={handleContinue}
+                            onClick={handleSave}  // Change from handleContinue to handleSave
                             className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primary/90 transition-colors"
                         >
-                            {t('luggage.continue')}
+                            {isEditing ? t('luggage.update') : t('luggage.continue')}
                         </button>
+
+
                     </div>
                 </motion.div>
             </div>

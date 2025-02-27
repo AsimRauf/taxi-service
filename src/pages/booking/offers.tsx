@@ -9,6 +9,8 @@ import { Check } from 'lucide-react';
 import { Stepper } from '@/components/booking/Stepper';
 import { calculatePrice, determineVehicleAvailability } from '@/utils/pricingCalculator';
 import { BookingData } from '@/types/booking';
+import { useEdit } from '@/contexts/EditContext';
+
 
 interface VehicleOption {
     id: 'regular' | 'van';
@@ -66,9 +68,8 @@ const VehicleCard = ({
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${
-                !isAvailable ? 'hidden' : 'cursor-pointer hover:shadow-md'
-            } ${isSelected ? 'ring-2 ring-primary' : ''}`}
+            className={`bg-white rounded-xl shadow-sm p-4 sm:p-6 transition-all duration-200 ${!isAvailable ? 'hidden' : 'cursor-pointer hover:shadow-md'
+                } ${isSelected ? 'ring-2 ring-primary' : ''}`}
             onClick={onSelect}
         >
             <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6">
@@ -113,8 +114,8 @@ const VehicleCard = ({
                     {isAvailable && (
                         <button
                             className={`mt-2 sm:mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 rounded-full text-sm transition-colors ${isSelected
-                                    ? 'bg-primary text-white'
-                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                ? 'bg-primary text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
                             {isSelected ? t('offers.selected') : t('offers.select')}
@@ -163,6 +164,8 @@ export const OffersPage = () => {
     const [prices, setPrices] = useState({ regular: 0, van: 0 });
     const [availableVehicles, setAvailableVehicles] = useState({ regular: true, van: true });
     const [isFixedPrice, setIsFixedPrice] = useState(false);
+    const { isEditing, editingBookingId, setEditMode } = useEdit();
+
 
     useEffect(() => {
         const savedData = localStorage.getItem('bookingData');
@@ -170,22 +173,22 @@ export const OffersPage = () => {
             router.push('/booking/luggage');
             return;
         }
-    
+
         const parsedData: BookingData = JSON.parse(savedData);
-        
+
         const calculatedPrices = calculatePrice(
             parsedData.sourceAddress,
             parsedData.destinationAddress,
             parsedData.directDistance,
             parsedData.extraDistance
         );
-    
+
         setPrices({
             regular: calculatedPrices.regular,
             van: calculatedPrices.van
         });
         setIsFixedPrice(calculatedPrices.isFixedPrice);
-    
+
         const availability = determineVehicleAvailability(
             parsedData.passengers,
             {
@@ -194,7 +197,7 @@ export const OffersPage = () => {
             }
         );
         setAvailableVehicles(availability);
-    
+
         // Update price if vehicle is already selected
         if (parsedData.vehicle) {
             const basePrice = calculatedPrices[parsedData.vehicle];
@@ -211,47 +214,88 @@ export const OffersPage = () => {
             setBookingData(parsedData);
         }
     }, [router]);
-           
+
 
     const handleVehicleSelect = (vehicleId: 'regular' | 'van') => {
         if (!bookingData) return;
-        
+
         const basePrice = prices[vehicleId];
         const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
         setSelectedVehicle(vehicleId);
-        
+
         const updatedData: BookingData = {
             ...bookingData,
             vehicle: vehicleId,
             price: finalPrice,
             isFixedPrice
         };
-    
+
+        if (isEditing && editingBookingId) {
+            const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+            const updatedBookings = allBookings.map((booking: BookingData) => {
+                if (booking.id === editingBookingId) {
+                    return updatedData;
+                }
+                return booking;
+            });
+            localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+        }
+
         setBookingData(updatedData);
         localStorage.setItem('bookingData', JSON.stringify(updatedData));
     };
 
-const handleContinue = () => {
-    if (!selectedVehicle || !bookingData) return;
-
-    // Calculate final price including return trip if selected
-    const basePrice = prices[selectedVehicle];
-    const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
-
-    const finalData: BookingData = {
-        ...bookingData,
-        price: finalPrice,
-        isFixedPrice
+    const handleBack = () => {
+        if (isEditing) {
+            setEditMode(null);
+            router.push('/booking/overview');
+        } else {
+            router.back();
+        }
     };
 
-    localStorage.setItem('bookingData', JSON.stringify(finalData));
-    router.push('/booking/travel-info');
-};
+    const handleContinue = () => {
+        if (!selectedVehicle || !bookingData) return;
+
+        const basePrice = prices[selectedVehicle];
+        const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
+
+        const finalData: BookingData = {
+            ...bookingData,
+            price: finalPrice,
+            isFixedPrice
+        };
+
+        if (isEditing && editingBookingId) {
+            const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+            const updatedBookings = allBookings.map((booking: BookingData) => {
+                if (booking.id === editingBookingId) {
+                    return finalData;
+                }
+                return booking;
+            });
+            localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+            setEditMode(null);
+            router.push('/booking/overview');
+        } else {
+            localStorage.setItem('bookingData', JSON.stringify(finalData));
+            router.push('/booking/travel-info');
+        }
+    };
 
     return (
         <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
             <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-14">
-                <Stepper currentStep="offers" />
+                {isEditing ? (
+                    <button
+                        onClick={handleBack}
+                        className="text-white hover:text-gray-200 transition-colors mb-6"
+                    >
+                        ← {t('common.backToOverview')}
+                    </button>
+                ) : (
+                    <Stepper currentStep="offers" />
+                )}
 
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -283,17 +327,17 @@ const handleContinue = () => {
 
                     <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8 sm:mt-12">
                         <button
-                            onClick={() => router.back()}
+                            onClick={handleBack}
                             className="order-2 sm:order-1 text-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
                         >
-                            {t('offers.back')}
+                            {isEditing ? t('common.backToOverview') : t('offers.back')}
                         </button>
                         <button
                             onClick={handleContinue}
                             disabled={!selectedVehicle}
                             className="order-1 sm:order-2 w-full sm:w-auto bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            {t('offers.continue')}
+                            {isEditing ? t('common.update') : t('offers.continue')}
                         </button>
                     </div>
                 </motion.div>
