@@ -59,15 +59,6 @@ const SpecialLuggageIcon = ({ type }: { type: string }) => {
   }
 };
 
-interface SnackbarProps {
-  message: string | React.ReactElement;
-  isOpen: boolean;
-  onClose: () => void;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-}
 
 interface BookingCardProps {
   booking: BookingData;
@@ -484,7 +475,7 @@ export const OverviewPage = () => {
   // Continuously validate all bookings
   useEffect(() => {
     const validateAllBookings = () => {
-      let updatedBookingIds: string[] = [];
+      const updatedBookingIds: string[] = [];
 
       const updatedBookings = bookings.map(booking => {
         if (!booking.luggage || !booking.passengers) return booking;
