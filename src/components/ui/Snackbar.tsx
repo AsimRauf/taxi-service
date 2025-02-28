@@ -3,13 +3,14 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, AlertCircle } from 'lucide-react';
 
 interface SnackbarProps {
-  message: string;
+  message: string | React.ReactNode;
   isOpen: boolean;
   onClose: () => void;
   action?: {
     label: string;
     onClick: () => void;
   };
+  duration?: number;
 }
 
 export const Snackbar = ({ message, isOpen, onClose, action }: SnackbarProps) => {
@@ -17,7 +18,7 @@ export const Snackbar = ({ message, isOpen, onClose, action }: SnackbarProps) =>
     if (isOpen) {
       const timer = setTimeout(() => {
         onClose();
-      }, 5000);
+      }, 20000);
 
       return () => clearTimeout(timer);
     }

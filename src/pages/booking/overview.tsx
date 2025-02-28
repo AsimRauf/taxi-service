@@ -59,6 +59,16 @@ const SpecialLuggageIcon = ({ type }: { type: string }) => {
   }
 };
 
+interface SnackbarProps {
+  message: string | React.ReactElement;
+  isOpen: boolean;
+  onClose: () => void;
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
+}
+
 interface BookingCardProps {
   booking: BookingData;
   onDelete: (id: string) => void;
@@ -140,49 +150,49 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
   const router = useRouter();
 
 
-const handleBookNow = async () => {
-  if (!user) {
+  const handleBookNow = async () => {
+    if (!user) {
       localStorage.setItem('pendingBooking', JSON.stringify(booking));
       router.push('/auth/signin');
       return;
-  }
+    }
 
-  setIsBooking(true);
-  try {
+    setIsBooking(true);
+    try {
       // Create a new object with only the needed fields
       const finalBookingData = {
-          ...booking,
-          userId: user.id,
-          clientBookingId: booking.id,
-          status: 'pending'
+        ...booking,
+        userId: user.id,
+        clientBookingId: booking.id,
+        status: 'pending'
       };
 
       const response = await fetch('/api/bookings/create', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(finalBookingData),
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(finalBookingData),
       });
 
       if (response.status === 409) {
-          setShowDuplicateSnackbar(true);
-          setIsBooking(false);
-          return;
+        setShowDuplicateSnackbar(true);
+        setIsBooking(false);
+        return;
       }
 
       if (!response.ok) {
-          throw new Error('Failed to create booking');
+        throw new Error('Failed to create booking');
       }
 
       onBookingSuccess(booking.id);
       router.push('/booking/success');
-  } catch (error) {
+    } catch (error) {
       console.error('Booking error:', error);
       setIsBooking(false);
       alert(t('booking.errors.createFailed'));
-  }
-};
+    }
+  };
 
 
   return (
@@ -198,7 +208,7 @@ const handleBookNow = async () => {
             <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs xs:text-sm">
               #{booking.id.slice(0, 8)}
             </span>
-            
+
             <Popover className="relative">
               <Popover.Button className="flex items-center justify-center gap-1 px-2 py-1.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                 <span className="text-xs xs:text-sm font-medium whitespace-nowrap">{t('overview.actions')}</span>
@@ -279,9 +289,8 @@ const handleBookNow = async () => {
           {/* Price and Actions - Reorganized for mobile */}
           <div className="space-y-3">
             {/* Price Row */}
-            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg w-full ${
-              booking.isFixedPrice ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'
-            }`}>
+            <div className={`flex items-center gap-2 px-3 py-2 rounded-lg w-full ${booking.isFixedPrice ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'
+              }`}>
               <span className="text-lg font-semibold">€{booking.price.toFixed(2)}</span>
               <span className="text-xs">{booking.isFixedPrice ? t('overview.fixedPrice') : t('overview.estimatedPrice')}</span>
             </div>
@@ -295,10 +304,9 @@ const handleBookNow = async () => {
                 <span className="text-xs xs:text-sm font-medium whitespace-nowrap">
                   {isExpanded ? t('overview.hideDetails') : t('overview.showDetails')}
                 </span>
-                <ChevronDown 
-                  className={`w-3 h-3 xs:w-4 xs:h-4 transform transition-transform ${
-                    isExpanded ? 'rotate-180' : ''
-                  }`} 
+                <ChevronDown
+                  className={`w-3 h-3 xs:w-4 xs:h-4 transform transition-transform ${isExpanded ? 'rotate-180' : ''
+                    }`}
                 />
               </button>
 
@@ -477,7 +485,7 @@ export const OverviewPage = () => {
   useEffect(() => {
     const validateAllBookings = () => {
       let updatedBookingIds: string[] = [];
-      
+
       const updatedBookings = bookings.map(booking => {
         if (!booking.luggage || !booking.passengers) return booking;
 
@@ -489,7 +497,7 @@ export const OverviewPage = () => {
         // Only update if regular taxi is selected but not available
         if (booking.vehicle === 'regular' && !vehicleAvailability.regular) {
           updatedBookingIds.push(booking.id);
-          
+
           const basePrice = calculatePrice(
             booking.sourceAddress,
             booking.destinationAddress,
@@ -599,9 +607,15 @@ export const OverviewPage = () => {
         <Snackbar
           isOpen={showVehicleUpdateSnackbar}
           onClose={() => setShowVehicleUpdateSnackbar(false)}
-          message={`${t('booking.vehicleUpdated.title')}\n${t('booking.vehicleUpdated.message')}\n${t('booking.vehicleUpdated.tip')}`}
+          message={
+            <div className="space-y-1">
+              <p className="font-semibold">{t('booking.vehicleUpdated.title')}</p>
+              <p>{t('booking.vehicleUpdated.message')}</p>
+              <p className="text-sm text-gray-200">{t('booking.vehicleUpdated.tip')}</p>
+            </div>
+          }
+          duration={20000} 
         />
-        
       </div>
     </div>
   );
@@ -616,3 +630,4 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 };
 
 export default OverviewPage;
+
