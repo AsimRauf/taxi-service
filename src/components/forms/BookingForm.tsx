@@ -30,7 +30,7 @@ export const BookingForm = () => {
         returnDate: undefined,
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
-    const [,setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleLocationUpdate = (location: Location, type: 'pickup' | 'destination') => {
         setFormData(prev => ({
@@ -51,6 +51,7 @@ export const BookingForm = () => {
             setValidationErrors(errors);
 
             if (!isValid) {
+                setIsLoading(false);
                 return;
             }
 
@@ -95,6 +96,8 @@ export const BookingForm = () => {
             };
 
             localStorage.setItem('bookingData', JSON.stringify(bookingData));
+            
+            // Keep loading state active while routing
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
             console.error('Booking calculation error:', error);
@@ -102,7 +105,6 @@ export const BookingForm = () => {
                 ...prev,
                 general: 'translations.travelInfo.errors.generalError'
             }));
-        } finally {
             setIsLoading(false);
         }
     };
@@ -346,9 +348,17 @@ export const BookingForm = () => {
                     <button
                         type="button"
                         onClick={handleCalculate}
-                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full hover:bg-primary/90 transition-colors"
+                        disabled={isLoading}
+                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
-                        {translations.hero.calculate}
+                        {isLoading ? (
+                            <div className="flex items-center gap-2">
+                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                <span>{translations.common.loading}</span>
+                            </div>
+                        ) : (
+                            translations.hero.calculate
+                        )}
                     </button>
                 </div>
             </form>
