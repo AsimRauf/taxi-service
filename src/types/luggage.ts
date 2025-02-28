@@ -5,6 +5,7 @@ export interface RegularLuggage {
 }
 
 export interface SpecialLuggage {
+    [key: string]: number; // Add index signature
     foldableWheelchair: number;
     rollator: number;
     pets: number;

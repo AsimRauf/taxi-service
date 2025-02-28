@@ -33,6 +33,8 @@ import {
 } from 'lucide-react';
 import { BookingData } from '@/types/booking';
 import { Snackbar } from '@/components/ui/Snackbar';
+import { determineVehicleAvailability } from '@/utils/pricingCalculator';
+import { calculatePrice } from '@/utils/pricingCalculator';
 
 const LuggageIcon = ({ type }: { type: string }) => {
   switch (type) {
@@ -469,13 +471,72 @@ export const OverviewPage = () => {
   const router = useRouter();
   const { setEditMode } = useEdit();
   const { t } = useTranslation();
+  const [showVehicleUpdateSnackbar, setShowVehicleUpdateSnackbar] = useState(false);
 
+  // Continuously validate all bookings
+  useEffect(() => {
+    const validateAllBookings = () => {
+      let updatedBookingIds: string[] = [];
+      
+      const updatedBookings = bookings.map(booking => {
+        if (!booking.luggage || !booking.passengers) return booking;
+
+        const vehicleAvailability = determineVehicleAvailability(
+          booking.passengers,
+          booking.luggage
+        );
+
+        // Only update if regular taxi is selected but not available
+        if (booking.vehicle === 'regular' && !vehicleAvailability.regular) {
+          updatedBookingIds.push(booking.id);
+          
+          const basePrice = calculatePrice(
+            booking.sourceAddress,
+            booking.destinationAddress,
+            booking.directDistance,
+            booking.extraDistance
+          );
+
+          return {
+            ...booking,
+            vehicle: 'van' as const,
+            price: booking.isReturn ? basePrice.van * 2 : basePrice.van,
+            isFixedPrice: basePrice.isFixedPrice
+          };
+        }
+
+        return booking;
+      });
+
+      if (updatedBookingIds.length > 0) {
+        setBookings(updatedBookings);
+        localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+        setShowVehicleUpdateSnackbar(true);
+      }
+    };
+
+    validateAllBookings();
+  }, [bookings]); // Run whenever bookings change
+
+  // Remove the old validation effect since we're now checking continuously
   useEffect(() => {
     const savedBookings = localStorage.getItem('allBookings');
     if (savedBookings) {
       setBookings(JSON.parse(savedBookings));
     }
   }, []);
+
+  // Update handleEdit to store additional info
+  const handleEdit = (id: string, section: string) => {
+    const bookingToEdit = bookings.find(booking => booking.id === id);
+    if (bookingToEdit) {
+      setEditMode(id);
+      localStorage.setItem('editingBookingId', id);
+      localStorage.setItem('previousSection', section);
+      localStorage.setItem('bookingData', JSON.stringify(bookingToEdit));
+      router.push(`/booking/${section}`);
+    }
+  };
 
   const handleDelete = (id: string) => {
     const updatedBookings = bookings.filter(booking => booking.id !== id);
@@ -493,15 +554,6 @@ export const OverviewPage = () => {
       const updatedBookings = [...bookings, newBooking];
       setBookings(updatedBookings);
       localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
-    }
-  };
-
-  const handleEdit = (id: string, section: string) => {
-    const bookingToEdit = bookings.find(booking => booking.id === id);
-    if (bookingToEdit) {
-      setEditMode(id); // Using EditContext
-      localStorage.setItem('bookingData', JSON.stringify(bookingToEdit));
-      router.push(`/booking/${section}`);
     }
   };
 
@@ -542,6 +594,14 @@ export const OverviewPage = () => {
             ))
           )}
         </div>
+
+        {/* Add Snackbar for vehicle update notification */}
+        <Snackbar
+          isOpen={showVehicleUpdateSnackbar}
+          onClose={() => setShowVehicleUpdateSnackbar(false)}
+          message={`${t('booking.vehicleUpdated.title')}\n${t('booking.vehicleUpdated.message')}\n${t('booking.vehicleUpdated.tip')}`}
+        />
+        
       </div>
     </div>
   );
