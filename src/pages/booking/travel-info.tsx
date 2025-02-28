@@ -11,11 +11,11 @@ import { Location, BookingData } from '@/types/booking';
 import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { createTranslationsObject } from '@/utils/translations';
 import { calculatePrice } from '@/utils/pricingCalculator';
-import { Plane, ArrowRight } from 'lucide-react';
+import { Plane } from 'lucide-react';
 import { DateSelector } from '@/components/forms/booking/DateSelector';
 import { isBefore } from 'date-fns';
 import { useEdit } from '@/contexts/EditContext';
-
+import { NavigationButtons } from '@/components/booking/NavigationButtons';
 
 export const TravelInfoPage = () => {
   const router = useRouter();
@@ -474,22 +474,26 @@ export const TravelInfoPage = () => {
   const isAirportDestination = bookingData?.destination?.mainAddress?.toLowerCase().includes('airport');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-14">
+    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
+      <div className="max-w-4xl mx-auto px-4 flex flex-col items-center mt-8">
         {isEditing ? (
-          <button
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             onClick={handleBack}
-            className="text-white hover:text-gray-200 transition-colors mb-6"
+            className="text-white hover:text-gray-200 transition-colors lg:mb-[-70px] lg:mt-[-20px] mt-[-40px] flex items-center gap-2"
           >
-            ← {t('common.backToOverview')}
-          </button>
+            ← <span>{t('common.backToOverview')}</span>
+          </motion.button>
         ) : (
           <Stepper currentStep="travel-info" />
         )}
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl mt-[130px] lg:mt-[165px]"
+          exit={{ opacity: 0 }}
+          className="w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl mt-8 lg:mt-[100px]"
         >
           <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-4">
             {t('travelInfo.title')}
@@ -677,20 +681,13 @@ export const TravelInfoPage = () => {
               </div>
             </div>
           </div>
-          <div className="mt-8 flex justify-between">
-            <button
-              onClick={handleBack}
-              className="px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              {isEditing ? t('common.backToOverview') : t('travelInfo.back')}
-            </button>
-            <button
-              onClick={handleContinue}
-              className="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-full hover:bg-primary/90 transition-colors"
-            >
-              {isEditing ? t('common.update') : t('travelInfo.continue')}
-              <ArrowRight size={18} />
-            </button>
+          <div className="mt-8">
+            <NavigationButtons
+              onBack={handleBack}
+              onContinue={handleContinue}
+              continueText={isEditing ? t('common.update') : t('travelInfo.continue')}
+              backText={isEditing ? t('common.backToOverview') : t('travelInfo.back')}
+            />
           </div>
         </motion.div>
       </div>

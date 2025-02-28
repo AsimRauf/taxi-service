@@ -241,13 +241,28 @@
     },
     "oneWayPrice": "(prijs voor enkele reis)",
     "returnTotalPrice": "Totaal met retour: €{{price}}",
-    "returnTripNote": "Voor retourreizen is de weergegeven prijs per richting. De totale prijs omvat beide ritten."
+    "returnTripNote": "Voor retourreizen is de weergegeven prijs per richting. De totale prijs omvat beide ritten.",
+    "update": "Voertuig Bijwerken",
+    "backToOverview": "Terug naar Overzicht",
+    "selectVehicle": "Selecteer een voertuig om door te gaan",
+    "priceDetails": {
+      "title": "Prijsdetails",
+      "perDirection": "Prijs per richting",
+      "totalPrice": "Totale prijs"
+    }
   },
   "units": {
     "km": "km"
   },
   "common": {
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "update": "Bijwerken",
+    "backToOverview": "Terug naar Overzicht",
+    "continue": "Doorgaan",
+    "back": "Terug",
+    "error": {
+      "generic": "Er is iets misgegaan. Probeer het opnieuw."
+    }
   },
   "travelInfo": {
     "title": "Reisinformatie",
@@ -280,7 +295,9 @@
       "invalidRoute": "Kan route niet berekenen. Controleer uw locaties"
     },
     "flightNumber": "Vlucht Nummer",
-    "remarks": "Aanvullende Opmerkingen"
+    "remarks": "Aanvullende Opmerkingen",
+    "update": "Reisinformatie Bijwerken",
+    "backToOverview": "Terug naar Overzicht"
   },
   "overview": {
     "outbound": "Heenreis",
@@ -310,5 +327,23 @@
     "bookNow": "Nu Boeken",
     "fixedPrice": "Vaste Prijs",
     "estimatedPrice": "Geschatte Prijs"
+  },
+  "navigation": {
+    "back": "Terug",
+    "continue": "Doorgaan",
+    "update": "Bijwerken",
+    "backToOverview": "Terug naar Overzicht",
+    "loading": "Laden..."
+  },
+  "personalInfo": {
+    "continue": "Ga verder naar Overzicht",
+    "back": "Terug naar Reisinformatie",
+    "update": "Persoonlijke Info Bijwerken",
+    "backToOverview": "Terug naar Overzicht",
+    "businessAddressPlaceholder": "Voer bedrijfsadres in",
+    "errors": {
+      "addressRequired": "Bedrijfsadres is verplicht",
+      "companyRequired": "Bedrijfsnaam is verplicht"
+    }
   }
 }

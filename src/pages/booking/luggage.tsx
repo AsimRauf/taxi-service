@@ -12,6 +12,7 @@ import { GetStaticProps } from 'next';
 import { LuggageFormData, RegularLuggage, SpecialLuggage } from '@/types/luggage';
 import { Stepper } from '@/components/booking/Stepper';
 import { useEdit } from '@/contexts/EditContext';
+import { NavigationButtons } from '@/components/booking/NavigationButtons';
 
 
 
@@ -275,7 +276,7 @@ export const LuggagePage = () => {
                 {isEditing ? (
                     <button
                         onClick={handleBack}
-                        className="text-white hover:text-gray-200 transition-colors mb-6"
+                        className="text-white hover:text-gray-200 transition-colors lg:mb-[-70px] lg:mt-[-20px] mt-[-40px]"
                     >
                         ← {t('common.backToOverview')}
                     </button>
@@ -349,20 +350,12 @@ export const LuggagePage = () => {
                     </div>
 
                     <div className="flex justify-between mt-8">
-                        <button
-                            onClick={() => router.back()}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-900 transition-colors"
-                        >
-                            {t('luggage.back')}
-                        </button>
-                        <button
-                            onClick={handleSave}  // Change from handleContinue to handleSave
-                            className="bg-primary text-white px-6 py-2 rounded-full hover:bg-primary/90 transition-colors"
-                        >
-                            {isEditing ? t('luggage.update') : t('luggage.continue')}
-                        </button>
-
-
+                        <NavigationButtons
+                            onBack={handleBack}
+                            onContinue={handleSave}
+                            continueText={isEditing ? t('common.update') : t('luggage.continue')}
+                            backText={isEditing ? t('common.backToOverview') : t('luggage.back')}
+                        />
                     </div>
                 </motion.div>
             </div>

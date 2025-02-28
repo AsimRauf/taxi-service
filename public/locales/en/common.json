@@ -76,8 +76,9 @@
       "otherPhoneNumber": "Passenger's Phone Number",
       "otherPhonePlaceholder": "Enter passenger's phone number",
       "addAdditionalPhone": "Add additional phone number",
-      "continue": "Continue",
       "errors": {
+        "addressRequired": "Business address is required",
+        "companyRequired": "Company name is required",
         "fullNameRequired": "Full name is required",
         "emailRequired": "Email is required",
         "invalidEmail": "Enter a valid email address",
@@ -101,7 +102,12 @@
       "companyNamePlaceholder": "Enter your company name",
       "businessAddress": "Business Address",
       "password": "Password",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "continue": "Continue to Review",
+      "back": "Back to Travel Info",
+      "update": "Update Personal Info",
+      "backToOverview": "Back to Overview",
+      "businessAddressPlaceholder": "Enter business address"
     }
   },
   "luggage": {
@@ -162,7 +168,9 @@
       "maxTotal": "Maximum 3 special items in total"
     },
     "continue": "Continue to Offers",
-    "back": "Back to Details"
+    "back": "Back to Travel Info",
+    "update": "Update Luggage",
+    "backToOverview": "Back to Overview"
   },
   "auth": {
     "registrationError": "Registration failed. Please try again.",
@@ -239,28 +247,46 @@
     },
     "oneWayPrice": "(price for one-way trip)",
     "returnTotalPrice": "Total with return: €{{price}}",
-    "returnTripNote": "For return trips, the displayed price is per direction. The total price includes both trips."
+    "returnTripNote": "For return trips, the displayed price is per direction. The total price includes both trips.",
+    "update": "Update Vehicle",
+    "backToOverview": "Back to Overview",
+    "selectVehicle": "Please select a vehicle to continue",
+    "priceDetails": {
+      "title": "Price Details",
+      "perDirection": "Price per direction",
+      "totalPrice": "Total price"
+    }
   },
   "units": {
     "km": "km"
   },
   "common": {
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "update": "Update",
+    "backToOverview": "Back to Overview",
+    "continue": "Continue",
+    "back": "Back",
+    "error": {
+      "generic": "Something went wrong. Please try again."
+    }
   },
   "travelInfo": {
     "title": "Travel Information",
-    "airportCaution": "Always check with your airline how early you should be at the airport.",
-    "returnRoute": "Return Route",
-    "returnRouteInfo": "This is your return trip route",
-    "via": "Via",
     "pickupSection": "Outbound Trip",
     "returnSection": "Return Trip",
     "rideDetails": "Your Ride",
-    "totalPassengers": "{{count}} passengers",
+    "airportCaution": "Always check with your airline how early you should be at the airport.",
+    "flightNumber": "Flight Number",
+    "remarks": "Additional Remarks",
     "optional": "optional",
+    "via": "Via",
     "continue": "Continue to Personal Information",
+    "back": "Back to Offers",
+    "update": "Update Travel Info",
+    "backToOverview": "Back to Overview",
     "flightNumberPlaceholder": "Enter your flight number",
     "remarksPlaceholder": "Any special requests or additional information?",
+    "totalPassengers": "{{count}} passengers",
     "errors": {
       "requiredLocations": "Enter both pickup and destination locations",
       "invalidPrice": "Invalid price calculation. Check your route",
@@ -273,12 +299,8 @@
       "maxStopovers": "Maximum 3 stopovers allowed",
       "duplicateLocation": "Pickup and destination locations cannot be the same",
       "invalidPassengers": "Select number of passengers",
-      "invalidLuggage": "Indicate whether you have luggage",
-      "invalidVehicle": "Select a vehicle type",
       "invalidRoute": "Cannot calculate route. Check your locations"
-    },
-    "flightNumber": "Flight Number",
-    "remarks": "Additional Remarks"
+    }
   },
   "overview": {
     "outbound": "Outbound Trip",
@@ -308,5 +330,12 @@
     "bookNow": "Book Now",
     "fixedPrice": "Fixed Price",
     "estimatedPrice": "Estimated Price"
+  },
+  "navigation": {
+    "back": "Back",
+    "continue": "Continue",
+    "update": "Update",
+    "backToOverview": "Back to Overview",
+    "loading": "Loading..."
   }
 }

@@ -11,6 +11,7 @@ import { BookingData, Location } from '@/types/booking';
 import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
 import { useEdit } from '@/contexts/EditContext';
+import { NavigationButtons } from '@/components/booking/NavigationButtons'; // Import NavigationButtons
 
 
 
@@ -285,7 +286,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
         {isEditing ? (
           <button
             onClick={handleBack}
-            className="text-white hover:text-gray-200 transition-colors mb-6"
+            className="text-white hover:text-gray-200 transition-colors lg:mt-0 mt-[-40px] lg:mb-[-60px]"
           >
             ← {t('common.backToOverview')}
           </button>
@@ -606,21 +607,16 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
             )}
           </div>
 
-          <div className="flex justify-between mt-8">
-            <button
-              onClick={handleBack}
-              className="px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              {isEditing ? t('common.backToOverview') : t('booking.back')}
-            </button>
-            <button
-              onClick={handleContinue}
-              disabled={isLoading}
-              className="bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isLoading ? t('common.loading') : isEditing ? t('common.update') : t('booking.personalInfo.continue')}
-            </button>
+          <div className="mt-8">
+            <NavigationButtons
+              onBack={handleBack}
+              onContinue={handleContinue}
+              loading={isLoading}
+              continueText={isEditing ? t('common.update') : undefined}
+              backText={isEditing ? t('common.backToOverview') : undefined}
+            />
           </div>
+
         </motion.div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import { Stepper } from '@/components/booking/Stepper';
 import { calculatePrice, determineVehicleAvailability } from '@/utils/pricingCalculator';
 import { BookingData } from '@/types/booking';
 import { useEdit } from '@/contexts/EditContext';
+import { NavigationButtons } from '@/components/booking/NavigationButtons'; // Import the NavigationButtons component
 
 
 interface VehicleOption {
@@ -284,12 +285,12 @@ export const OffersPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
-            <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-14">
+        <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
+            <div className="max-w-4xl mx-auto px-4 flex flex-col items-center mt-8">
                 {isEditing ? (
                     <button
                         onClick={handleBack}
-                        className="text-white hover:text-gray-200 transition-colors mb-6"
+                        className="text-white hover:text-gray-200 transition-colors lg:mb-[-70px] lg:mt-[-20px] mt-[-40px]"
                     >
                         ← {t('common.backToOverview')}
                     </button>
@@ -300,7 +301,8 @@ export const OffersPage = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-8 shadow-xl mt-[130px] lg:mt-[165px]"
+                    exit={{ opacity: 0 }}
+                    className="w-full bg-white rounded-2xl p-4 md:p-6 shadow-xl mt-8 lg:mt-[100px]"
                 >
                     <h2 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-1 sm:mb-2">
                         {t('offers.title')}
@@ -324,21 +326,15 @@ export const OffersPage = () => {
                     </div>
 
                     <PriceInfo isFixedPrice={isFixedPrice} bookingData={bookingData} />
+                    <div className="mt-8">
 
-                    <div className="flex flex-col sm:flex-row justify-between gap-4 mt-8 sm:mt-12">
-                        <button
-                            onClick={handleBack}
-                            className="order-2 sm:order-1 text-center px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors"
-                        >
-                            {isEditing ? t('common.backToOverview') : t('offers.back')}
-                        </button>
-                        <button
-                            onClick={handleContinue}
+                        <NavigationButtons
+                            onBack={handleBack}
+                            onContinue={handleContinue}
                             disabled={!selectedVehicle}
-                            className="order-1 sm:order-2 w-full sm:w-auto bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {isEditing ? t('common.update') : t('offers.continue')}
-                        </button>
+                            continueText={isEditing ? t('common.update') : t('offers.continue')}
+                            backText={isEditing ? t('common.backToOverview') : t('offers.back')}
+                        />
                     </div>
                 </motion.div>
             </div>
