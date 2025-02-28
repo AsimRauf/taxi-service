@@ -108,6 +108,28 @@
       "update": "Update Personal Info",
       "backToOverview": "Back to Overview",
       "businessAddressPlaceholder": "Enter business address"
+    },
+    "vehicleUpdated": {
+      "title": "Vehicle Updated",
+      "message": "Your vehicle has been updated to a van due to luggage capacity requirements.",
+      "tip": "You can review available vehicles by clicking Actions > Edit Vehicle"
+    },
+    "errors": {
+      "addressRequired": "Business address is required",
+      "companyRequired": "Company name is required",
+      "fullNameRequired": "Full name is required",
+      "emailRequired": "Email is required",
+      "invalidEmail": "Enter a valid email address",
+      "phoneRequired": "Phone number is required",
+      "otherFullNameRequired": "Passenger's full name is required",
+      "otherPhoneRequired": "Passenger's phone number is required",
+      "invalidPhone": "Enter a valid phone number",
+      "passwordRequired": "Password is required",
+      "passwordLength": "Password must be at least 8 characters long",
+      "passwordMatch": "Passwords do not match",
+      "createFailed": "Failed to create booking. Please try again.",
+      "duplicateBooking": "This booking already exists.",
+      "vehicleNotAvailable": "Regular taxi is not available for this amount of luggage. Vehicle type has been automatically updated to van"
     }
   },
   "luggage": {

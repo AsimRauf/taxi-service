@@ -104,6 +104,11 @@
     "errors": {
       "createFailed": "Boeking maken mislukt. Probeer het opnieuw.",
       "duplicateBooking": "Deze boeking bestaat al."
+    },
+    "vehicleUpdated": {
+      "title": "Voertuig Bijgewerkt",
+      "message": "Uw voertuig is bijgewerkt naar een taxibus vanwege bagagecapaciteitsvereisten.",
+      "tip": "U kunt beschikbare voertuigen bekijken door te klikken op Acties > Voertuig bewerken"
     }
   },
   "luggage": {
