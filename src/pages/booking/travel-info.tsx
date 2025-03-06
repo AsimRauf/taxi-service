@@ -33,30 +33,61 @@ const parseNetherlandsAddress = (address: string) => {
   // Split remaining address by comma
   const parts = address.split(',').map(part => part.trim()).filter(Boolean);
 
-  // Extract postal code first (if present)
+  // Early return if no parts
+  if (parts.length === 0) return result;
+
+  // Extract postal code if present in any part
   const postalCodeRegex = /\b(\d{4}\s?[A-Z]{2})\b/;
   parts.forEach((part, index) => {
     const match = part.match(postalCodeRegex);
     if (match) {
       result.postalCode = match[1];
-      // Remove postal code from the part
       parts[index] = part.replace(postalCodeRegex, '').trim();
     }
   });
 
-  // Handle city (last part after removing postal code)
+  // Business location patterns
+  const isBusinessLocation = (
+    // Check if first part contains business indicators
+    parts[0].includes('Airport') ||
+    parts[0].includes('(AMS)') ||
+    parts[0].includes('Station') ||
+    parts[0].includes('Hotel') ||
+    parts[0].includes('Terminal') ||
+    parts[0].includes('Sports') ||
+    parts[0].includes('Mall') ||
+    parts[0].includes('Center') ||
+    parts[0].includes('Centre') ||
+    // Check if parts follow business pattern (no house number in second part)
+    (parts.length >= 3 && !parts[1].match(/\d+/))
+  );
+
+  if (isBusinessLocation) {
+    // Business address format: [Business Name], [Street], [City]
+    result.businessName = parts[0];
+    if (parts.length >= 2) result.streetName = parts[1];
+    if (parts.length >= 3) result.city = parts[parts.length - 1];
+
+    // Clean up city from postal code if present
+    if (result.city) {
+      result.city = result.city.replace(postalCodeRegex, '').trim();
+    }
+
+    return result;
+  }
+
+  // Regular address handling
+  // Last part is always city
   if (parts.length >= 1) {
-    const lastPart = parts[parts.length - 1];
-    // Clean up city name by removing postal code if it's still there
-    result.city = lastPart.replace(postalCodeRegex, '').trim();
+    result.city = parts[parts.length - 1].replace(postalCodeRegex, '').trim();
     parts.pop();
   }
 
-  // Process first part for street name and house number
+  // First part should contain street name and house number
   if (parts.length > 0) {
     const firstPart = parts[0];
     const streetMatch = firstPart.match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
-    
+
     if (streetMatch) {
       result.streetName = streetMatch[1].trim();
       result.houseNumber = streetMatch[2];
@@ -69,14 +100,14 @@ const parseNetherlandsAddress = (address: string) => {
 };
 
 // Modify the ExactLocationForm component:
-const ExactLocationForm = ({ 
-  location, 
-  type, 
-  index, 
-  parsedAddress, 
-  bookingData, 
-  updateBookingData, 
-  t 
+const ExactLocationForm = ({
+  location,
+  type,
+  index,
+  parsedAddress,
+  bookingData,
+  updateBookingData,
+  t
 }: {
   location: Location;
   type: 'pickup' | 'stopover';
@@ -172,9 +203,8 @@ const ExactLocationForm = ({
           type="text"
           value={localStreetName}
           onChange={(e) => handleInputChange('streetName', e.target.value)}
-          className={`w-full px-3 py-2 border ${
-            !localStreetName.trim() ? 'border-red-300' : 'border-gray-300'
-          } rounded-md focus:ring-primary focus:border-primary`}
+          className={`w-full px-3 py-2 border ${!localStreetName.trim() ? 'border-red-300' : 'border-gray-300'
+            } rounded-md focus:ring-primary focus:border-primary`}
           placeholder={t('booking.enterStreetName')}
         />
         {!localStreetName.trim() && (
@@ -194,9 +224,8 @@ const ExactLocationForm = ({
           value={localHouseNumber}
           onChange={(e) => handleInputChange('houseNumber', e.target.value)}
           placeholder={t('booking.enterHouseNumber')}
-          className={`w-full px-3 py-2 border ${
-            !localHouseNumber.trim() ? 'border-red-300' : 'border-gray-300'
-          } rounded-md focus:ring-primary focus:border-primary`}
+          className={`w-full px-3 py-2 border ${!localHouseNumber.trim() ? 'border-red-300' : 'border-gray-300'
+            } rounded-md focus:ring-primary focus:border-primary`}
         />
         {!localHouseNumber.trim() && (
           <span className="text-red-500 text-xs mt-1">
@@ -255,18 +284,18 @@ export const TravelInfoPage = () => {
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const translations = createTranslationsObject(t, router.locale || 'en');
   const [showExactLocation, setShowExactLocation] = useState(false);
-  const [showExactLocations, setShowExactLocations] = useState<{[key: string]: boolean}>({});
+  const [showExactLocations, setShowExactLocations] = useState<{ [key: string]: boolean }>({});
 
   const validateExactLocation = (location: Location) => {
     if (!location?.exactAddress) return false;
-    
+
     const { streetName, houseNumber } = location.exactAddress;
-    
+
     // Check if both street name and house number are present and not empty
     if (!streetName?.trim() || !houseNumber?.trim()) {
       return false;
     }
-    
+
     return true;
   };
 
@@ -357,42 +386,42 @@ export const TravelInfoPage = () => {
       price: updatedData.price,
       isReturn: updatedData.isReturn
     });
-    
+
     console.log('Pickup Details:', {
       location: updatedData.pickup?.mainAddress,
       exactAddress: updatedData.pickup?.exactAddress,
       dateTime: updatedData.pickupDateTime
     });
-    
+
     console.log('Destination Details:', {
       location: updatedData.destination?.mainAddress,
       exactAddress: updatedData.destination?.exactAddress
     });
-    
+
     console.log('Stopovers:', updatedData.stopovers.map(stop => ({
       location: stop.mainAddress,
       exactAddress: stop.exactAddress
     })));
-    
+
     if (updatedData.isReturn) {
       console.log('Return Trip:', {
         dateTime: updatedData.returnDateTime
       });
     }
-    
+
     if (updatedData.flightNumber) {
       console.log('Flight Details:', {
         flightNumber: updatedData.flightNumber
       });
     }
-    
+
     console.log('Additional Info:', {
       remarks: updatedData.remarks,
       directDistance: updatedData.directDistance,
       extraDistance: updatedData.extraDistance,
       isFixedPrice: updatedData.isFixedPrice
     });
-    
+
     console.dir(updatedData, { depth: null });
     console.groupEnd();
 
@@ -524,104 +553,104 @@ export const TravelInfoPage = () => {
     const updatedData = { ...bookingData };
 
     if (newLocation) {
-        // Parse address immediately when location is selected
-        const parsedAddress = parseNetherlandsAddress(
-            newLocation.value.description || newLocation.mainAddress || ''
-        );
+      // Parse address immediately when location is selected
+      const parsedAddress = parseNetherlandsAddress(
+        newLocation.value.description || newLocation.mainAddress || ''
+      );
 
-        // Create location with parsed address details
-        const locationWithAddress: Location = {
-            ...newLocation,
-            exactAddress: {
-                streetName: parsedAddress.streetName || '',
-                houseNumber: parsedAddress.houseNumber || '',
-                postalCode: parsedAddress.postalCode || '',
-                city: parsedAddress.city || newLocation.value.structured_formatting?.secondary_text || '',
-                businessName: parsedAddress.businessName || ''
-            },
-            mainAddress: newLocation.value.description,
-            description: newLocation.value.description,
-            secondaryAddress: newLocation.value.structured_formatting?.secondary_text || '',
-        };
+      // Create location with parsed address details
+      const locationWithAddress: Location = {
+        ...newLocation,
+        exactAddress: {
+          streetName: parsedAddress.streetName || '',
+          houseNumber: parsedAddress.houseNumber || '',
+          postalCode: parsedAddress.postalCode || '',
+          city: parsedAddress.city || newLocation.value.structured_formatting?.secondary_text || '',
+          businessName: parsedAddress.businessName || ''
+        },
+        mainAddress: newLocation.value.description,
+        description: newLocation.value.description,
+        secondaryAddress: newLocation.value.structured_formatting?.secondary_text || '',
+      };
 
-        if (type === 'stopover' && typeof index !== 'undefined') {
-            if (!locationWithAddress.mainAddress) {
-                alert(t('errors.invalidStopover'));
-                return;
-            }
-            updatedData.stopovers[index] = locationWithAddress;
-        } else if (type === 'pickup') {
-            updatedData.pickup = locationWithAddress;
-            updatedData.sourceAddress = locationWithAddress.mainAddress || '';
-
-            if (locationWithAddress.mainAddress === updatedData.destination?.mainAddress) {
-                alert(t('errors.duplicateLocation'));
-                return;
-            }
-        } else if (type === 'destination') {
-            updatedData.destination = locationWithAddress;
-            updatedData.destinationAddress = locationWithAddress.mainAddress || '';
-
-            if (!locationWithAddress.mainAddress?.toLowerCase().includes('airport')) {
-                updatedData.flightNumber = '';
-            }
-
-            if (locationWithAddress.mainAddress === updatedData.pickup?.mainAddress) {
-                alert(t('errors.duplicateLocation'));
-                return;
-            }
+      if (type === 'stopover' && typeof index !== 'undefined') {
+        if (!locationWithAddress.mainAddress) {
+          alert(t('errors.invalidStopover'));
+          return;
         }
+        updatedData.stopovers[index] = locationWithAddress;
+      } else if (type === 'pickup') {
+        updatedData.pickup = locationWithAddress;
+        updatedData.sourceAddress = locationWithAddress.mainAddress || '';
+
+        if (locationWithAddress.mainAddress === updatedData.destination?.mainAddress) {
+          alert(t('errors.duplicateLocation'));
+          return;
+        }
+      } else if (type === 'destination') {
+        updatedData.destination = locationWithAddress;
+        updatedData.destinationAddress = locationWithAddress.mainAddress || '';
+
+        if (!locationWithAddress.mainAddress?.toLowerCase().includes('airport')) {
+          updatedData.flightNumber = '';
+        }
+
+        if (locationWithAddress.mainAddress === updatedData.pickup?.mainAddress) {
+          alert(t('errors.duplicateLocation'));
+          return;
+        }
+      }
     } else {
-        // Handle clearing the location
-        if (type === 'stopover' && typeof index !== 'undefined') {
-            updatedData.stopovers[index] = {
-                ...({} as Location),
-                exactAddress: {
-                    streetName: '',
-                    houseNumber: '',
-                    postalCode: '',
-                    city: '',
-                    businessName: ''
-                }
-            };
-        } else if (type === 'pickup') {
-            updatedData.pickup = {
-                ...({} as Location),
-                exactAddress: {
-                    streetName: '',
-                    houseNumber: '',
-                    postalCode: '',
-                    city: '',
-                    businessName: ''
-                }
-            };
-            updatedData.sourceAddress = '';
-        } else if (type === 'destination') {
-            updatedData.destination = {
-                ...({} as Location),
-                exactAddress: {
-                    streetName: '',
-                    houseNumber: '',
-                    postalCode: '',
-                    city: '',
-                    businessName: ''
-                }
-            };
-            updatedData.destinationAddress = '';
-            updatedData.flightNumber = '';
-        }
+      // Handle clearing the location
+      if (type === 'stopover' && typeof index !== 'undefined') {
+        updatedData.stopovers[index] = {
+          ...({} as Location),
+          exactAddress: {
+            streetName: '',
+            houseNumber: '',
+            postalCode: '',
+            city: '',
+            businessName: ''
+          }
+        };
+      } else if (type === 'pickup') {
+        updatedData.pickup = {
+          ...({} as Location),
+          exactAddress: {
+            streetName: '',
+            houseNumber: '',
+            postalCode: '',
+            city: '',
+            businessName: ''
+          }
+        };
+        updatedData.sourceAddress = '';
+      } else if (type === 'destination') {
+        updatedData.destination = {
+          ...({} as Location),
+          exactAddress: {
+            streetName: '',
+            houseNumber: '',
+            postalCode: '',
+            city: '',
+            businessName: ''
+          }
+        };
+        updatedData.destinationAddress = '';
+        updatedData.flightNumber = '';
+      }
     }
 
     // Automatically show exact location form when location is selected
     if (newLocation) {
-        setShowExactLocations(prev => ({
-            ...prev,
-            [`${type}_${index || 0}`]: true
-        }));
+      setShowExactLocations(prev => ({
+        ...prev,
+        [`${type}_${index || 0}`]: true
+      }));
     }
 
     updateBookingData(updatedData);
-};
+  };
 
   const swapLocations = () => {
     if (!bookingData?.pickup || !bookingData?.destination) return;
@@ -695,7 +724,7 @@ export const TravelInfoPage = () => {
 
   const handleAddExactLocation = (type: 'pickup' | 'stopover', index?: number) => {
     const location = type === 'pickup' ? bookingData?.pickup : bookingData?.stopovers[index!];
-    
+
     if (!location?.value?.structured_formatting) {
       alert(t('errors.selectLocationFirst'));
       return;
@@ -716,7 +745,7 @@ export const TravelInfoPage = () => {
 
   const renderExactLocationForm = (location: Location, type: 'pickup' | 'stopover', index?: number) => {
     const parsedAddress = parseNetherlandsAddress(
-      location.mainAddress || 
+      location.mainAddress ||
       location.value.description
     );
 
@@ -797,7 +826,7 @@ export const TravelInfoPage = () => {
           </button>
 
           {showExactLocations['pickup_0'] && renderExactLocationForm(bookingData.pickup, 'pickup')}
-          
+
           {validationErrors.pickup && (
             <span className="text-red-500 text-sm mt-1">{validationErrors.pickup}</span>
           )}
@@ -868,7 +897,7 @@ export const TravelInfoPage = () => {
               </button>
 
               {showExactLocations[`stopover_${index}`] && renderExactLocationForm(stopover, 'stopover', index)}
-              
+
               {validationErrors[`stopover_${index}`] && (
                 <span className="text-red-500 text-sm mt-1">{validationErrors[`stopover_${index}`]}</span>
               )}
@@ -1092,12 +1121,92 @@ export const TravelInfoPage = () => {
                       )}
                     </div>
 
+                    <div className="space-y-4 border-b border-gray-200 pb-6">
+                      <h3 className="text-base font-medium text-gray-900">{t('travelInfo.returnSection')}</h3>
+                      <DateSelector
+                        label={t('hero.returnDateTime')}
+                        value={bookingData?.returnDateTime ? new Date(bookingData.returnDateTime.replace(' ', 'T')) : null}
+                        onChange={(date) => {
+                          if (!bookingData) return;
+                          const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
+
+                          setBookingData({
+                            ...bookingData,
+                            returnDateTime: dateString
+                          });
+                        }}
+                        placeholder={t('hero.returnPlaceholder')}
+                      />
+                      {validationErrors.returnDate && (
+                        <span className="text-red-500 text-sm mt-1">{validationErrors.returnDate}</span>
+                      )}
+                    </div>
                     <div className="space-y-4 sm:space-y-6 relative">
-                      <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-green-500/80 to-primary/80" />
-                      {renderPickupLocation()}
-                      {renderStopovers()}
-                      {renderAddStopoverButton()}
-                      {renderDestination()}
+                      {bookingData?.isReturn && (
+                        <>
+                          <div className="hidden md:block h-px bg-gray-200 my-6" />
+                          <div className="space-y-6">
+
+                            <span className="block mb-[-20px] lg:ms-[60px] ms-[35px] text-sm font-medium text-gray-600">{t('booking.from')}</span>
+
+                            <div className="space-y-4 sm:space-y-6 relative">
+                              <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-green-500/80 to-primary/80" />
+
+                              {/* Return route display */}
+                              <div className="space-y-4">
+                                {/* From (original destination) */}
+                                <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                                  <div className="flex justify-center pt-8">
+                                    <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
+                                      <MapPin className="text-white" size={16} />
+                                    </div>
+                                  </div>
+                                  <div className="w-full space-y-1">
+                                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                                      {bookingData?.destination?.mainAddress || t('common.notSpecified')}
+                                    </div>
+                                  </div>
+                                  <div className="w-[24px]" />
+                                </div>
+
+                                {/* Stopovers in reverse */}
+                                {bookingData?.stopovers.slice().reverse().map((stopover, index) => (
+                                  <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                                    <div className="flex justify-center pt-8">
+                                      <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-10">
+                                        <MapPin className="text-white" size={12} />
+                                      </div>
+                                    </div>
+                                    <div className="w-full space-y-1">
+                                      <span className="block text-sm font-medium text-gray-600">{t('travelInfo.via')}</span>
+                                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                                        {stopover.mainAddress || t('common.notSpecified')}
+                                      </div>
+                                    </div>
+                                    <div className="w-[24px]" />
+                                  </div>
+                                ))}
+
+                                {/* To (original pickup) */}
+                                <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                                  <div className="flex justify-center pt-8">
+                                    <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
+                                      <MapPin className="text-white" size={16} />
+                                    </div>
+                                  </div>
+                                  <div className="w-full space-y-1">
+                                    <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
+                                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                                      {bookingData?.pickup?.mainAddress || t('common.notSpecified')}
+                                    </div>
+                                  </div>
+                                  <div className="w-[24px]" />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 </>
