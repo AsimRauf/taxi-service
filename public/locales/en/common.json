@@ -130,7 +130,16 @@
       "createFailed": "Failed to create booking. Please try again.",
       "duplicateBooking": "This booking already exists.",
       "vehicleNotAvailable": "Regular taxi is not available for this amount of luggage. Vehicle type has been automatically updated to van"
-    }
+    },
+    "streetName": "Street Name",
+    "houseNumber": "House Number",
+    "postalCode": "Postal Code",
+    "city": "City",
+    "country": "Country",
+    "businessName": "Business Name",
+    "enterStreetName": "Enter street name",
+    "enterHouseNumber": "Enter house number",
+    "addExactLocation": "Add exact location details"
   },
   "luggage": {
     "title": "Luggage Details",
@@ -359,5 +368,13 @@
     "update": "Update",
     "backToOverview": "Back to Overview",
     "loading": "Loading..."
+  },
+  "errors": {
+    "exactAddressRequired": "Please add exact address details",
+    "required": "is required",
+    "selectLocationFirst": "Please select a location first",
+    "invalidStopover": "Please enter a valid stopover location",
+    "maxStopovers": "Maximum 3 stopovers allowed",
+    "duplicateLocation": "Pickup and destination locations cannot be the same"
   }
 }

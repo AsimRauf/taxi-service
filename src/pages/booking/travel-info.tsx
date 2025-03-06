@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -16,6 +16,236 @@ import { DateSelector } from '@/components/forms/booking/DateSelector';
 import { isBefore } from 'date-fns';
 import { useEdit } from '@/contexts/EditContext';
 import { NavigationButtons } from '@/components/booking/NavigationButtons';
+import { debounce } from 'lodash';
+
+const parseNetherlandsAddress = (address: string) => {
+  const result = {
+    businessName: '',
+    streetName: '',
+    houseNumber: '',
+    postalCode: '',
+    city: ''
+  };
+
+  // Remove ", Netherlands" at the end (if present)
+  address = address.replace(/,?\s*Netherlands$/i, '').trim();
+
+  // Split remaining address by comma
+  const parts = address.split(',').map(part => part.trim()).filter(Boolean);
+
+  // Extract postal code first (if present)
+  const postalCodeRegex = /\b(\d{4}\s?[A-Z]{2})\b/;
+  parts.forEach((part, index) => {
+    const match = part.match(postalCodeRegex);
+    if (match) {
+      result.postalCode = match[1];
+      // Remove postal code from the part
+      parts[index] = part.replace(postalCodeRegex, '').trim();
+    }
+  });
+
+  // Handle city (last part after removing postal code)
+  if (parts.length >= 1) {
+    const lastPart = parts[parts.length - 1];
+    // Clean up city name by removing postal code if it's still there
+    result.city = lastPart.replace(postalCodeRegex, '').trim();
+    parts.pop();
+  }
+
+  // Process first part for street name and house number
+  if (parts.length > 0) {
+    const firstPart = parts[0];
+    const streetMatch = firstPart.match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
+    
+    if (streetMatch) {
+      result.streetName = streetMatch[1].trim();
+      result.houseNumber = streetMatch[2];
+    } else {
+      result.streetName = firstPart.trim();
+    }
+  }
+
+  return result;
+};
+
+// Modify the ExactLocationForm component:
+const ExactLocationForm = ({ 
+  location, 
+  type, 
+  index, 
+  parsedAddress, 
+  bookingData, 
+  updateBookingData, 
+  t 
+}: {
+  location: Location;
+  type: 'pickup' | 'stopover';
+  index?: number;
+  parsedAddress: any;
+  bookingData: BookingData | null;
+  updateBookingData: (data: BookingData) => void;
+  t: (key: string) => string;
+}) => {
+  const [localStreetName, setLocalStreetName] = useState('');
+  const [localHouseNumber, setLocalHouseNumber] = useState('');
+
+  useEffect(() => {
+    setLocalStreetName(location.exactAddress?.streetName || parsedAddress.streetName || '');
+    setLocalHouseNumber(location.exactAddress?.houseNumber || parsedAddress.houseNumber || '');
+  }, [location.value.place_id, parsedAddress]); // Changed dependency to be more specific
+
+  const debouncedUpdate = useCallback(
+    debounce((field: string, value: string) => {
+      if (!bookingData) return;
+
+      const exactAddress = {
+        streetName: field === 'streetName' ? value : localStreetName,
+        houseNumber: field === 'houseNumber' ? value : localHouseNumber,
+        postalCode: parsedAddress.postalCode || '',
+        city: parsedAddress.city || '',
+        businessName: parsedAddress.businessName || ''
+      };
+
+      const updatedLocation: Location = {
+        ...location,
+        exactAddress,
+        mainAddress: `${exactAddress.streetName} ${exactAddress.houseNumber}, ${exactAddress.city}, Netherlands`
+      };
+
+      let updatedData: BookingData;
+      if (type === 'pickup') {
+        updatedData = {
+          ...bookingData,
+          pickup: updatedLocation,
+          sourceAddress: updatedLocation.mainAddress || ''
+        };
+      } else {
+        const stopovers = [...bookingData.stopovers];
+        stopovers[index!] = updatedLocation;
+        updatedData = {
+          ...bookingData,
+          stopovers
+        };
+      }
+
+      updateBookingData(updatedData);
+    }, 100), // Reduced debounce delay from 300ms to 100ms
+    [bookingData, location, type, index, parsedAddress, localStreetName, localHouseNumber]
+  );
+
+  const handleInputChange = (field: string, value: string) => {
+    if (field === 'streetName') {
+      setLocalStreetName(value);
+    } else {
+      setLocalHouseNumber(value);
+    }
+    debouncedUpdate(field, value);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      className="mt-4 space-y-4 bg-gray-50 p-4 rounded-lg"
+    >
+      {/* Business Name */}
+      {parsedAddress.businessName && (
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-600">
+            {t('booking.businessName')}
+          </label>
+          <input
+            type="text"
+            value={parsedAddress.businessName}
+            readOnly
+            className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
+          />
+        </div>
+      )}
+
+      {/* Street Name */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-600">
+          {t('booking.streetName')} <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={localStreetName}
+          onChange={(e) => handleInputChange('streetName', e.target.value)}
+          className={`w-full px-3 py-2 border ${
+            !localStreetName.trim() ? 'border-red-300' : 'border-gray-300'
+          } rounded-md focus:ring-primary focus:border-primary`}
+          placeholder={t('booking.enterStreetName')}
+        />
+        {!localStreetName.trim() && (
+          <span className="text-red-500 text-xs mt-1">
+            {t('booking.streetName')} {t('errors.required')}
+          </span>
+        )}
+      </div>
+
+      {/* House Number */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-600">
+          {t('booking.houseNumber')} <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="text"
+          value={localHouseNumber}
+          onChange={(e) => handleInputChange('houseNumber', e.target.value)}
+          placeholder={t('booking.enterHouseNumber')}
+          className={`w-full px-3 py-2 border ${
+            !localHouseNumber.trim() ? 'border-red-300' : 'border-gray-300'
+          } rounded-md focus:ring-primary focus:border-primary`}
+        />
+        {!localHouseNumber.trim() && (
+          <span className="text-red-500 text-xs mt-1">
+            {t('booking.houseNumber')} {t('errors.required')}
+          </span>
+        )}
+      </div>
+
+      {/* Postal Code */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-600">
+          {t('booking.postalCode')}
+        </label>
+        <input
+          type="text"
+          value={parsedAddress.postalCode}
+          readOnly
+          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
+        />
+      </div>
+
+      {/* City */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-600">
+          {t('booking.city')}
+        </label>
+        <input
+          type="text"
+          value={parsedAddress.city || location.value.structured_formatting.secondary_text}
+          readOnly
+          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
+        />
+      </div>
+
+      {/* Country */}
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-600">
+          {t('booking.country')}
+        </label>
+        <input
+          type="text"
+          value="Netherlands"
+          readOnly
+          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
+        />
+      </div>
+    </motion.div>
+  );
+};
 
 export const TravelInfoPage = () => {
   const router = useRouter();
@@ -24,6 +254,21 @@ export const TravelInfoPage = () => {
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const translations = createTranslationsObject(t, router.locale || 'en');
+  const [showExactLocation, setShowExactLocation] = useState(false);
+  const [showExactLocations, setShowExactLocations] = useState<{[key: string]: boolean}>({});
+
+  const validateExactLocation = (location: Location) => {
+    if (!location?.exactAddress) return false;
+    
+    const { streetName, houseNumber } = location.exactAddress;
+    
+    // Check if both street name and house number are present and not empty
+    if (!streetName?.trim() || !houseNumber?.trim()) {
+      return false;
+    }
+    
+    return true;
+  };
 
   useEffect(() => {
     const savedData = localStorage.getItem('bookingData');
@@ -80,6 +325,16 @@ export const TravelInfoPage = () => {
       errors.destination = t('travelInfo.errors.invalidRoute');
     }
 
+    if (!validateExactLocation(bookingData.pickup)) {
+      errors.pickup = t('errors.exactAddressRequired');
+    }
+
+    bookingData.stopovers.forEach((stopover, index) => {
+      if (!validateExactLocation(stopover)) {
+        errors[`stopover_${index}`] = t('errors.exactAddressRequired');
+      }
+    });
+
     setValidationErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -92,6 +347,54 @@ export const TravelInfoPage = () => {
       flightNumber: bookingData.flightNumber || '',
       remarks: bookingData.remarks || ''
     };
+
+    // Add detailed console logging
+    console.group('Final Booking Data');
+    console.log('Basic Info:', {
+      id: updatedData.id,
+      vehicle: updatedData.vehicle,
+      passengers: updatedData.passengers,
+      price: updatedData.price,
+      isReturn: updatedData.isReturn
+    });
+    
+    console.log('Pickup Details:', {
+      location: updatedData.pickup?.mainAddress,
+      exactAddress: updatedData.pickup?.exactAddress,
+      dateTime: updatedData.pickupDateTime
+    });
+    
+    console.log('Destination Details:', {
+      location: updatedData.destination?.mainAddress,
+      exactAddress: updatedData.destination?.exactAddress
+    });
+    
+    console.log('Stopovers:', updatedData.stopovers.map(stop => ({
+      location: stop.mainAddress,
+      exactAddress: stop.exactAddress
+    })));
+    
+    if (updatedData.isReturn) {
+      console.log('Return Trip:', {
+        dateTime: updatedData.returnDateTime
+      });
+    }
+    
+    if (updatedData.flightNumber) {
+      console.log('Flight Details:', {
+        flightNumber: updatedData.flightNumber
+      });
+    }
+    
+    console.log('Additional Info:', {
+      remarks: updatedData.remarks,
+      directDistance: updatedData.directDistance,
+      extraDistance: updatedData.extraDistance,
+      isFixedPrice: updatedData.isFixedPrice
+    });
+    
+    console.dir(updatedData, { depth: null });
+    console.groupEnd();
 
     if (isEditing && editingBookingId) {
       const allBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
@@ -220,39 +523,105 @@ export const TravelInfoPage = () => {
 
     const updatedData = { ...bookingData };
 
-    if (type === 'stopover' && typeof index !== 'undefined') {
-      if (!newLocation?.mainAddress) {
-        alert(t('errors.invalidStopover'));
-        return;
-      }
-      updatedData.stopovers[index] = newLocation;
-    } else if (type === 'pickup') {
-      updatedData.pickup = newLocation || {} as Location;
-      updatedData.sourceAddress = newLocation?.mainAddress || '';
+    if (newLocation) {
+        // Parse address immediately when location is selected
+        const parsedAddress = parseNetherlandsAddress(
+            newLocation.value.description || newLocation.mainAddress || ''
+        );
 
-      // Check if pickup and destination are the same
-      if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.destination?.mainAddress) {
-        alert(t('errors.duplicateLocation'));
-        return;
-      }
-    } else if (type === 'destination') {
-      updatedData.destination = newLocation || {} as Location;
-      updatedData.destinationAddress = newLocation?.mainAddress || '';
+        // Create location with parsed address details
+        const locationWithAddress: Location = {
+            ...newLocation,
+            exactAddress: {
+                streetName: parsedAddress.streetName || '',
+                houseNumber: parsedAddress.houseNumber || '',
+                postalCode: parsedAddress.postalCode || '',
+                city: parsedAddress.city || newLocation.value.structured_formatting?.secondary_text || '',
+                businessName: parsedAddress.businessName || ''
+            },
+            mainAddress: newLocation.value.description,
+            description: newLocation.value.description,
+            secondaryAddress: newLocation.value.structured_formatting?.secondary_text || '',
+        };
 
-      // Clear flight number if destination is not an airport
-      if (!newLocation?.mainAddress?.toLowerCase().includes('airport')) {
-        updatedData.flightNumber = '';
-      }
+        if (type === 'stopover' && typeof index !== 'undefined') {
+            if (!locationWithAddress.mainAddress) {
+                alert(t('errors.invalidStopover'));
+                return;
+            }
+            updatedData.stopovers[index] = locationWithAddress;
+        } else if (type === 'pickup') {
+            updatedData.pickup = locationWithAddress;
+            updatedData.sourceAddress = locationWithAddress.mainAddress || '';
 
-      // Check if pickup and destination are the same
-      if (newLocation?.mainAddress && newLocation.mainAddress === updatedData.pickup?.mainAddress) {
-        alert(t('errors.duplicateLocation'));
-        return;
-      }
+            if (locationWithAddress.mainAddress === updatedData.destination?.mainAddress) {
+                alert(t('errors.duplicateLocation'));
+                return;
+            }
+        } else if (type === 'destination') {
+            updatedData.destination = locationWithAddress;
+            updatedData.destinationAddress = locationWithAddress.mainAddress || '';
+
+            if (!locationWithAddress.mainAddress?.toLowerCase().includes('airport')) {
+                updatedData.flightNumber = '';
+            }
+
+            if (locationWithAddress.mainAddress === updatedData.pickup?.mainAddress) {
+                alert(t('errors.duplicateLocation'));
+                return;
+            }
+        }
+    } else {
+        // Handle clearing the location
+        if (type === 'stopover' && typeof index !== 'undefined') {
+            updatedData.stopovers[index] = {
+                ...({} as Location),
+                exactAddress: {
+                    streetName: '',
+                    houseNumber: '',
+                    postalCode: '',
+                    city: '',
+                    businessName: ''
+                }
+            };
+        } else if (type === 'pickup') {
+            updatedData.pickup = {
+                ...({} as Location),
+                exactAddress: {
+                    streetName: '',
+                    houseNumber: '',
+                    postalCode: '',
+                    city: '',
+                    businessName: ''
+                }
+            };
+            updatedData.sourceAddress = '';
+        } else if (type === 'destination') {
+            updatedData.destination = {
+                ...({} as Location),
+                exactAddress: {
+                    streetName: '',
+                    houseNumber: '',
+                    postalCode: '',
+                    city: '',
+                    businessName: ''
+                }
+            };
+            updatedData.destinationAddress = '';
+            updatedData.flightNumber = '';
+        }
+    }
+
+    // Automatically show exact location form when location is selected
+    if (newLocation) {
+        setShowExactLocations(prev => ({
+            ...prev,
+            [`${type}_${index || 0}`]: true
+        }));
     }
 
     updateBookingData(updatedData);
-  };
+};
 
   const swapLocations = () => {
     if (!bookingData?.pickup || !bookingData?.destination) return;
@@ -324,48 +693,116 @@ export const TravelInfoPage = () => {
     updateBookingData(updatedData);
   };
 
+  const handleAddExactLocation = (type: 'pickup' | 'stopover', index?: number) => {
+    const location = type === 'pickup' ? bookingData?.pickup : bookingData?.stopovers[index!];
+    
+    if (!location?.value?.structured_formatting) {
+      alert(t('errors.selectLocationFirst'));
+      return;
+    }
+
+    setShowExactLocations(prev => ({
+      ...prev,
+      [`${type}_${index || 0}`]: true
+    }));
+  };
+
+  const validateField = (location: Location, field: 'streetName' | 'houseNumber') => {
+    if (!location?.exactAddress?.[field]?.trim()) {
+      return `${t(`booking.${field}`)} ${t('errors.required')}`;
+    }
+    return '';
+  };
+
+  const renderExactLocationForm = (location: Location, type: 'pickup' | 'stopover', index?: number) => {
+    const parsedAddress = parseNetherlandsAddress(
+      location.mainAddress || 
+      location.value.description
+    );
+
+    return (
+      <ExactLocationForm
+        location={location}
+        type={type}
+        index={index}
+        parsedAddress={parsedAddress}
+        bookingData={bookingData}
+        updateBookingData={updateBookingData}
+        t={t}
+      />
+    );
+  };
+
   const renderPickupLocation = () => (
-    <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-      <div className="flex justify-center pt-8">
-        <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
-          <MapPin className="text-white" size={16} />
+    <div className="space-y-4">
+      <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+        <div className="flex justify-center pt-8">
+          <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
+            <MapPin className="text-white" size={16} />
+          </div>
+        </div>
+        <div className="w-full space-y-1">
+          <span className="block text-sm font-medium text-gray-600">{t('booking.from')}</span>
+          <LocationInput
+            value={bookingData?.pickup || null}
+            onChange={(place) => {
+              if (!place) return;
+              const location: Location = {
+                ...place.value,
+                label: place.label,
+                mainAddress: place.value.description,
+                description: place.value.description,
+                secondaryAddress: place.value.structured_formatting?.secondary_text || '',
+                value: {
+                  place_id: place.value.place_id,
+                  description: place.value.description,
+                  structured_formatting: place.value.structured_formatting
+                },
+                exactAddress: {
+                  streetName: '',
+                  houseNumber: '',
+                  postalCode: '',
+                  city: place.value.structured_formatting?.secondary_text || '',
+                  businessName: ''
+                }
+              };
+              handleLocationUpdate(location, 'pickup');
+            }}
+            placeholder={t('hero.pickupPlaceholder')}
+            translations={translations}
+            onClear={() => handleLocationUpdate(null, 'pickup')}
+          />
+        </div>
+        <div className="flex justify-center pt-7">
+          <button
+            type="button"
+            onClick={swapLocations}
+            className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
+            title={t('hero.swapLocations')}
+          >
+            <ArrowUpDown size={20} className="text-secondary" />
+          </button>
         </div>
       </div>
-      <div className="w-full space-y-1">
-        <span className="block text-sm font-medium text-gray-600">{t('booking.from')}</span>
-        <LocationInput
-          value={bookingData?.pickup || null}
-          onChange={(place) => {
-            if (!place) return;
-            const location: Location = {
-              ...place.value,
-              label: place.label,
-              mainAddress: place.value.description,
-              description: place.value.description,
-              secondaryAddress: place.value.structured_formatting?.secondary_text || '',
-              value: {
-                place_id: place.value.place_id,
-                description: place.value.description,
-                structured_formatting: place.value.structured_formatting
-              }
-            };
-            handleLocationUpdate(location, 'pickup');
-          }}
-          placeholder={t('hero.pickupPlaceholder')}
-          translations={translations}
-          onClear={() => handleLocationUpdate(null, 'pickup')}
-        />
-      </div>
-      <div className="flex justify-center pt-7">
-        <button
-          type="button"
-          onClick={swapLocations}
-          className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
-          title={t('hero.swapLocations')}
-        >
-          <ArrowUpDown size={20} className="text-secondary" />
-        </button>
-      </div>
+
+      {bookingData?.pickup && (
+        <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
+          <button
+            type="button"
+            onClick={() => handleAddExactLocation('pickup')}
+            className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+          >
+            <Plus size={16} />
+            {t('booking.addExactLocation')}
+          </button>
+
+          {showExactLocations['pickup_0'] && renderExactLocationForm(bookingData.pickup, 'pickup')}
+          
+          {validationErrors.pickup && (
+            <span className="text-red-500 text-sm mt-1">{validationErrors.pickup}</span>
+          )}
+        </div>
+      )}
     </div>
   );
 
@@ -394,6 +831,13 @@ export const TravelInfoPage = () => {
                     place_id: place.value.place_id,
                     description: place.value.description,
                     structured_formatting: place.value.structured_formatting
+                  },
+                  exactAddress: {
+                    streetName: '',
+                    houseNumber: '',
+                    postalCode: '',
+                    city: place.value.structured_formatting?.secondary_text || '',
+                    businessName: ''
                   }
                 };
                 handleLocationUpdate(location, 'stopover', index);
@@ -411,6 +855,24 @@ export const TravelInfoPage = () => {
             >
               <Minus size={16} className="text-red-500" />
             </button>
+          </div>
+          <div className="col-span-3">
+            <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
+              <button
+                type="button"
+                onClick={() => handleAddExactLocation('stopover', index)}
+                className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+              >
+                <Plus size={16} />
+                {t('booking.addExactLocation')}
+              </button>
+
+              {showExactLocations[`stopover_${index}`] && renderExactLocationForm(stopover, 'stopover', index)}
+              
+              {validationErrors[`stopover_${index}`] && (
+                <span className="text-red-500 text-sm mt-1">{validationErrors[`stopover_${index}`]}</span>
+              )}
+            </div>
           </div>
         </div>
       ))}
@@ -440,6 +902,13 @@ export const TravelInfoPage = () => {
                 place_id: place.value.place_id,
                 description: place.value.description,
                 structured_formatting: place.value.structured_formatting
+              },
+              exactAddress: {
+                streetName: '',
+                houseNumber: '',
+                postalCode: '',
+                city: place.value.structured_formatting?.secondary_text || '',
+                businessName: ''
               }
             };
             handleLocationUpdate(location, 'destination');

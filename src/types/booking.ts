@@ -15,6 +15,13 @@ export interface Location {
   }
   mainAddress?: string
   secondaryAddress?: string
+  exactAddress?: {
+    streetName: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+    businessName?: string;
+  }
 }
 
 export interface BookingFormData {

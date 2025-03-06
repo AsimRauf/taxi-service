@@ -109,7 +109,16 @@
       "title": "Voertuig Bijgewerkt",
       "message": "Uw voertuig is bijgewerkt naar een taxibus vanwege bagagecapaciteitsvereisten.",
       "tip": "U kunt beschikbare voertuigen bekijken door te klikken op Acties > Voertuig bewerken"
-    }
+    },
+    "streetName": "Straatnaam",
+    "houseNumber": "Huisnummer",
+    "postalCode": "Postcode",
+    "city": "Plaats",
+    "country": "Land",
+    "businessName": "Bedrijfsnaam",
+    "enterStreetName": "Voer straatnaam in",
+    "enterHouseNumber": "Voer huisnummer in",
+    "addExactLocation": "Voeg exacte locatiegegevens toe"
   },
   "luggage": {
     "title": "Bagagegegevens",
@@ -350,5 +359,13 @@
       "addressRequired": "Bedrijfsadres is verplicht",
       "companyRequired": "Bedrijfsnaam is verplicht"
     }
+  },
+  "errors": {
+    "exactAddressRequired": "Voeg exacte adresgegevens toe",
+    "required": "is verplicht",
+    "selectLocationFirst": "Selecteer eerst een locatie",
+    "invalidStopover": "Voer een geldige tussenstop locatie in",
+    "maxStopovers": "Maximaal 3 tussenstops toegestaan",
+    "duplicateLocation": "Ophaal- en bestemmingslocaties kunnen niet hetzelfde zijn"
   }
 }
