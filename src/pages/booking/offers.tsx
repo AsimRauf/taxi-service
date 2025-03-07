@@ -48,6 +48,47 @@ const useVehicleOptions = () => {
     ];
 };
 
+const parseNetherlandsAddress = (address: string) => {
+    const result = {
+        businessName: '',
+        streetName: '',
+        houseNumber: '',
+        postalCode: '',
+        city: ''
+    };
+
+    if (!address) return result;
+
+    // Remove ", Netherlands" at the end (if present)
+    address = address.replace(/,?\s*Netherlands$/i, '').trim();
+
+    // Split remaining address by comma
+    const parts = address.split(',').map(part => part.trim()).filter(Boolean);
+
+    // Business location pattern check
+    const isBusinessLocation = (
+        parts[0].includes('Airport') ||
+        parts[0].includes('(AMS)') ||
+        parts[0].includes('Station') ||
+        parts[0].includes('Ahoy') ||  // Add common business locations
+        parts[0].includes('Hotel') ||
+        parts[0].includes('Terminal')
+    );
+
+    if (isBusinessLocation) {
+        result.businessName = parts[0];
+        result.city = parts[parts.length - 1].replace(/\d{4}\s?[A-Z]{2}/, '').trim();
+        return result;
+    }
+
+    // Extract city
+    if (parts.length > 0) {
+        result.city = parts[parts.length - 1].replace(/\d{4}\s?[A-Z]{2}/, '').trim();
+    }
+
+    return result;
+};
+
 const VehicleCard = ({
     vehicle,
     isSelected,
@@ -177,11 +218,23 @@ export const OffersPage = () => {
 
         const parsedData: BookingData = JSON.parse(savedData);
 
+        // Parse addresses for exact location matching
+        const sourceExact = parseNetherlandsAddress(parsedData.sourceAddress);
+        const destinationExact = parseNetherlandsAddress(parsedData.destinationAddress);
+
         const calculatedPrices = calculatePrice(
             parsedData.sourceAddress,
             parsedData.destinationAddress,
             parsedData.directDistance,
-            parsedData.extraDistance
+            parsedData.extraDistance,
+            {
+                businessName: sourceExact.businessName,
+                city: sourceExact.city
+            },
+            {
+                businessName: destinationExact.businessName,
+                city: destinationExact.city
+            }
         );
 
         setPrices({
@@ -220,7 +273,26 @@ export const OffersPage = () => {
     const handleVehicleSelect = (vehicleId: 'regular' | 'van') => {
         if (!bookingData) return;
 
-        const basePrice = prices[vehicleId];
+        // Parse addresses for consistent pricing
+        const sourceExact = parseNetherlandsAddress(bookingData.sourceAddress);
+        const destinationExact = parseNetherlandsAddress(bookingData.destinationAddress);
+
+        const calculatedPrices = calculatePrice(
+            bookingData.sourceAddress,
+            bookingData.destinationAddress,
+            bookingData.directDistance,
+            bookingData.extraDistance,
+            {
+                businessName: sourceExact.businessName,
+                city: sourceExact.city
+            },
+            {
+                businessName: destinationExact.businessName,
+                city: destinationExact.city
+            }
+        );
+
+        const basePrice = calculatedPrices[vehicleId];
         const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
         setSelectedVehicle(vehicleId);
 
@@ -228,7 +300,7 @@ export const OffersPage = () => {
             ...bookingData,
             vehicle: vehicleId,
             price: finalPrice,
-            isFixedPrice
+            isFixedPrice: calculatedPrices.isFixedPrice
         };
 
         if (isEditing && editingBookingId) {
