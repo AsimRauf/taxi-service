@@ -53,7 +53,7 @@ export const fixedRoutes: FixedRouteMap = {
         "Rockanje": { regular: 97.50, van: 127.50 },
         "Amsterdam": { regular: 47.50, van: 57.50 }
     },
-    "Eindhoven Airport": {
+    "Eindhoven Airport (EIN)": {
         "Rotterdam": { regular: 150.00, van: 175.00 },
         "Schiedam": { regular: 150.00, van: 175.00 },
         "Vlaardingen": { regular: 150.00, van: 175.00 },
@@ -63,7 +63,7 @@ export const fixedRoutes: FixedRouteMap = {
         "Hoogvliet Rotterdam": { regular: 150.00, van: 175.00 },
         "Capelle aan den ijssel": { regular: 150.00, van: 175.00 }
     },
-    "Rotterdam The Hague Airport": {
+    "Rotterdam The Hague Airport (RTM)": {
         "Leeuwarden": { regular: 330.00, van: 350.00 },
         "Groningen": { regular: 400.00, van: 430.00 },
         "Assen": { regular: 370.00, van: 400.00 },

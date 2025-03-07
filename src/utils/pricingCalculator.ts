@@ -1,5 +1,6 @@
 import { FixedPrice, PriceResult } from '@/types/pricing';
 import { fixedRoutes } from '@/data/fixedPrice';
+import { findCanonicalName } from '@/data/placeAliases';
 
 const PRICE_PER_KM = 2.5;
 const VAN_MULTIPLIER = 1.3;
@@ -66,16 +67,47 @@ export const determineVehicleAvailability = (
 };
 
 
-const extractMainLocation = (address: string): string => {
+const extractMainLocation = (address: string, exactAddress?: {
+    businessName: string;
+    city: string;
+}): string => {
+    // First check for exact address
+    if (exactAddress) {
+        // If it's a business location (like airport), prioritize that
+        if (exactAddress.businessName) {
+            const canonicalBusiness = findCanonicalName(exactAddress.businessName);
+            if (fixedRoutes.hasOwnProperty(canonicalBusiness)) {
+                console.log('📍 Found canonical business name:', canonicalBusiness);
+                return canonicalBusiness;
+            }
+        }
+        // Check city name from exact address
+        if (exactAddress.city) {
+            const canonicalCity = findCanonicalName(exactAddress.city);
+            console.log('📍 Using canonical city name:', canonicalCity);
+            return canonicalCity;
+        }
+    }
+
+    // Fallback to original address parsing
     const parts = address.split(',');
     const mainLocation = parts[0].trim();
-    console.log('📍 Location extraction:', { full: address, extracted: mainLocation });
-    return mainLocation;
+    const canonicalLocation = findCanonicalName(mainLocation);
+    
+    console.log('📍 Location extraction:', { 
+        original: mainLocation,
+        canonical: canonicalLocation 
+    });
+    
+    return canonicalLocation;
 };
 
-const findFixedPrice = (source: string, destination: string): FixedPrice | null => {
-    const sourceMain = extractMainLocation(source);
-    const destMain = extractMainLocation(destination);
+const findFixedPrice = (
+    source: { address: string; exact?: { businessName: string; city: string; } },
+    destination: { address: string; exact?: { businessName: string; city: string; } }
+): FixedPrice | null => {
+    const sourceMain = extractMainLocation(source.address, source.exact);
+    const destMain = extractMainLocation(destination.address, destination.exact);
 
     console.log('🔍 Searching fixed routes:', { from: sourceMain, to: destMain });
 
@@ -99,14 +131,26 @@ export const calculatePrice = (
     source: string,
     destination: string,
     distance: string,
-    extraDistance: string
+    extraDistance: string,
+    sourceExact?: { businessName: string; city: string; },
+    destinationExact?: { businessName: string; city: string; }
 ): PriceResult => {
-    console.log('🚗 Starting price calculation:', { source, destination, distance, extraDistance });
+    console.log('🚗 Starting price calculation:', { 
+        source, 
+        destination, 
+        distance, 
+        extraDistance,
+        sourceExact,
+        destinationExact 
+    });
 
     const extraDistanceKm = parseFloat(extraDistance.replace('km', '').trim()) || 0;
     const mainDistanceKm = parseFloat(distance.replace('km', '').trim()) || 0;
 
-    const fixedPrice = findFixedPrice(source, destination);
+    const fixedPrice = findFixedPrice(
+        { address: source, exact: sourceExact },
+        { address: destination, exact: destinationExact }
+    );
     
     if (fixedPrice) {
         const result = {

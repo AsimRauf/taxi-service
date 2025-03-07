@@ -209,156 +209,158 @@ const ExactLocationModal = ({
         onClick={onClose}
       />
 
-      {/* Modal Container - Improved mobile positioning */}
-      <div className="fixed inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-4">
-        <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-2xl sm:rounded-2xl shadow-xl transform transition-all">
-          {/* Header */}
-          <div className="sticky top-0 z-10 bg-white px-6 py-4 border-b border-gray-200 rounded-t-2xl">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium text-gray-900">
-                {t('booking.exactLocation')}
-              </h3>
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-full p-1 hover:bg-gray-100 transition-colors"
-              >
-                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+      {/* Modal Container - Updated positioning and scroll handling */}
+      <div className="fixed inset-0 overflow-y-auto">
+        <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+          <div className="relative transform overflow-hidden rounded-t-2xl sm:rounded-2xl bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+            {/* Header - Make sticky */}
+            <div className="sticky top-0 z-20 bg-white px-6 py-4 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-medium text-gray-900">
+                  {t('booking.exactLocation')}
+                </h3>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+                >
+                  <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Content with custom scrollbar */}
-          <div className="px-6 py-4 max-h-[calc(100vh-12rem)] sm:max-h-[600px] overflow-y-auto custom-scrollbar">
-            <div className="space-y-4">
-              {/* Business Name */}
-              {parsedAddress.businessName && (
+            {/* Content - Updated max height and scroll */}
+            <div className="px-6 py-4 max-h-[calc(100vh-16rem)] overflow-y-auto">
+              <div className="space-y-4">
+                {/* Business Name */}
+                {parsedAddress.businessName && (
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      {t('booking.businessName')}
+                    </label>
+                    <input
+                      type="text"
+                      value={parsedAddress.businessName}
+                      readOnly
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    />
+                  </div>
+                )}
+
+                {/* Street Name */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-600">
-                    {t('booking.businessName')}
+                    {t('booking.streetName')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={parsedAddress.businessName}
-                    readOnly
-                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    value={localStreetName}
+                    onChange={(e) => setLocalStreetName(e.target.value)}
+                    className={`w-full px-3 py-2.5 border ${errors.streetName ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                    placeholder={t('booking.enterStreetName')}
                   />
-                </div>
-              )}
-
-              {/* Street Name */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-600">
-                  {t('booking.streetName')} <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={localStreetName}
-                  onChange={(e) => setLocalStreetName(e.target.value)}
-                  className={`w-full px-3 py-2.5 border ${errors.streetName ? 'border-red-300' : 'border-gray-300'
-                    } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
-                  placeholder={t('booking.enterStreetName')}
-                />
-                {errors.streetName && (
-                  <span className="text-red-500 text-xs mt-1">
-                    {errors.streetName}
-                  </span>
-                )}
-              </div>
-
-              {/* House Number */}
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-600">
-                  {t('booking.houseNumber')}
-                  {!parsedAddress.businessName && <span className="text-red-500">*</span>}
-                  {parsedAddress.businessName && (
-                    <span className="text-xs text-gray-500 ml-2">
-                      ({t('booking.optional')})
+                  {errors.streetName && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {errors.streetName}
                     </span>
                   )}
-                </label>
-                <input
-                  type="text"
-                  value={localHouseNumber}
-                  onChange={(e) => setLocalHouseNumber(e.target.value)}
-                  placeholder={parsedAddress.businessName
-                    ? t('booking.enterHouseNumberOptional')
-                    : t('booking.enterHouseNumber')
-                  }
-                  className={`w-full px-3 py-2.5 border ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
-                    } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${parsedAddress.businessName ? 'bg-gray-50' : 'bg-white'
-                    }`}
-                />
-                {errors.houseNumber && (
-                  <span className="text-red-500 text-xs mt-1">{errors.houseNumber}</span>
-                )}
-                {parsedAddress.businessName && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {t('booking.houseNumberOptionalForBusiness')}
-                  </p>
-                )}
-              </div>
-
-              {/* Read-only Fields */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    {t('booking.postalCode')}
-                  </label>
-                  <input
-                    type="text"
-                    value={parsedAddress.postalCode}
-                    readOnly
-                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
-                  />
                 </div>
 
+                {/* House Number */}
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-600">
-                    {t('booking.city')}
+                    {t('booking.houseNumber')}
+                    {!parsedAddress.businessName && <span className="text-red-500">*</span>}
+                    {parsedAddress.businessName && (
+                      <span className="text-xs text-gray-500 ml-2">
+                        ({t('booking.optional')})
+                      </span>
+                    )}
                   </label>
                   <input
                     type="text"
-                    value={parsedAddress.city || location.value.structured_formatting.secondary_text}
-                    readOnly
-                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    value={localHouseNumber}
+                    onChange={(e) => setLocalHouseNumber(e.target.value)}
+                    placeholder={parsedAddress.businessName
+                      ? t('booking.enterHouseNumberOptional')
+                      : t('booking.enterHouseNumber')
+                    }
+                    className={`w-full px-3 py-2.5 border ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
+                      } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${parsedAddress.businessName ? 'bg-gray-50' : 'bg-white'
+                      }`}
                   />
+                  {errors.houseNumber && (
+                    <span className="text-red-500 text-xs mt-1">{errors.houseNumber}</span>
+                  )}
+                  {parsedAddress.businessName && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {t('booking.houseNumberOptionalForBusiness')}
+                    </p>
+                  )}
                 </div>
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-medium text-gray-600">
-                    {t('booking.country')}
-                  </label>
-                  <input
-                    type="text"
-                    value="Netherlands"
-                    readOnly
-                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
-                  />
+                {/* Read-only Fields */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      {t('booking.postalCode')}
+                    </label>
+                    <input
+                      type="text"
+                      value={parsedAddress.postalCode}
+                      readOnly
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      {t('booking.city')}
+                    </label>
+                    <input
+                      type="text"
+                      value={parsedAddress.city || location.value.structured_formatting.secondary_text}
+                      readOnly
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-600">
+                      {t('booking.country')}
+                    </label>
+                    <input
+                      type="text"
+                      value="Netherlands"
+                      readOnly
+                      className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Footer - Fixed at bottom */}
-          <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-200 rounded-b-2xl">
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
-              >
-                {t('common.save')}
-              </button>
+            {/* Footer - Make sticky */}
+            <div className="sticky bottom-0 z-20 bg-white px-6 py-4 border-t border-gray-200">
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+                >
+                  {t('common.save')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -574,7 +576,15 @@ export const TravelInfoPage = () => {
         updatedData.pickup.mainAddress,
         updatedData.destination.mainAddress,
         segments[0].distance,
-        segments[1]?.distance || '0 km'
+        segments[1]?.distance || '0 km',
+        updatedData.pickup.exactAddress ? {
+          businessName: updatedData.pickup.exactAddress.businessName || '',
+          city: updatedData.pickup.exactAddress.city
+        } : undefined,
+        updatedData.destination.exactAddress ? {
+          businessName: updatedData.destination.exactAddress.businessName || '',
+          city: updatedData.destination.exactAddress.city
+        } : undefined
       );
 
       const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
@@ -618,7 +628,15 @@ export const TravelInfoPage = () => {
         updatedData.pickup.mainAddress,
         updatedData.destination.mainAddress,
         segments[0].distance,
-        segments[1]?.distance || '0 km'
+        segments[1]?.distance || '0 km',
+        updatedData.pickup.exactAddress ? {
+          businessName: updatedData.pickup.exactAddress.businessName || '',
+          city: updatedData.pickup.exactAddress.city
+        } : undefined,
+        updatedData.destination.exactAddress ? {
+          businessName: updatedData.destination.exactAddress.businessName || '',
+          city: updatedData.destination.exactAddress.city
+        } : undefined
       );
 
       // Calculate base price first
