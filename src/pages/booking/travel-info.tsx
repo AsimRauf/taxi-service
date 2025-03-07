@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
@@ -16,7 +16,14 @@ import { DateSelector } from '@/components/forms/booking/DateSelector';
 import { isBefore } from 'date-fns';
 import { useEdit } from '@/contexts/EditContext';
 import { NavigationButtons } from '@/components/booking/NavigationButtons';
-import { debounce } from 'lodash';
+
+interface ParsedAddress {
+  businessName: string;
+  streetName: string;
+  houseNumber: string;
+  postalCode: string;
+  city: string;
+}
 
 const parseNetherlandsAddress = (address: string) => {
   const result = {
@@ -116,7 +123,7 @@ const ExactLocationModal = ({
   location: Location;
   type: 'pickup' | 'stopover' | 'destination';
   index?: number;
-  parsedAddress: any;
+  parsedAddress: ParsedAddress;
   bookingData: BookingData | null;
   updateBookingData: (data: BookingData) => void;
   t: (key: string) => string;
@@ -128,7 +135,12 @@ const ExactLocationModal = ({
   useEffect(() => {
     setLocalStreetName(location.exactAddress?.streetName || parsedAddress.streetName || '');
     setLocalHouseNumber(location.exactAddress?.houseNumber || parsedAddress.houseNumber || '');
-  }, [location.value.place_id, parsedAddress]);
+  }, [
+    location.value.place_id, 
+    parsedAddress,
+    location.exactAddress?.streetName,
+    location.exactAddress?.houseNumber
+  ]);
 
   const handleSave = () => {
     // Modified validation logic
@@ -835,12 +847,7 @@ export const TravelInfoPage = () => {
     });
   };
 
-  const validateField = (location: Location, field: 'streetName' | 'houseNumber') => {
-    if (!location?.exactAddress?.[field]?.trim()) {
-      return `${t(`booking.${field}`)} ${t('errors.required')}`;
-    }
-    return '';
-  };
+  
 
   const renderPickupLocation = () => (
     <div className="space-y-4">
