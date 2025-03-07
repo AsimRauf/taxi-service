@@ -99,8 +99,10 @@ const parseNetherlandsAddress = (address: string) => {
   return result;
 };
 
-// Modify the ExactLocationForm component:
-const ExactLocationForm = ({
+// First, add a new ExactLocationModal component at the top of the file
+const ExactLocationModal = ({
+  isOpen,
+  onClose,
   location,
   type,
   index,
@@ -109,8 +111,10 @@ const ExactLocationForm = ({
   updateBookingData,
   t
 }: {
+  isOpen: boolean;
+  onClose: () => void;
   location: Location;
-  type: 'pickup' | 'stopover';
+  type: 'pickup' | 'stopover' | 'destination';
   index?: number;
   parsedAddress: any;
   bookingData: BookingData | null;
@@ -119,160 +123,235 @@ const ExactLocationForm = ({
 }) => {
   const [localStreetName, setLocalStreetName] = useState('');
   const [localHouseNumber, setLocalHouseNumber] = useState('');
+  const [errors, setErrors] = useState({ streetName: '', houseNumber: '' });
 
   useEffect(() => {
     setLocalStreetName(location.exactAddress?.streetName || parsedAddress.streetName || '');
     setLocalHouseNumber(location.exactAddress?.houseNumber || parsedAddress.houseNumber || '');
-  }, [location.value.place_id, parsedAddress]); // Changed dependency to be more specific
+  }, [location.value.place_id, parsedAddress]);
 
-  const debouncedUpdate = useCallback(
-    debounce((field: string, value: string) => {
-      if (!bookingData) return;
+  const handleSave = () => {
+    // Modified validation logic
+    const newErrors = {
+      streetName: !localStreetName.trim() ? t('errors.required') : '',
+      // Only require house number if there's no business name
+      houseNumber: !parsedAddress.businessName && !localHouseNumber.trim() ? t('errors.required') : ''
+    };
 
-      const exactAddress = {
-        streetName: field === 'streetName' ? value : localStreetName,
-        houseNumber: field === 'houseNumber' ? value : localHouseNumber,
-        postalCode: parsedAddress.postalCode || '',
-        city: parsedAddress.city || '',
-        businessName: parsedAddress.businessName || ''
-      };
+    setErrors(newErrors);
 
-      const updatedLocation: Location = {
-        ...location,
-        exactAddress,
-        mainAddress: `${exactAddress.streetName} ${exactAddress.houseNumber}, ${exactAddress.city}, Netherlands`
-      };
-
-      let updatedData: BookingData;
-      if (type === 'pickup') {
-        updatedData = {
-          ...bookingData,
-          pickup: updatedLocation,
-          sourceAddress: updatedLocation.mainAddress || ''
-        };
-      } else {
-        const stopovers = [...bookingData.stopovers];
-        stopovers[index!] = updatedLocation;
-        updatedData = {
-          ...bookingData,
-          stopovers
-        };
-      }
-
-      updateBookingData(updatedData);
-    }, 100), // Reduced debounce delay from 300ms to 100ms
-    [bookingData, location, type, index, parsedAddress, localStreetName, localHouseNumber]
-  );
-
-  const handleInputChange = (field: string, value: string) => {
-    if (field === 'streetName') {
-      setLocalStreetName(value);
-    } else {
-      setLocalHouseNumber(value);
+    if (newErrors.streetName || (!parsedAddress.businessName && newErrors.houseNumber)) {
+      return;
     }
-    debouncedUpdate(field, value);
+
+    if (!bookingData) return;
+
+    const exactAddress = {
+      streetName: localStreetName,
+      houseNumber: localHouseNumber || '', // Allow empty house number for business locations
+      postalCode: parsedAddress.postalCode || '',
+      city: parsedAddress.city || '',
+      businessName: parsedAddress.businessName || location.exactAddress?.businessName || ''
+    };
+
+    const updatedLocation: Location = {
+      ...location,
+      exactAddress,
+      // Update mainAddress format based on whether it's a business location
+      mainAddress: exactAddress.businessName
+        ? `${exactAddress.businessName}, ${exactAddress.streetName}${localHouseNumber ? ` ${localHouseNumber}` : ''}, ${exactAddress.city}, Netherlands`
+        : `${exactAddress.streetName} ${localHouseNumber}, ${exactAddress.city}, Netherlands`
+    };
+
+    let updatedData: BookingData;
+    if (type === 'pickup') {
+      updatedData = {
+        ...bookingData,
+        pickup: updatedLocation,
+        sourceAddress: updatedLocation.mainAddress || ''
+      };
+    } else if (type === 'destination') {
+      updatedData = {
+        ...bookingData,
+        destination: updatedLocation,
+        destinationAddress: updatedLocation.mainAddress || ''
+      };
+    } else {
+      const stopovers = [...bookingData.stopovers];
+      stopovers[index!] = updatedLocation;
+      updatedData = {
+        ...bookingData,
+        stopovers
+      };
+    }
+
+    updateBookingData(updatedData);
+    onClose();
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: 'auto' }}
-      className="mt-4 space-y-4 bg-gray-50 p-4 rounded-lg"
-    >
-      {/* Business Name */}
-      {parsedAddress.businessName && (
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-600">
-            {t('booking.businessName')}
-          </label>
-          <input
-            type="text"
-            value={parsedAddress.businessName}
-            readOnly
-            className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
-          />
+    <div className={`fixed inset-0 z-50 ${isOpen ? 'block' : 'hidden'}`}>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal Container - Improved mobile positioning */}
+      <div className="fixed inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center p-4">
+        <div className="relative w-full max-w-lg mx-auto bg-white rounded-t-2xl sm:rounded-2xl shadow-xl transform transition-all">
+          {/* Header */}
+          <div className="sticky top-0 z-10 bg-white px-6 py-4 border-b border-gray-200 rounded-t-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-medium text-gray-900">
+                {t('booking.exactLocation')}
+              </h3>
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+              >
+                <svg className="w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Content with custom scrollbar */}
+          <div className="px-6 py-4 max-h-[calc(100vh-12rem)] sm:max-h-[600px] overflow-y-auto custom-scrollbar">
+            <div className="space-y-4">
+              {/* Business Name */}
+              {parsedAddress.businessName && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
+                    {t('booking.businessName')}
+                  </label>
+                  <input
+                    type="text"
+                    value={parsedAddress.businessName}
+                    readOnly
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                  />
+                </div>
+              )}
+
+              {/* Street Name */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-600">
+                  {t('booking.streetName')} <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={localStreetName}
+                  onChange={(e) => setLocalStreetName(e.target.value)}
+                  className={`w-full px-3 py-2.5 border ${errors.streetName ? 'border-red-300' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors`}
+                  placeholder={t('booking.enterStreetName')}
+                />
+                {errors.streetName && (
+                  <span className="text-red-500 text-xs mt-1">
+                    {errors.streetName}
+                  </span>
+                )}
+              </div>
+
+              {/* House Number */}
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-600">
+                  {t('booking.houseNumber')}
+                  {!parsedAddress.businessName && <span className="text-red-500">*</span>}
+                  {parsedAddress.businessName && (
+                    <span className="text-xs text-gray-500 ml-2">
+                      ({t('booking.optional')})
+                    </span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  value={localHouseNumber}
+                  onChange={(e) => setLocalHouseNumber(e.target.value)}
+                  placeholder={parsedAddress.businessName
+                    ? t('booking.enterHouseNumberOptional')
+                    : t('booking.enterHouseNumber')
+                  }
+                  className={`w-full px-3 py-2.5 border ${errors.houseNumber ? 'border-red-300' : 'border-gray-300'
+                    } rounded-lg focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors ${parsedAddress.businessName ? 'bg-gray-50' : 'bg-white'
+                    }`}
+                />
+                {errors.houseNumber && (
+                  <span className="text-red-500 text-xs mt-1">{errors.houseNumber}</span>
+                )}
+                {parsedAddress.businessName && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    {t('booking.houseNumberOptionalForBusiness')}
+                  </p>
+                )}
+              </div>
+
+              {/* Read-only Fields */}
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
+                    {t('booking.postalCode')}
+                  </label>
+                  <input
+                    type="text"
+                    value={parsedAddress.postalCode}
+                    readOnly
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
+                    {t('booking.city')}
+                  </label>
+                  <input
+                    type="text"
+                    value={parsedAddress.city || location.value.structured_formatting.secondary_text}
+                    readOnly
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-600">
+                    {t('booking.country')}
+                  </label>
+                  <input
+                    type="text"
+                    value="Netherlands"
+                    readOnly
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-600"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer - Fixed at bottom */}
+          <div className="sticky bottom-0 bg-white px-6 py-4 border-t border-gray-200 rounded-b-2xl">
+            <div className="flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary-dark rounded-lg transition-colors"
+              >
+                {t('common.save')}
+              </button>
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Street Name */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-600">
-          {t('booking.streetName')} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={localStreetName}
-          onChange={(e) => handleInputChange('streetName', e.target.value)}
-          className={`w-full px-3 py-2 border ${!localStreetName.trim() ? 'border-red-300' : 'border-gray-300'
-            } rounded-md focus:ring-primary focus:border-primary`}
-          placeholder={t('booking.enterStreetName')}
-        />
-        {!localStreetName.trim() && (
-          <span className="text-red-500 text-xs mt-1">
-            {t('booking.streetName')} {t('errors.required')}
-          </span>
-        )}
       </div>
-
-      {/* House Number */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-600">
-          {t('booking.houseNumber')} <span className="text-red-500">*</span>
-        </label>
-        <input
-          type="text"
-          value={localHouseNumber}
-          onChange={(e) => handleInputChange('houseNumber', e.target.value)}
-          placeholder={t('booking.enterHouseNumber')}
-          className={`w-full px-3 py-2 border ${!localHouseNumber.trim() ? 'border-red-300' : 'border-gray-300'
-            } rounded-md focus:ring-primary focus:border-primary`}
-        />
-        {!localHouseNumber.trim() && (
-          <span className="text-red-500 text-xs mt-1">
-            {t('booking.houseNumber')} {t('errors.required')}
-          </span>
-        )}
-      </div>
-
-      {/* Postal Code */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-600">
-          {t('booking.postalCode')}
-        </label>
-        <input
-          type="text"
-          value={parsedAddress.postalCode}
-          readOnly
-          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
-        />
-      </div>
-
-      {/* City */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-600">
-          {t('booking.city')}
-        </label>
-        <input
-          type="text"
-          value={parsedAddress.city || location.value.structured_formatting.secondary_text}
-          readOnly
-          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
-        />
-      </div>
-
-      {/* Country */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-600">
-          {t('booking.country')}
-        </label>
-        <input
-          type="text"
-          value="Netherlands"
-          readOnly
-          className="w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-600"
-        />
-      </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -283,16 +362,25 @@ export const TravelInfoPage = () => {
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const translations = createTranslationsObject(t, router.locale || 'en');
-  const [showExactLocation, setShowExactLocation] = useState(false);
-  const [showExactLocations, setShowExactLocations] = useState<{ [key: string]: boolean }>({});
+  const [showExactLocationModal, setShowExactLocationModal] = useState<{
+    isOpen: boolean;
+    location?: Location;
+    type?: 'pickup' | 'stopover' | 'destination';
+    index?: number;
+  }>({ isOpen: false });
 
   const validateExactLocation = (location: Location) => {
     if (!location?.exactAddress) return false;
 
-    const { streetName, houseNumber } = location.exactAddress;
+    const { streetName, houseNumber, businessName } = location.exactAddress;
 
-    // Check if both street name and house number are present and not empty
-    if (!streetName?.trim() || !houseNumber?.trim()) {
+    // Street name is always required
+    if (!streetName?.trim()) {
+      return false;
+    }
+
+    // House number is only required if there's no business name
+    if (!businessName && !houseNumber?.trim()) {
       return false;
     }
 
@@ -356,6 +444,10 @@ export const TravelInfoPage = () => {
 
     if (!validateExactLocation(bookingData.pickup)) {
       errors.pickup = t('errors.exactAddressRequired');
+    }
+
+    if (!validateExactLocation(bookingData.destination)) {
+      errors.destination = t('errors.exactAddressRequired');
     }
 
     bookingData.stopovers.forEach((stopover, index) => {
@@ -643,15 +735,16 @@ export const TravelInfoPage = () => {
 
     // Automatically show exact location form when location is selected
     if (newLocation) {
-      setShowExactLocations(prev => ({
-        ...prev,
-        [`${type}_${index || 0}`]: true
-      }));
+      setShowExactLocationModal({
+        isOpen: true,
+        location: newLocation,
+        type: type as 'pickup' | 'stopover' | 'destination',
+        index
+      });
     }
 
     updateBookingData(updatedData);
   };
-
   const swapLocations = () => {
     if (!bookingData?.pickup || !bookingData?.destination) return;
 
@@ -722,18 +815,24 @@ export const TravelInfoPage = () => {
     updateBookingData(updatedData);
   };
 
-  const handleAddExactLocation = (type: 'pickup' | 'stopover', index?: number) => {
-    const location = type === 'pickup' ? bookingData?.pickup : bookingData?.stopovers[index!];
+  const handleAddExactLocation = (type: 'pickup' | 'stopover' | 'destination', index?: number) => {
+    const location = type === 'pickup'
+      ? bookingData?.pickup
+      : type === 'destination'
+        ? bookingData?.destination
+        : bookingData?.stopovers[index!];
 
     if (!location?.value?.structured_formatting) {
       alert(t('errors.selectLocationFirst'));
       return;
     }
 
-    setShowExactLocations(prev => ({
-      ...prev,
-      [`${type}_${index || 0}`]: true
-    }));
+    setShowExactLocationModal({
+      isOpen: true,
+      location,
+      type,
+      index
+    });
   };
 
   const validateField = (location: Location, field: 'streetName' | 'houseNumber') => {
@@ -741,25 +840,6 @@ export const TravelInfoPage = () => {
       return `${t(`booking.${field}`)} ${t('errors.required')}`;
     }
     return '';
-  };
-
-  const renderExactLocationForm = (location: Location, type: 'pickup' | 'stopover', index?: number) => {
-    const parsedAddress = parseNetherlandsAddress(
-      location.mainAddress ||
-      location.value.description
-    );
-
-    return (
-      <ExactLocationForm
-        location={location}
-        type={type}
-        index={index}
-        parsedAddress={parsedAddress}
-        bookingData={bookingData}
-        updateBookingData={updateBookingData}
-        t={t}
-      />
-    );
   };
 
   const renderPickupLocation = () => (
@@ -824,8 +904,6 @@ export const TravelInfoPage = () => {
             <Plus size={16} />
             {t('booking.addExactLocation')}
           </button>
-
-          {showExactLocations['pickup_0'] && renderExactLocationForm(bookingData.pickup, 'pickup')}
 
           {validationErrors.pickup && (
             <span className="text-red-500 text-sm mt-1">{validationErrors.pickup}</span>
@@ -896,8 +974,6 @@ export const TravelInfoPage = () => {
                 {t('booking.addExactLocation')}
               </button>
 
-              {showExactLocations[`stopover_${index}`] && renderExactLocationForm(stopover, 'stopover', index)}
-
               {validationErrors[`stopover_${index}`] && (
                 <span className="text-red-500 text-sm mt-1">{validationErrors[`stopover_${index}`]}</span>
               )}
@@ -909,44 +985,48 @@ export const TravelInfoPage = () => {
   );
 
   const renderDestination = () => (
-    <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-      <div className="flex justify-center pt-8">
-        <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
-          <MapPin className="text-white" size={16} />
+    <div className="space-y-4">
+      <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+        <div className="flex justify-center pt-8">
+          <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
+            <MapPin className="text-white" size={16} />
+          </div>
+        </div>
+        <div className="w-full space-y-1">
+          <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
+          <LocationInput
+            value={bookingData?.destination || null}
+            onChange={(place) => {
+              if (!place) return;
+              const location: Location = {
+                ...place.value,
+                label: place.label,
+                mainAddress: place.value.description,
+                description: place.value.description,
+                secondaryAddress: place.value.structured_formatting?.secondary_text || '',
+                value: {
+                  place_id: place.value.place_id,
+                  description: place.value.description,
+                  structured_formatting: place.value.structured_formatting
+                },
+                exactAddress: {
+                  streetName: '',
+                  houseNumber: '',
+                  postalCode: '',
+                  city: place.value.structured_formatting?.secondary_text || '',
+                  businessName: ''
+                }
+              };
+              handleLocationUpdate(location, 'destination');
+            }}
+            placeholder={t('hero.destinationPlaceholder')}
+            translations={translations}
+            onClear={() => handleLocationUpdate(null, 'destination')}
+          />
         </div>
       </div>
-      <div className="w-full space-y-1">
-        <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
-        <LocationInput
-          value={bookingData?.destination || null}
-          onChange={(place) => {
-            if (!place) return;
-            const location: Location = {
-              ...place.value,
-              label: place.label,
-              mainAddress: place.value.description,
-              description: place.value.description,
-              secondaryAddress: place.value.structured_formatting?.secondary_text || '',
-              value: {
-                place_id: place.value.place_id,
-                description: place.value.description,
-                structured_formatting: place.value.structured_formatting
-              },
-              exactAddress: {
-                streetName: '',
-                houseNumber: '',
-                postalCode: '',
-                city: place.value.structured_formatting?.secondary_text || '',
-                businessName: ''
-              }
-            };
-            handleLocationUpdate(location, 'destination');
-          }}
-          placeholder={t('hero.destinationPlaceholder')}
-          translations={translations}
-          onClear={() => handleLocationUpdate(null, 'destination')}
-        />
-      </div>
+
+
     </div>
   );
 
@@ -1093,6 +1173,22 @@ export const TravelInfoPage = () => {
                     <span className="text-red-500 text-sm mt-1">{validationErrors.dates}</span>
                   )}
                 </div>
+                {bookingData?.destination && (
+                  <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
+                    <button
+                      type="button"
+                      onClick={() => handleAddExactLocation('destination')}
+                      className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                    >
+                      <Plus size={16} />
+                      {t('booking.addExactLocation')}
+                    </button>
+
+                    {validationErrors.destination && (
+                      <span className="text-red-500 text-sm mt-1">{validationErrors.destination}</span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Return Section */}
@@ -1267,6 +1363,22 @@ export const TravelInfoPage = () => {
               backText={isEditing ? t('common.backToOverview') : t('travelInfo.back')}
             />
           </div>
+          {showExactLocationModal.isOpen && showExactLocationModal.location && (
+            <ExactLocationModal
+              isOpen={showExactLocationModal.isOpen}
+              onClose={() => setShowExactLocationModal({ isOpen: false })}
+              location={showExactLocationModal.location}
+              type={showExactLocationModal.type!}
+              index={showExactLocationModal.index}
+              parsedAddress={parseNetherlandsAddress(
+                showExactLocationModal.location.mainAddress ||
+                showExactLocationModal.location.value.description
+              )}
+              bookingData={bookingData}
+              updateBookingData={updateBookingData}
+              t={t}
+            />
+          )}
         </motion.div>
       </div>
     </div>

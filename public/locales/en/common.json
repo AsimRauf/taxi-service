@@ -139,7 +139,12 @@
     "businessName": "Business Name",
     "enterStreetName": "Enter street name",
     "enterHouseNumber": "Enter house number",
-    "addExactLocation": "Add exact location details"
+    "addExactLocation": "Add exact location details",
+    "exactLocation": "Exact Location Details",
+    "enterHouseNumberOptional": "Enter house number (optional)",
+    "optional": "optional",
+    "houseNumberOptionalForBusiness": "House number is optional for business locations",
+    "exactLocationRequired": "Please add exact location details"
   },
   "luggage": {
     "title": "Luggage Details",
@@ -299,7 +304,9 @@
     "back": "Back",
     "error": {
       "generic": "Something went wrong. Please try again."
-    }
+    },
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "travelInfo": {
     "title": "Travel Information",
@@ -375,6 +382,7 @@
     "selectLocationFirst": "Please select a location first",
     "invalidStopover": "Please enter a valid stopover location",
     "maxStopovers": "Maximum 3 stopovers allowed",
-    "duplicateLocation": "Pickup and destination locations cannot be the same"
+    "duplicateLocation": "Pickup and destination locations cannot be the same",
+    "invalidLocationDetails": "Please provide valid location details"
   }
 }

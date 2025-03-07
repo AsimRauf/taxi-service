@@ -118,7 +118,12 @@
     "businessName": "Bedrijfsnaam",
     "enterStreetName": "Voer straatnaam in",
     "enterHouseNumber": "Voer huisnummer in",
-    "addExactLocation": "Voeg exacte locatiegegevens toe"
+    "addExactLocation": "Voeg exacte locatiegegevens toe",
+    "exactLocation": "Exacte Locatiegegevens",
+    "enterHouseNumberOptional": "Voer huisnummer in (optioneel)",
+    "optional": "optioneel",
+    "houseNumberOptionalForBusiness": "Huisnummer is optioneel voor bedrijfslocaties",
+    "exactLocationRequired": "Voeg exacte locatiegegevens toe"
   },
   "luggage": {
     "title": "Bagagegegevens",
@@ -276,7 +281,9 @@
     "back": "Terug",
     "error": {
       "generic": "Er is iets misgegaan. Probeer het opnieuw."
-    }
+    },
+    "save": "Opslaan",
+    "cancel": "Annuleren"
   },
   "travelInfo": {
     "title": "Reisinformatie",
@@ -366,6 +373,7 @@
     "selectLocationFirst": "Selecteer eerst een locatie",
     "invalidStopover": "Voer een geldige tussenstop locatie in",
     "maxStopovers": "Maximaal 3 tussenstops toegestaan",
-    "duplicateLocation": "Ophaal- en bestemmingslocaties kunnen niet hetzelfde zijn"
+    "duplicateLocation": "Ophaal- en bestemmingslocaties kunnen niet hetzelfde zijn",
+    "invalidLocationDetails": "Voer geldige locatiegegevens in"
   }
 }
