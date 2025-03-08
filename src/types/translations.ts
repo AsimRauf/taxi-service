@@ -242,4 +242,22 @@ export interface WebsiteTranslations {
     noBookings: string;
     title: string;
   };
+  features: {
+    prices: {
+      title: string;
+      description: string;
+    };
+    coverage: {
+      title: string;
+      description: string;
+    };
+    reliability: {
+      title: string;
+      description: string;
+    };
+    heading: string;
+    description1: string;
+    description2: string;
+    imageAlt: string;
+  };
 }

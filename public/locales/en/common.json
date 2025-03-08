@@ -27,6 +27,24 @@
     "formTitle": "Your Booking Details",
     "returnPlaceholder": "Select return date and time"
   },
+  "features": {
+    "prices": {
+      "title": "Competitive Prices",
+      "description": "Best value for money with transparent pricing and no hidden fees"
+    },
+    "coverage": {
+      "title": "Wide Coverage",
+      "description": "Service available throughout the city and surrounding areas"
+    },
+    "reliability": {
+      "title": "24/7 Reliability",
+      "description": "Professional drivers and punctual service around the clock"
+    },
+    "heading": "Your Trusted Transportation Partner",
+    "description1": "We provide premium taxi services with a focus on comfort, safety, and reliability.",
+    "description2": "Our experienced drivers and modern fleet ensure a smooth journey every time.",
+    "imageAlt": "Taxi Service Vehicle"
+  },
   "booking": {
     "title": "Comfort Taxi Service",
     "from": "From",

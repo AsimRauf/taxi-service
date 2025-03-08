@@ -2,6 +2,7 @@ import { GetStaticProps } from 'next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { useTranslation } from 'next-i18next'
 import { HeroSection } from '@/components/sections/HeroSection'
+import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { createTranslationsObject } from '@/utils/translations'
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
@@ -19,6 +20,7 @@ export default function Home() {
   return (
     <main>
       <HeroSection translations={translations} />
+      <FeaturesSection translations={translations} />
     </main>
   )
 }

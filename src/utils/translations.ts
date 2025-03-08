@@ -244,5 +244,23 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     noBookings: t('overview.noBookings'),
     title: t('overview.title')
   },
+  features: {
+    prices: {
+      title: t('features.prices.title'),
+      description: t('features.prices.description')
+    },
+    coverage: {
+      title: t('features.coverage.title'),
+      description: t('features.coverage.description')
+    },
+    reliability: {
+      title: t('features.reliability.title'),
+      description: t('features.reliability.description')
+    },
+    heading: t('features.heading'),
+    description1: t('features.description1'),
+    description2: t('features.description2'),
+    imageAlt: t('features.imageAlt')
+  },
   locale: locale
 });
