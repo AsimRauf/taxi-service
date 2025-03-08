@@ -384,20 +384,26 @@ export const TravelInfoPage = () => {
   }>({ isOpen: false });
 
   const validateExactLocation = (location: Location) => {
-    if (!location?.exactAddress) return false;
-
+    // First check if location and exactAddress exist
+    if (!location || !location.mainAddress || !location.exactAddress) return false;
+  
     const { streetName, houseNumber, businessName } = location.exactAddress;
-
+  
     // Street name is always required
     if (!streetName?.trim()) {
       return false;
     }
-
-    // House number is only required if there's no business name
-    if (!businessName && !houseNumber?.trim()) {
+  
+    // If there's a business name, house number is optional
+    if (businessName?.trim()) {
+      return true;
+    }
+  
+    // If no business name, house number is required
+    if (!houseNumber?.trim()) {
       return false;
     }
-
+  
     return true;
   };
 
@@ -427,12 +433,26 @@ export const TravelInfoPage = () => {
 
     const errors: Record<string, string> = {};
 
-    if (!bookingData.pickup) {
+    // Check pickup location
+    if (!bookingData.pickup?.mainAddress) {
       errors.pickup = t('travelInfo.errors.requiredLocations');
+    } else if (!validateExactLocation(bookingData.pickup)) {
+      errors.pickup = t('errors.exactAddressRequired');
     }
-    if (!bookingData.destination) {
+  
+    // Check destination location
+    if (!bookingData.destination?.mainAddress) {
       errors.destination = t('travelInfo.errors.requiredLocations');
+    } else if (!validateExactLocation(bookingData.destination)) {
+      errors.destination = t('errors.exactAddressRequired');
     }
+  
+    // Check stopovers
+    bookingData.stopovers.forEach((stopover, index) => {
+      if (stopover.mainAddress && !validateExactLocation(stopover)) {
+        errors[`stopover_${index}`] = t('errors.exactAddressRequired');
+      }
+    });
 
     if (!bookingData.pickupDateTime) {
       errors.pickupDate = t('travelInfo.errors.pickupDateRequired');
@@ -455,20 +475,6 @@ export const TravelInfoPage = () => {
       bookingData.pickup.value.place_id === bookingData.destination.value.place_id) {
       errors.destination = t('travelInfo.errors.invalidRoute');
     }
-
-    if (!validateExactLocation(bookingData.pickup)) {
-      errors.pickup = t('errors.exactAddressRequired');
-    }
-
-    if (!validateExactLocation(bookingData.destination)) {
-      errors.destination = t('errors.exactAddressRequired');
-    }
-
-    bookingData.stopovers.forEach((stopover, index) => {
-      if (!validateExactLocation(stopover)) {
-        errors[`stopover_${index}`] = t('errors.exactAddressRequired');
-      }
-    });
 
     setValidationErrors(errors);
 
@@ -671,15 +677,15 @@ export const TravelInfoPage = () => {
 
   const handleLocationUpdate = (newLocation: Location | null, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
     if (!bookingData) return;
-
+  
     const updatedData = { ...bookingData };
-
+  
     if (newLocation) {
       // Parse address immediately when location is selected
       const parsedAddress = parseNetherlandsAddress(
         newLocation.value.description || newLocation.mainAddress || ''
       );
-
+  
       // Create location with parsed address details
       const locationWithAddress: Location = {
         ...newLocation,
@@ -694,87 +700,37 @@ export const TravelInfoPage = () => {
         description: newLocation.value.description,
         secondaryAddress: newLocation.value.structured_formatting?.secondary_text || '',
       };
-
-      if (type === 'stopover' && typeof index !== 'undefined') {
-        if (!locationWithAddress.mainAddress) {
-          alert(t('errors.invalidStopover'));
-          return;
-        }
-        updatedData.stopovers[index] = locationWithAddress;
-      } else if (type === 'pickup') {
+  
+      // Update the appropriate location
+      if (type === 'pickup') {
         updatedData.pickup = locationWithAddress;
         updatedData.sourceAddress = locationWithAddress.mainAddress || '';
-
-        if (locationWithAddress.mainAddress === updatedData.destination?.mainAddress) {
-          alert(t('errors.duplicateLocation'));
-          return;
-        }
       } else if (type === 'destination') {
         updatedData.destination = locationWithAddress;
         updatedData.destinationAddress = locationWithAddress.mainAddress || '';
-
-        if (!locationWithAddress.mainAddress?.toLowerCase().includes('airport')) {
-          updatedData.flightNumber = '';
-        }
-
-        if (locationWithAddress.mainAddress === updatedData.pickup?.mainAddress) {
-          alert(t('errors.duplicateLocation'));
-          return;
-        }
+      } else if (type === 'stopover' && typeof index !== 'undefined') {
+        updatedData.stopovers[index] = locationWithAddress;
       }
-    } else {
-      // Handle clearing the location
-      if (type === 'stopover' && typeof index !== 'undefined') {
-        updatedData.stopovers[index] = {
-          ...({} as Location),
-          exactAddress: {
-            streetName: '',
-            houseNumber: '',
-            postalCode: '',
-            city: '',
-            businessName: ''
-          }
-        };
-      } else if (type === 'pickup') {
-        updatedData.pickup = {
-          ...({} as Location),
-          exactAddress: {
-            streetName: '',
-            houseNumber: '',
-            postalCode: '',
-            city: '',
-            businessName: ''
-          }
-        };
-        updatedData.sourceAddress = '';
-      } else if (type === 'destination') {
-        updatedData.destination = {
-          ...({} as Location),
-          exactAddress: {
-            streetName: '',
-            houseNumber: '',
-            postalCode: '',
-            city: '',
-            businessName: ''
-          }
-        };
-        updatedData.destinationAddress = '';
-        updatedData.flightNumber = '';
-      }
-    }
-
-    // Automatically show exact location form when location is selected
-    if (newLocation) {
+  
+      // Clear validation error for this location
+      const newValidationErrors = { ...validationErrors };
+      if (type === 'pickup') delete newValidationErrors.pickup;
+      else if (type === 'destination') delete newValidationErrors.destination;
+      else if (type === 'stopover') delete newValidationErrors[`stopover_${index}`];
+      setValidationErrors(newValidationErrors);
+  
+      // Show exact location modal with parsed address
       setShowExactLocationModal({
         isOpen: true,
-        location: newLocation,
-        type: type as 'pickup' | 'stopover' | 'destination',
+        location: locationWithAddress,
+        type,
         index
       });
     }
-
+  
     updateBookingData(updatedData);
   };
+  
   const swapLocations = () => {
     if (!bookingData?.pickup || !bookingData?.destination) return;
 
