@@ -242,6 +242,7 @@ export interface WebsiteTranslations {
     noBookings: string;
     title: string;
   };
+  
   features: {
     prices: {
       title: string;
@@ -259,5 +260,45 @@ export interface WebsiteTranslations {
     description1: string;
     description2: string;
     imageAlt: string;
+  };
+  services: {
+    title: string;
+    subtitle: string;
+    local: {
+      title: string;
+      description: string;
+    };
+    airport: {
+      title: string;
+      description: string;
+      viewOptions: string;
+      airports: {
+        amsterdam: string;
+        rotterdam: string;
+        eindhoven: string;
+      };
+    };
+    care: {
+      title: string;
+      description: string;
+    };
+    business: {
+      title: string;
+      description: string;
+    };
+    popular: {
+      title: string;
+      description: string;
+      viewOptions: string;
+      locations: {
+        walibi: string;
+        efteling: string;
+        gelredome: string;
+      };
+    };
+    event: {
+      title: string;
+      description: string;
+    };
   };
 }

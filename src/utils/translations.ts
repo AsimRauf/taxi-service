@@ -262,5 +262,46 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     description2: t('features.description2'),
     imageAlt: t('features.imageAlt')
   },
+  services: {
+    title: t('services.title'),
+    subtitle: t('services.subtitle'),
+    local: {
+      title: t('services.local.title'),
+      description: t('services.local.description')
+    },
+    airport: {
+      title: t('services.airport.title'),
+      description: t('services.airport.description'),
+      viewOptions: t('services.airport.viewOptions'),
+      airports: {
+        amsterdam: t('services.airport.airports.amsterdam'),
+        rotterdam: t('services.airport.airports.rotterdam'),
+        eindhoven: t('services.airport.airports.eindhoven')
+      }
+    },
+    care: {
+      title: t('services.care.title'),
+      description: t('services.care.description')
+    },
+    business: {
+      title: t('services.business.title'),
+      description: t('services.business.description')
+    },
+    popular: {
+      title: t('services.popular.title'),
+      description: t('services.popular.description'),
+      viewOptions: t('services.popular.viewOptions'),
+      locations: {
+        walibi: t('services.popular.locations.walibi'),
+        efteling: t('services.popular.locations.efteling'),
+        gelredome: t('services.popular.locations.gelredome')
+      }
+    },
+    event: {
+      title: t('services.event.title'),
+      description: t('services.event.description')
+    }
+  },
+  
   locale: locale
 });

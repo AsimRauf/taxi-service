@@ -33,17 +33,57 @@
       "description": "Best value for money with transparent pricing and no hidden fees"
     },
     "coverage": {
-      "title": "Wide Coverage",
-      "description": "Service available throughout the city and surrounding areas"
+      "title": "Anywhere in NL",
+      "description": "Travel to and from any location in the Netherlands, and airports"
     },
     "reliability": {
       "title": "24/7 Reliability",
       "description": "Professional drivers and punctual service around the clock"
     },
-    "heading": "Your Trusted Transportation Partner",
-    "description1": "We provide premium taxi services with a focus on comfort, safety, and reliability.",
-    "description2": "Our experienced drivers and modern fleet ensure a smooth journey every time.",
+    "heading": "Book a Taxi Anywhere in the Netherlands",
+    "description1": "Taxiritje makes it easy to book a taxi to any location in the Netherlands and major airports. We work with certified taxi companies to ensure reliable and high-quality service.",
+    "description2": "Book online for airport transfers, business trips, healthcare visits, festivals, or day trips. Choose from standard, luxury, electric, or minibus transport. No extra luggage fees, and you can modify or cancel your ride for free up to three hours before departure.",
     "imageAlt": "Taxi Service Vehicle"
+  },
+  "services": {
+    "title": "Our Services",
+    "subtitle": "Choose from our wide range of professional taxi services",
+    "local": {
+      "title": "Local taxi services",
+      "description": "Through our website you can order a taxi from and to any location in the Netherlands. It doesn't matter if you need a taxi within 20 minutes or book your ride in advance."
+    },
+    "airport": {
+      "title": "Airport taxi",
+      "description": "You can easily book a taxi to and from airports in the Netherlands, Germany and Belgium. We keep an eye on your flight and wait if delayed.",
+      "viewOptions": "View Options",
+      "airports": {
+        "amsterdam": "Taxi Amsterdam Airport",
+        "rotterdam": "Taxi Rotterdam The Hague Airport",
+        "eindhoven": "Taxi Eindhoven Airport"
+      }
+    },
+    "care": {
+      "title": "Care transport",
+      "description": "We offer tailor-made care transport for people who are unable to travel themselves. For patient transport from or to healthcare facilities."
+    },
+    "business": {
+      "title": "Business transport",
+      "description": "For business taxi rides, we are the ideal service in the Netherlands. Companies can easily order taxi rides on account with a business account."
+    },
+    "popular": {
+      "title": "Popular Locations",
+      "description": "Our drivers ride to and from popular locations in the Netherlands. Perfect for trips to amusement parks, zoos, theaters or stadiums.",
+      "viewOptions": "View Options",
+      "locations": {
+        "walibi": "Taxi to Walibi",
+        "efteling": "Taxi to Efteling",
+        "gelredome": "Taxi to GelreDome"
+      }
+    },
+    "event": {
+      "title": "Event Transportation",
+      "description": "Perfect for parties, festivals or other events. No one has to stay sober; after the event we will bring you home safely."
+    }
   },
   "booking": {
     "title": "Comfort Taxi Service",

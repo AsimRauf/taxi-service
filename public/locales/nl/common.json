@@ -27,6 +27,64 @@
     "formTitle": "Uw Boekingsgegevens",
     "returnPlaceholder": "Selecteer retourdatum en tijd"
   },
+  "features": {
+    "heading": "Waarom voor ons kiezen?",
+    "description1": "Wij bieden betrouwbare taxidiensten met professionele chauffeurs die u veilig naar uw bestemming brengen.",
+    "description2": "Met onze moderne vloot en geavanceerde boekingssysteem zorgen we voor een comfortabele reis.",
+    "imageAlt": "Taxi Service Features",
+    "prices": {
+      "title": "Transparante Prijzen",
+      "description": "Vaste tarieven zonder verborgen kosten. U weet vooraf precies wat u betaalt."
+    },
+    "coverage": {
+      "title": "Landelijke Dekking",
+      "description": "Wij rijden door heel Nederland en naar belangrijke bestemmingen in België en Duitsland."
+    },
+    "reliability": {
+      "title": "Betrouwbare Service",
+      "description": "24/7 beschikbaar met stipte ophaaltijden en professionele chauffeurs."
+    }
+  },
+  "services": {
+    "title": "Onze Diensten",
+    "subtitle": "Kies uit ons uitgebreide aanbod van professionele taxidiensten",
+    "local": {
+      "title": "Lokale taxidiensten",
+      "description": "Via onze website kunt u een taxi bestellen van en naar elke locatie in Nederland. Het maakt niet uit of u binnen 20 minuten een taxi nodig heeft of uw rit vooraf wilt boeken."
+    },
+    "airport": {
+      "title": "Luchthaven taxi",
+      "description": "U kunt eenvoudig een taxi boeken van en naar luchthavens in Nederland, Duitsland en België. We houden uw vlucht in de gaten en wachten als deze vertraagd is.",
+      "viewOptions": "Bekijk Opties",
+      "airports": {
+        "amsterdam": "Taxi Schiphol Airport",
+        "rotterdam": "Taxi Rotterdam The Hague Airport",
+        "eindhoven": "Taxi Eindhoven Airport"
+      }
+    },
+    "care": {
+      "title": "Zorgvervoer",
+      "description": "Wij bieden op maat gemaakt zorgvervoer voor mensen die zelf niet kunnen reizen. Voor patiëntenvervoer van of naar een zorginstelling."
+    },
+    "business": {
+      "title": "Zakelijk vervoer",
+      "description": "Voor zakelijke taxiritten zijn wij de ideale dienst in Nederland. Bedrijven kunnen eenvoudig taxiritten op rekening bestellen met een zakelijk account."
+    },
+    "popular": {
+      "title": "Populaire Locaties",
+      "description": "Onze chauffeurs rijden van en naar populaire locaties in Nederland. Perfect voor uitstapjes naar pretparken, dierentuinen, theaters of stadions.",
+      "viewOptions": "Bekijk Opties",
+      "locations": {
+        "walibi": "Taxi naar Walibi",
+        "efteling": "Taxi naar Efteling",
+        "gelredome": "Taxi naar GelreDome"
+      }
+    },
+    "event": {
+      "title": "Evenementenvervoer",
+      "description": "Perfect voor feesten, festivals of andere evenementen. Niemand hoeft nuchter te blijven; na het evenement brengen wij u veilig thuis."
+    }
+  },
   "booking": {
     "title": "Comfort Taxi Service",
     "from": "Van",
