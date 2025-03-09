@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern Taxi Service Platform
 
-## Getting Started
+A full-featured taxi booking platform built with Next.js, focusing on airport transfers and professional transportation services across the Netherlands.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 🚕 Real-time taxi booking system
+- 🌍 Multi-language support (English/Dutch)
+- 🗺️ Google Places integration for accurate location selection
+- 💼 Business and individual booking options
+- ✈️ Specialized airport transfer services
+  - Schiphol Airport
+  - Rotterdam The Hague Airport
+  - Eindhoven Airport
+- 🧳 Advanced luggage management
+- 📅 Return trip scheduling
+- 💰 Dynamic pricing system
+- 📱 Responsive design
+
+## Tech Stack
+
+- Next.js 13
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- next-i18next
+- Google Maps API
+- MongoDB
+
+
+
+## Project Structure
+
+```
+├── public/
+│   ├── locales/         # Translation files
+│   └── images/          # Static images
+├── src/
+│   ├── components/      # Reusable components
+│   ├── pages/          # Next.js pages
+│   ├── hooks/          # Custom hooks
+│   ├── utils/          # Utility functions
+│   ├── types/          # TypeScript types
+│   └── models/         # MongoDB models
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Key Features
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Booking System
+- Multi-step booking process
+- Location validation
+- Price calculation
+- Luggage management
+- Return trip options
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Airport Transfers
+- Fixed price transfers
+- Flight tracking integration
+- Meet & Greet service
+- 24/7 availability
 
-## Learn More
+### Business Features
+- Business accounts
+- Corporate billing
+- Special rates
+- Priority service
 
-To learn more about Next.js, take a look at the following resources:
+## Contributing
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
+MIT License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Contact
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+For support or inquiries, please contact [info@taxiritje.nl]
