@@ -26,8 +26,8 @@ export const ServicesSection = ({ translations }: ServicesSectionProps) => {
         icon: <Plane className="w-6 h-6" />,
         description: translations.services.airport.description,
         expandContent: [
-          { name: translations.services.airport.airports.amsterdam, link: '/booking/amsterdam-airport' },
-          { name: translations.services.airport.airports.rotterdam, link: '/booking/rotterdam-airport' },
+          { name: translations.services.airport.airports.amsterdam, link: '/booking/ams-airport' },
+          { name: translations.services.airport.airports.rotterdam, link: '/booking/rotterdam-hague-airport' },
           { name: translations.services.airport.airports.eindhoven, link: '/booking/eindhoven-airport' }
         ]
       },
