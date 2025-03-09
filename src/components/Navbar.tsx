@@ -31,7 +31,7 @@ export const Navbar = () => {
                 {/* Logo - Make it smaller on tiny screens */}
                 <div className="flex-shrink-0">
                     <Link href="/" className="font-montserrat text-base xs:text-lg sm:text-xl font-bold text-secondary whitespace-nowrap">
-                        <span className="text-primary">Taxi</span>Service
+                        <span className="text-primary">Taxi</span>Ritje
                     </Link>
                 </div>
 
