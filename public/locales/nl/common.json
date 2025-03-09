@@ -433,5 +433,25 @@
     "maxStopovers": "Maximaal 3 tussenstops toegestaan",
     "duplicateLocation": "Ophaal- en bestemmingslocaties kunnen niet hetzelfde zijn",
     "invalidLocationDetails": "Voer geldige locatiegegevens in"
+  },
+  "airports": {
+    "schiphol": {
+      "title": "Schiphol Luchthaven Transfer",
+      "description": "Boek uw betrouwbare luchthaventransfer van en naar Amsterdam Airport Schiphol. Vaste prijzen, professionele chauffeurs en 24/7 service."
+    },
+    "rotterdam": {
+      "title": "Rotterdam The Hague Airport Transfer",
+      "description": "Boek uw betrouwbare luchthaventransfer van en naar Rotterdam The Hague Airport. Vaste prijzen, professionele chauffeurs en 24/7 service."
+    },
+    "eindhoven": {
+      "title": "Eindhoven Airport Transfer",
+      "description": "Boek uw betrouwbare luchthaventransfer van en naar Eindhoven Airport. Vaste prijzen, professionele chauffeurs en 24/7 service."
+    },
+    "features": {
+      "fixedPrice": "Vaste prijs garantie",
+      "service24h": "24/7 service beschikbaar",
+      "flightTracking": "Gratis vlucht tracking",
+      "meetGreet": "Meet & Greet service"
+    }
   }
 }

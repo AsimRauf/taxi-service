@@ -442,5 +442,25 @@
     "maxStopovers": "Maximum 3 stopovers allowed",
     "duplicateLocation": "Pickup and destination locations cannot be the same",
     "invalidLocationDetails": "Please provide valid location details"
+  },
+  "airports": {
+    "schiphol": {
+      "title": "Schiphol Airport Transfer",
+      "description": "Book your reliable airport transfer to and from Amsterdam Airport Schiphol. Fixed prices, professional drivers, and 24/7 service."
+    },
+    "rotterdam": {
+      "title": "Rotterdam The Hague Airport Transfer",
+      "description": "Book your reliable airport transfer to and from Rotterdam The Hague Airport. Fixed prices, professional drivers, and 24/7 service."
+    },
+    "eindhoven": {
+      "title": "Eindhoven Airport Transfer",
+      "description": "Book your reliable airport transfer to and from Eindhoven Airport. Fixed prices, professional drivers, and 24/7 service."
+    },
+    "features": {
+      "fixedPrice": "Fixed price guarantee",
+      "service24h": "24/7 service available",
+      "flightTracking": "Free flight tracking",
+      "meetGreet": "Meet & Greet service"
+    }
   }
 }
