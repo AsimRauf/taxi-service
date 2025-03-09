@@ -43,17 +43,18 @@ export const Navbar = () => {
         <div className="w-[95%] px-1 xs:px-2 sm:px-4 py-1 xs:py-2 sm:py-4 fixed top-0 left-0 right-0 z-50 mx-auto">
             <nav className="max-w-6xl mx-auto bg-white rounded-full shadow-lg px-1.5 xs:px-2 sm:px-6 py-1.5 xs:py-2 sm:py-3 flex items-center justify-between border border-secondary/20">
                 {/* Logo - Make it smaller on tiny screens */}
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 mt-[3px] ml-[2px]">
                     <Link href="/" className="flex items-center">
                         <Image
                             src="/images/Logo.png"
                             alt="TaxiRitje Logo"
                             width={140}
                             height={20}
-                            className="object-cover"
+                            className="w-[100px] xs:w-[120px] sm:w-[140px] object-cover"
                         />
                     </Link>
                 </div>
+
 
                 {/* Desktop Navigation */}
                 <div className="hidden md:flex items-center space-x-8">
@@ -119,7 +120,7 @@ export const Navbar = () => {
                             leaveFrom="opacity-100 translate-y-0"
                             leaveTo="opacity-0 translate-y-1"
                         >
-                            <Popover.Panel className="absolute right-0 z-50 mt-3 w-80 transform">
+                            <Popover.Panel className="absolute right-[-50] z-50 mt-3 w-80 transform">
                                 <div className="overflow-hidden rounded-xl shadow-lg ring-1 ring-black ring-opacity-5">
                                     <div className="relative bg-white p-4">
                                         <h3 className="font-medium mb-2">{t('nav.pendingBookings')}</h3>
@@ -277,7 +278,7 @@ export const Navbar = () => {
                 </div>
 
                 {/* Mobile Menu */}
-                <div className={`absolute left-2 right-2 top-10 mt-2 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+                <div className={`absolute left-2 right-2 mt-[150px] top-[-70] mt-2 z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
                     <Transition
                         show={isMobileMenuOpen}
                         enter="transition ease-out duration-200"
