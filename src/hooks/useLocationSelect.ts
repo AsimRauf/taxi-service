@@ -54,6 +54,34 @@ export const handleLocationSelect = async (
         return;
     }
 
+    // Handle manual entries (when place_id is 'manual-entry')
+    if (selected.value.place_id === 'manual-entry') {
+        const manualLocation: Location = {
+            label: selected.value.description,
+            mainAddress: selected.value.description,
+            secondaryAddress: '',
+            value: {
+                place_id: 'manual-entry',
+                description: selected.value.description,
+                structured_formatting: {
+                    main_text: selected.value.description,
+                    secondary_text: '',
+                    place_id: 'manual-entry'
+                }
+            },
+            description: selected.value.description
+        };
+
+        if (type === 'stopover' && typeof index === 'number') {
+            const newStopovers = [...formData.stopovers];
+            newStopovers[index] = manualLocation;
+            setFormData({ ...formData, stopovers: newStopovers });
+        } else {
+            setFormData({ ...formData, [type]: manualLocation });
+        }
+        return;
+    }
+
     const geocoder = new google.maps.Geocoder();
     const mainLocale = translations.locale;
     const secondaryLocale = mainLocale === 'nl' ? 'en' : 'nl';

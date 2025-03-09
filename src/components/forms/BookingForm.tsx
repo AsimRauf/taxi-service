@@ -1,8 +1,18 @@
 import { useState } from 'react';
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
+import { SingleValue } from 'react-select';
+type SelectOption = {
+    label: string;
+    value: {
+        description: string;
+        place_id: string;
+        structured_formatting?: {
+            secondary_text?: string;
+        };
+    };
+};
 import { LocationInput } from './booking/LocationInput';
 import { Location, BookingFormData, BookingData } from '@/types/booking';
-import { handleLocationSelect } from '@/hooks/useLocationSelect';
 import { LuggageCheckbox } from './booking/LuggageCheckbox';
 import { DateSelector } from './booking/DateSelector';
 import { PassengerSelector } from './booking/PassengerSelector';
@@ -35,11 +45,43 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleLocationUpdate = (location: Location, type: 'pickup' | 'destination') => {
-        setFormData(prev => ({
-            ...prev,
-            [type]: location
-        }));
+    // Update the handleLocationUpdate function to handle all location types
+    const handleLocationUpdate = (place: SingleValue<SelectOption>, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
+        if (!place) {
+            if (type === 'stopover' && typeof index === 'number') {
+                const newStopovers = [...formData.stopovers];
+                newStopovers[index] = null as unknown as Location;
+                setFormData(prev => ({ ...prev, stopovers: newStopovers }));
+            } else {
+                setFormData(prev => ({ ...prev, [type]: null }));
+            }
+            return;
+        }
+    
+        const location: Location = {
+            label: place.label,
+            mainAddress: place.value.description,
+            secondaryAddress: place.value.structured_formatting?.secondary_text || '',
+            description: place.value.description,
+            value: {
+                place_id: place.value.place_id,
+                description: place.value.description,
+                structured_formatting: {
+                    main_text: place.value.description,
+                    secondary_text: place.value.structured_formatting?.secondary_text || '',
+                    place_id: place.value.place_id
+                }
+            }
+        };
+    
+        if (type === 'stopover' && typeof index === 'number') {
+            const newStopovers = [...formData.stopovers];
+            newStopovers[index] = location;
+            setFormData(prev => ({ ...prev, stopovers: newStopovers }));
+        } else {
+            setFormData(prev => ({ ...prev, [type]: location }));
+        }
+    
         // Clear validation errors when input changes
         setValidationErrors(prev => ({
             ...prev,
@@ -156,25 +198,10 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
                 <LocationInput
                     value={formData.pickup}
-                    onChange={(place) => {
-                        if (!place) return;
-                        const location: Location = {
-                          ...place.value,
-                          label: place.label,
-                          mainAddress: place.value.description,
-                          description: place.value.description,
-                          secondaryAddress: place.value.structured_formatting?.secondary_text || '',
-                          value: {
-                            place_id: place.value.place_id,
-                            description: place.value.description,
-                            structured_formatting: place.value.structured_formatting
-                          }
-                        };
-                        handleLocationUpdate(location, 'pickup');
-                      }}
+                    onChange={(place) => handleLocationUpdate(place, 'pickup')}
                     placeholder={t('hero.pickupPlaceholder')}
                     translations={translations}
-                    onClear={() => setFormData(prev => ({ ...prev, pickup: null }))}
+                    onClear={() => handleLocationUpdate(null, 'pickup')}
                 />
                 {validationErrors.pickup && <span className="text-red-500 text-sm">{validationErrors.pickup}</span>}
             </div>
@@ -204,14 +231,10 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         <span className="block text-sm font-medium text-gray-600">{translations.booking.via}</span>
                         <LocationInput
                             value={stopover}
-                            onChange={(place) => handleLocationSelect(place, 'stopover', formData, setFormData, translations, index)}
+                            onChange={(place) => handleLocationUpdate(place, 'stopover', index)}
                             placeholder={`${translations.hero.stopover} ${index + 1}`}
                             translations={translations}
-                            onClear={() => {
-                                const newStopovers = [...formData.stopovers];
-                                newStopovers[index] = null as unknown as Location;
-                                setFormData(prev => ({ ...prev, stopovers: newStopovers }));
-                            }}
+                            onClear={() => handleLocationUpdate(null, 'stopover', index)}
                         />
                     </div>
                     <div className="flex justify-center pt-8">
@@ -240,10 +263,10 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     <span className="block text-sm font-medium text-gray-600">{translations.booking.to}</span>
                     <LocationInput
                         value={formData.destination}
-                        onChange={(place) => handleLocationSelect(place, 'destination', formData, setFormData, translations)}
+                        onChange={(place) => handleLocationUpdate(place, 'destination')}
                         placeholder={translations.hero.destinationPlaceholder}
                         translations={translations}
-                        onClear={() => setFormData(prev => ({ ...prev, destination: null }))}
+                        onClear={() => handleLocationUpdate(null, 'destination')}
                     />
                 </div>
                 <div className="flex justify-center pt-7">
