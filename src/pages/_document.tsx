@@ -4,7 +4,7 @@ export default function Document() {
   return (
     <Html>
       <Head>
-        {/* No need to include Google Maps script here */}
+        <link rel="icon" href="/favicon.ico" />
       </Head>
       <body>
         <Main />
