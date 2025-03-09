@@ -136,7 +136,7 @@ const ExactLocationModal = ({
     setLocalStreetName(location.exactAddress?.streetName || parsedAddress.streetName || '');
     setLocalHouseNumber(location.exactAddress?.houseNumber || parsedAddress.houseNumber || '');
   }, [
-    location.value.place_id, 
+    location.value.place_id,
     parsedAddress,
     location.exactAddress?.streetName,
     location.exactAddress?.houseNumber
@@ -384,28 +384,21 @@ export const TravelInfoPage = () => {
   }>({ isOpen: false });
 
   const validateExactLocation = (location: Location) => {
-    // First check if location and exactAddress exist
-    if (!location || !location.mainAddress || !location.exactAddress) return false;
-  
-    const { streetName, houseNumber, businessName } = location.exactAddress;
-  
-    // Street name is always required
-    if (!streetName?.trim()) {
-      return false;
-    }
-  
-    // If there's a business name, house number is optional
-    if (businessName?.trim()) {
+    // If it's a business location (like an airport), validate differently
+    if (location.mainAddress?.toLowerCase().includes('airport') ||
+      location.exactAddress?.businessName) {
       return true;
     }
-  
-    // If no business name, house number is required
-    if (!houseNumber?.trim()) {
-      return false;
-    }
-  
-    return true;
+
+    // For non-business addresses, check for street name and house number
+    if (!location || !location.mainAddress || !location.exactAddress) return false;
+
+    const { streetName, houseNumber } = location.exactAddress;
+
+    return Boolean(streetName?.trim() && houseNumber?.trim());
   };
+
+
 
   useEffect(() => {
     const savedData = localStorage.getItem('bookingData');
@@ -439,14 +432,14 @@ export const TravelInfoPage = () => {
     } else if (!validateExactLocation(bookingData.pickup)) {
       errors.pickup = t('errors.exactAddressRequired');
     }
-  
+
     // Check destination location
     if (!bookingData.destination?.mainAddress) {
       errors.destination = t('travelInfo.errors.requiredLocations');
     } else if (!validateExactLocation(bookingData.destination)) {
       errors.destination = t('errors.exactAddressRequired');
     }
-  
+
     // Check stopovers
     bookingData.stopovers.forEach((stopover, index) => {
       if (stopover.mainAddress && !validateExactLocation(stopover)) {
@@ -677,15 +670,15 @@ export const TravelInfoPage = () => {
 
   const handleLocationUpdate = (newLocation: Location | null, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
     if (!bookingData) return;
-  
+
     const updatedData = { ...bookingData };
-  
+
     if (newLocation) {
       // Parse address immediately when location is selected
       const parsedAddress = parseNetherlandsAddress(
         newLocation.value.description || newLocation.mainAddress || ''
       );
-  
+
       // Create location with parsed address details
       const locationWithAddress: Location = {
         ...newLocation,
@@ -700,7 +693,7 @@ export const TravelInfoPage = () => {
         description: newLocation.value.description,
         secondaryAddress: newLocation.value.structured_formatting?.secondary_text || '',
       };
-  
+
       // Update the appropriate location
       if (type === 'pickup') {
         updatedData.pickup = locationWithAddress;
@@ -711,14 +704,14 @@ export const TravelInfoPage = () => {
       } else if (type === 'stopover' && typeof index !== 'undefined') {
         updatedData.stopovers[index] = locationWithAddress;
       }
-  
+
       // Clear validation error for this location
       const newValidationErrors = { ...validationErrors };
       if (type === 'pickup') delete newValidationErrors.pickup;
       else if (type === 'destination') delete newValidationErrors.destination;
       else if (type === 'stopover') delete newValidationErrors[`stopover_${index}`];
       setValidationErrors(newValidationErrors);
-  
+
       // Show exact location modal with parsed address
       setShowExactLocationModal({
         isOpen: true,
@@ -727,10 +720,10 @@ export const TravelInfoPage = () => {
         index
       });
     }
-  
+
     updateBookingData(updatedData);
   };
-  
+
   const swapLocations = () => {
     if (!bookingData?.pickup || !bookingData?.destination) return;
 
@@ -821,7 +814,7 @@ export const TravelInfoPage = () => {
     });
   };
 
-  
+
 
   const renderPickupLocation = () => (
     <div className="space-y-4">
