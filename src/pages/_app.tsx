@@ -5,6 +5,30 @@ import Layout from '@/components/Layout'
 import { Suspense, useEffect, useRef } from 'react'
 import { AuthProvider } from '@/contexts/AuthContext'
 import { EditProvider } from '@/contexts/EditContext'
+import { DefaultSeo } from 'next-seo'
+
+const seoConfig = {
+  title: "TaxiRitje - Professionele Taxiservice Nederland",
+  description: "Boek betrouwbare taxidiensten in heel Nederland. Luchthaventransfers, zakelijk vervoer & meer. Vaste prijzen, 24/7 service.",
+  canonical: "https://taxiritje.nl",
+  openGraph: {
+    type: 'website',
+    locale: 'nl_NL',
+    url: 'https://taxiritje.nl',
+    siteName: 'TaxiRitje',
+    images: [{
+      url: '/images/Logo.png',
+      width: 800,
+      height: 600,
+      alt: 'TaxiRitje Nederland',
+    }],
+  },
+  additionalLinkTags: [{
+    rel: 'alternate',
+    hrefLang: 'nl',
+    href: 'https://taxiritje.nl'
+  }]
+}
 
 declare global {
   interface Window {
@@ -37,11 +61,12 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <Suspense fallback="loading">
+        <DefaultSeo {...seoConfig} />
         <AuthProvider>
           <EditProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
           </EditProvider>
         </AuthProvider>
       </Suspense>

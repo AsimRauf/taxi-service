@@ -14,15 +14,39 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
   }
 }
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "TaxiService",
+  "name": "TaxiRitje",
+  "areaServed": {
+    "@type": "Country",
+    "name": "Nederland"
+  },
+  "description": "Professionele taxiservice in heel Nederland",
+  "availableLanguage": ["Nederlands", "Engels"],
+  "priceRange": "€€",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "NL"
+  },
+  "url": "https://taxiritje.nl"
+}
+
 export default function Home() {
   const { t } = useTranslation('common')
   const translations = createTranslationsObject(t, 'nl')
 
   return (
-    <main>
-      <HeroSection translations={translations} />
-      <FeaturesSection translations={translations} />
-      <ServicesSection translations={translations} />
-    </main>
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <main>
+        <HeroSection translations={translations} />
+        <FeaturesSection translations={translations} />
+        <ServicesSection translations={translations} />
+      </main>
+    </>
   )
 }
