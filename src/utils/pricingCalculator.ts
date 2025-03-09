@@ -77,30 +77,27 @@ const extractMainLocation = (address: string, exactAddress?: {
         if (exactAddress.businessName) {
             const canonicalBusiness = findCanonicalName(exactAddress.businessName);
             if (fixedRoutes.hasOwnProperty(canonicalBusiness)) {
-                console.log('📍 Found canonical business name:', canonicalBusiness);
                 return canonicalBusiness;
             }
         }
         // Check city name from exact address
         if (exactAddress.city) {
-            const canonicalCity = findCanonicalName(exactAddress.city);
-            console.log('📍 Using canonical city name:', canonicalCity);
+            // Remove ", Nederland" or ", Netherlands" from city name
+            const cleanCity = exactAddress.city.replace(/,?\s*(Nederland|Netherlands)$/i, '').trim();
+            const canonicalCity = findCanonicalName(cleanCity);
             return canonicalCity;
         }
     }
 
     // Fallback to original address parsing
     const parts = address.split(',');
-    const mainLocation = parts[0].trim();
+    // Take first part and remove ", Nederland" or ", Netherlands"
+    const mainLocation = parts[0].replace(/,?\s*(Nederland|Netherlands)$/i, '').trim();
     const canonicalLocation = findCanonicalName(mainLocation);
-    
-    console.log('📍 Location extraction:', { 
-        original: mainLocation,
-        canonical: canonicalLocation 
-    });
     
     return canonicalLocation;
 };
+
 
 const findFixedPrice = (
     source: { address: string; exact?: { businessName: string; city: string; } },
