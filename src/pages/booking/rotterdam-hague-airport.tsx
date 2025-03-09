@@ -9,7 +9,7 @@ const RotterdamBookingPage = () => {
     const { t } = useTranslation()
     const router = useRouter()
     const translations = createTranslationsObject(t, router.locale || 'en')
-    
+
     const rotterdamLocation = {
         label: "Rotterdam The Hague Airport",
         mainAddress: "Rotterdam The Hague Airport, Rotterdam Airportplein 60, 3045 AP Rotterdam, Netherlands",
@@ -27,10 +27,10 @@ const RotterdamBookingPage = () => {
     }
 
     return (
-        <section className="bg-gradient-to-b from-primary to-primary/90 pt-32 pb-16">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto px-4">
+        <section className="bg-gradient-to-b from-primary to-primary/90 pt-32 pb-16 p-6 lg:p-10">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 lg:mt-[100px]">
                 <div className="bg-white p-6 rounded-2xl shadow-xl">
-                    <BookingForm 
+                    <BookingForm
                         defaultDestination={rotterdamLocation}
                         {...translations}
                     />
@@ -40,7 +40,7 @@ const RotterdamBookingPage = () => {
                         {t('airports.rotterdam.title', 'Rotterdam Airport Transfer')}
                     </h1>
                     <p className="text-white/80 text-lg">
-                        {t('airports.rotterdam.description', 
+                        {t('airports.rotterdam.description',
                             'Book your reliable airport transfer to and from Rotterdam The Hague Airport. Fixed prices, professional drivers, and 24/7 service.')}
                     </p>
                     <ul className="space-y-4 text-white/80">
