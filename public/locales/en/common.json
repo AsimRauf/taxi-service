@@ -7,7 +7,11 @@
     "service1": "Taxi Service",
     "service2": "Business Transport",
     "profile": "Profile",
-    "signOut": "Sign Out"
+    "signOut": "Sign Out",
+    "pendingBookings": "Pending Bookings",
+    "noBookings": "No pending bookings",
+    "viewAll": "View All Bookings",
+    "cart": "Booking Cart"
   },
   "hero": {
     "title": "Book Your Ride with Confidence",

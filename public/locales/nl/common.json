@@ -7,7 +7,11 @@
     "service1": "Taxi Service",
     "service2": "Zakelijk Vervoer",
     "profile": "Profiel",
-    "signOut": "Uitloggen"
+    "signOut": "Uitloggen",
+    "pendingBookings": "Openstaande Boekingen",
+    "noBookings": "Geen openstaande boekingen",
+    "viewAll": "Alle Boekingen Bekijken",
+    "cart": "Boekingsmandje"
   },
   "hero": {
     "title": "Boek Uw Rit met Vertrouwen",
