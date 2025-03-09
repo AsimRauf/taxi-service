@@ -13,15 +13,18 @@ import { useRouter } from 'next/router';
 import { createTranslationsObject } from '@/utils/translations';
 import { useTranslation } from 'next-i18next';
 
-
-export const BookingForm = () => {
+interface BookingFormProps {
+    defaultDestination?: Location;
+  }
+  
+export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const { t } = useTranslation();
     const router = useRouter();
     const translations = createTranslationsObject(t, router.locale || 'en');
     const [formData, setFormData] = useState<BookingFormData>({
         pickup: null,
         stopovers: [],
-        destination: null,
+        destination: defaultDestination || null,
         hasLuggage: false,
         travelers: 1,
         pickupDate: undefined,
