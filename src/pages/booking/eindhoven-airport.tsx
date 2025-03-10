@@ -27,9 +27,9 @@ const EindhovenBookingPage = () => {
     }
 
     return (
-        <section className="bg-gradient-to-b from-primary to-primary/90 pt-32 pb-16 p-4 lg:p-10">
+        <section className="bg-gradient-to-b from-primary to-primary/90 pt-32 pb-16 p-2 lg:p-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto px-4 lg:mt-[100px]">
-                <div className="bg-white p-6 rounded-2xl shadow-xl">
+                <div className="bg-white p-3 rounded-2xl shadow-xl">
                     <BookingForm 
                         defaultDestination={eindhovenLocation} 
                         {...translations}
