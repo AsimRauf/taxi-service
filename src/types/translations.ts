@@ -110,6 +110,23 @@ export interface WebsiteTranslations {
         otherPhoneRequired: string;
       };
     };
+    exactLocation: string;
+    businessName: string;
+    streetName: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+    enterStreetName: string;
+    enterHouseNumber: string;
+    enterBusinessName: string;
+    locationDetails: string;
+    addExactLocation: string;
+    errors: {
+      streetRequired: string;
+      houseNumberRequired: string;
+      exactAddressRequired: string;
+      selectLocationFirst: string;
+    };
   };
   luggage: {
     title: string;
@@ -216,6 +233,9 @@ export interface WebsiteTranslations {
   };
   common: {
     loading: string;
+    save: string;
+    cancel: string;
+    required: string;
   };
   overview: {
     outbound: string;

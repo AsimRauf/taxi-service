@@ -86,6 +86,23 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     back: t('booking.back'),
     bookNow: t('booking.bookNow'),
     via: t('booking.via'),
+    exactLocation: t('booking.exactLocation'),
+    businessName: t('booking.businessName'),
+    streetName: t('booking.streetName'),
+    houseNumber: t('booking.houseNumber'),
+    postalCode: t('booking.postalCode'),
+    city: t('booking.city'),
+    enterStreetName: t('booking.enterStreetName'),
+    enterHouseNumber: t('booking.enterHouseNumber'),
+    enterBusinessName: t('booking.enterBusinessName'),
+    locationDetails: t('booking.locationDetails'),
+    addExactLocation: t('booking.addExactLocation'),
+    errors: {
+      streetRequired: t('booking.errors.streetRequired'),
+      houseNumberRequired: t('booking.errors.houseNumberRequired'),
+      exactAddressRequired: t('booking.errors.exactAddressRequired'),
+      selectLocationFirst: t('booking.errors.selectLocationFirst')
+    },
     personalInfo: {
       title: t('booking.personalInfo.title'),
       fullName: t('booking.personalInfo.fullName'),
@@ -109,7 +126,7 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
         invalidEmail: t('booking.personalInfo.errors.invalidEmail'),
         phoneRequired: t('booking.personalInfo.errors.phoneRequired'),
         otherFullNameRequired: t('booking.personalInfo.errors.otherFullNameRequired'),
-        otherPhoneRequired: t('booking.personalInfo.errors.otherPhoneRequired')
+        otherPhoneRequired: t('booking.personalInfo.errors.otherPhoneRequired'),
       }
     }
   },
@@ -217,7 +234,10 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     km: t('units.km')
   },
   common: {
-    loading: t('common.loading')
+    loading: t('common.loading'),
+    save: t('common.save'),
+    cancel: t('common.cancel'),
+    required: t('common.required')
   },
   overview: {
     outbound: t('overview.outbound'),

@@ -191,7 +191,10 @@
       "passwordMatch": "Passwords do not match",
       "createFailed": "Failed to create booking. Please try again.",
       "duplicateBooking": "This booking already exists.",
-      "vehicleNotAvailable": "Regular taxi is not available for this amount of luggage. Vehicle type has been automatically updated to van"
+      "vehicleNotAvailable": "Regular taxi is not available for this amount of luggage. Vehicle type has been automatically updated to van",
+      "streetRequired": "Street name is required",
+      "houseNumberRequired": "House number is required",
+      "exactAddressRequired": "Please provide exact address details"
     },
     "streetName": "Street Name",
     "houseNumber": "House Number",
