@@ -4,6 +4,7 @@ import { Location } from '@/types/booking'
 import { WebsiteTranslations } from '@/types/translations'
 import { SingleValue } from 'react-select'
 import { useState, useEffect, useRef } from 'react'
+import { GooglePlacesAutocompleteHandle } from 'react-google-places-autocomplete/build/types'
 
 interface GooglePlaceValue {
   description: string
@@ -39,6 +40,14 @@ interface LocationInputProps {
 interface ClearIndicatorProps {
   innerProps: React.HTMLAttributes<HTMLDivElement>
 }
+
+// Add this interface for the input ref
+interface GooglePlacesInputRef {
+  select: {
+    inputRef: React.RefObject<HTMLInputElement>;
+  };
+}
+
 export const LocationInput = ({ value, onChange, placeholder, translations, onClear }: LocationInputProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [inputValue, setInputValue] = useState('');
@@ -46,7 +55,8 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [hasError, setHasError] = useState(false);
-  const inputRef = useRef<any>(null);
+  // Fix the any type with proper interface
+  const inputRef = useRef<GooglePlacesInputRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const googlePlacesProps = createGooglePlacesConfig({
@@ -86,7 +96,8 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
       // Force a reflow when location is selected
       if (containerRef.current) {
         containerRef.current.style.display = 'none';
-        containerRef.current.offsetHeight; // Force reflow
+        // Fix the unused expression error by using void
+        void containerRef.current.offsetHeight; // Force reflow
         containerRef.current.style.display = '';
       }
     }
@@ -130,7 +141,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         isMounted && (
           <GooglePlacesAutocomplete
             {...googlePlacesProps}
-            ref={inputRef}
+            ref={inputRef as React.Ref<GooglePlacesAutocompleteHandle>}
             selectProps={{
               ...googlePlacesProps.selectProps,
               value: value ? {
@@ -334,5 +345,4 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         )
       )}
     </div>
-  );
-};
+  );};
