@@ -185,7 +185,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const handleCalculate = async () => {
         setIsLoading(true);
         try {
-            const { isValid, errors } = validateBookingForm(formData, translations);
+            const { errors } = validateBookingForm(formData, translations);
             setValidationErrors(errors);
 
             // Add exact address validation
