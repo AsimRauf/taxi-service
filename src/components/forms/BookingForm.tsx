@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
 import { SingleValue } from 'react-select';
 type SelectOption = {
@@ -22,11 +22,99 @@ import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { useRouter } from 'next/router';
 import { createTranslationsObject } from '@/utils/translations';
 import { useTranslation } from 'next-i18next';
+import { ExactLocationModal } from '@/components/modals/ExactLocationModal';
 
 interface BookingFormProps {
     defaultDestination?: Location;
-  }
-  
+}
+
+interface ParsedAddress {
+    businessName: string;
+    streetName: string;
+    houseNumber: string;
+    postalCode: string;
+    city: string;
+}
+
+// Add the address parser function
+const parseNetherlandsAddress = (address: string) => {
+    const result = {
+        businessName: '',
+        streetName: '',
+        houseNumber: '',
+        postalCode: '',
+        city: ''
+    };
+
+    // Remove ", Netherlands" at the end (if present)
+    address = address.replace(/,?\s*Netherlands$/i, '').trim();
+    const parts = address.split(',').map(part => part.trim()).filter(Boolean);
+
+    if (parts.length === 0) return result;
+
+    const postalCodeRegex = /\b(\d{4}\s?[A-Z]{2})\b/;
+    parts.forEach((part, index) => {
+        const match = part.match(postalCodeRegex);
+        if (match) {
+            result.postalCode = match[1];
+            parts[index] = part.replace(postalCodeRegex, '').trim();
+        }
+    });
+
+    const isBusinessLocation = (
+        parts[0].includes('Airport') ||
+        parts[0].includes('(AMS)') ||
+        parts[0].includes('Station') ||
+        parts[0].includes('Hotel') ||
+        parts[0].includes('Terminal') ||
+        parts[0].includes('Sports') ||
+        parts[0].includes('Mall') ||
+        parts[0].includes('Center') ||
+        parts[0].includes('Centre') ||
+        (parts.length >= 3 && !parts[1].match(/\d+/))
+    );
+
+    if (isBusinessLocation) {
+        result.businessName = parts[0];
+        if (parts.length >= 2) result.streetName = parts[1];
+        if (parts.length >= 3) result.city = parts[parts.length - 1];
+        if (result.city) {
+            result.city = result.city.replace(postalCodeRegex, '').trim();
+        }
+        return result;
+    }
+
+    if (parts.length >= 1) {
+        result.city = parts[parts.length - 1].replace(postalCodeRegex, '').trim();
+        parts.pop();
+    }
+
+    if (parts.length > 0) {
+        const firstPart = parts[0];
+        const streetMatch = firstPart.match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
+        if (streetMatch) {
+            result.streetName = streetMatch[1].trim();
+            result.houseNumber = streetMatch[2];
+        } else {
+            result.streetName = firstPart.trim();
+        }
+    }
+
+    return result;
+};
+
+const validateExactLocation = (location: Location) => {
+    if (location.mainAddress?.toLowerCase().includes('airport') ||
+        location.exactAddress?.businessName) {
+        return true;
+    }
+
+    if (!location || !location.mainAddress || !location.exactAddress) return false;
+
+    const { streetName, houseNumber } = location.exactAddress;
+    return Boolean(streetName?.trim() && houseNumber?.trim());
+};
+
 export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const { t } = useTranslation();
     const router = useRouter();
@@ -44,8 +132,14 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
     const [isLoading, setIsLoading] = useState(false);
+    const [showExactLocationModal, setShowExactLocationModal] = useState<{
+        isOpen: boolean;
+        location?: Location;
+        type?: 'pickup' | 'stopover' | 'destination';
+        index?: number;
+    }>({ isOpen: false });
 
-    // Update the handleLocationUpdate function to handle all location types
+    // Update the handleLocationUpdate function
     const handleLocationUpdate = (place: SingleValue<SelectOption>, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
         if (!place) {
             if (type === 'stopover' && typeof index === 'number') {
@@ -57,7 +151,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             }
             return;
         }
-    
+
         const location: Location = {
             label: place.label,
             mainAddress: place.value.description,
@@ -73,7 +167,8 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 }
             }
         };
-    
+
+        // Update form data without showing modal
         if (type === 'stopover' && typeof index === 'number') {
             const newStopovers = [...formData.stopovers];
             newStopovers[index] = location;
@@ -81,12 +176,16 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
         } else {
             setFormData(prev => ({ ...prev, [type]: location }));
         }
-    
-        // Clear validation errors when input changes
-        setValidationErrors(prev => ({
-            ...prev,
-            [type]: undefined
-        }));
+    };
+
+    // Add a new function to handle opening the exact location modal
+    const handleOpenExactLocation = (location: Location, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
+        setShowExactLocationModal({
+            isOpen: true,
+            location,
+            type,
+            index
+        });
     };
 
     const handleCalculate = async () => {
@@ -95,7 +194,21 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             const { isValid, errors } = validateBookingForm(formData, translations);
             setValidationErrors(errors);
 
-            if (!isValid) {
+            // Add exact address validation
+            if (formData.pickup && !validateExactLocation(formData.pickup)) {
+                setValidationErrors(prev => ({
+                    ...prev,
+                    pickup: translations.booking.errors.exactAddressRequired
+                }));
+                setIsLoading(false);
+                return;
+            }
+
+            if (formData.destination && !validateExactLocation(formData.destination)) {
+                setValidationErrors(prev => ({
+                    ...prev,
+                    destination: translations.booking.errors.exactAddressRequired
+                }));
                 setIsLoading(false);
                 return;
             }
@@ -112,7 +225,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
             const bookingData: BookingData = {
                 clientBookingId: new Date().getTime().toString(),
-                id: new Date().getTime().toString(), 
+                id: new Date().getTime().toString(),
                 pickup: formData.pickup,
                 destination: formData.destination,
                 stopovers: formData.stopovers,
@@ -141,7 +254,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             };
 
             localStorage.setItem('bookingData', JSON.stringify(bookingData));
-            
+
             // Keep loading state active while routing
             router.push(formData.hasLuggage ? '/booking/luggage' : '/booking/offers');
         } catch (error) {
@@ -188,32 +301,53 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     };
 
     const renderPickupLocation = () => (
-        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-            <div className="flex justify-center pt-8">
-                <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-20">
-                    <MapPin className="text-white" size={16} />
+        <div>
+            <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                <div className="flex justify-center pt-8">
+                    <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-20">
+                        <MapPin className="text-white" size={16} />
+                    </div>
+                </div>
+                <div className="w-full space-y-1">
+                    <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
+                    <LocationInput
+                        value={formData.pickup}
+                        onChange={(place) => handleLocationUpdate(place, 'pickup')}
+                        placeholder={t('hero.pickupPlaceholder')}
+                        translations={translations}
+                        onClear={() => handleLocationUpdate(null, 'pickup')}
+                    />
+                </div>
+                <div className="flex justify-center pt-7">
+                    <button
+                        type="button"
+                        onClick={swapLocations}
+                        className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
+                        title={translations.hero.swapLocations}
+                    >
+                        <ArrowUpDown size={20} className="text-secondary" />
+                    </button>
                 </div>
             </div>
-            <div className="w-full space-y-1">
-                <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
-                <LocationInput
-                    value={formData.pickup}
-                    onChange={(place) => handleLocationUpdate(place, 'pickup')}
-                    placeholder={t('hero.pickupPlaceholder')}
-                    translations={translations}
-                    onClear={() => handleLocationUpdate(null, 'pickup')}
-                />
-                {validationErrors.pickup && <span className="text-red-500 text-sm">{validationErrors.pickup}</span>}
-            </div>
-            <div className="flex justify-center pt-7">
-                <button
-                    type="button"
-                    onClick={swapLocations}
-                    className="p-2 mt-2 rounded-full hover:bg-gray-100 transition-colors"
-                    title={translations.hero.swapLocations}
-                >
-                    <ArrowUpDown size={20} className="text-secondary" />
-                </button>
+
+            <div className="col-span-3">
+                {formData.pickup && (
+                    <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px] m-2">
+                        <button
+                            type="button"
+                            onClick={() => handleOpenExactLocation(formData.pickup!, 'pickup')}
+                            className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                        >
+                            <Plus size={16} />
+                            <span>{translations.booking.addExactLocation}</span>
+                        </button>
+                        {validationErrors.pickup && (
+                            <span className="text-red-500 text-sm mt-1 block">
+                                {validationErrors.pickup}
+                            </span>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -221,30 +355,52 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const renderStopovers = () => (
         <>
             {formData.stopovers.map((stopover, index) => (
-                <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-                    <div className="flex justify-center pt-8">
-                        <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-20">
-                            <MapPin className="text-white" size={12} />
+                <div key={index}>
+                    <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                        <div className="flex justify-center pt-8">
+                            <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-20">
+                                <MapPin className="text-white" size={12} />
+                            </div>
+                        </div>
+                        <div className="w-full space-y-1">
+                            <span className="block text-sm font-medium text-gray-600">{translations.booking.via}</span>
+                            <LocationInput
+                                value={stopover}
+                                onChange={(place) => handleLocationUpdate(place, 'stopover', index)}
+                                placeholder={`${translations.hero.stopover} ${index + 1}`}
+                                translations={translations}
+                                onClear={() => handleLocationUpdate(null, 'stopover', index)}
+                            />
+                        </div>
+                        <div className="flex justify-center pt-8">
+                            <button
+                                type="button"
+                                onClick={() => removeStopover(index)}
+                                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                            >
+                                <Minus size={16} className="text-red-500" />
+                            </button>
                         </div>
                     </div>
-                    <div className="w-full space-y-1">
-                        <span className="block text-sm font-medium text-gray-600">{translations.booking.via}</span>
-                        <LocationInput
-                            value={stopover}
-                            onChange={(place) => handleLocationUpdate(place, 'stopover', index)}
-                            placeholder={`${translations.hero.stopover} ${index + 1}`}
-                            translations={translations}
-                            onClear={() => handleLocationUpdate(null, 'stopover', index)}
-                        />
-                    </div>
-                    <div className="flex justify-center pt-8">
-                        <button
-                            type="button"
-                            onClick={() => removeStopover(index)}
-                            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-                        >
-                            <Minus size={16} className="text-red-500" />
-                        </button>
+
+                    <div className="col-span-3">
+                        {stopover && stopover.mainAddress && (
+                            <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px] m-2">
+                                <button
+                                    type="button"
+                                    onClick={() => handleOpenExactLocation(stopover, 'stopover', index)}
+                                    className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                                >
+                                    <Plus size={16} />
+                                    <span>{translations.booking.addExactLocation}</span>
+                                </button>
+                                {validationErrors[`stopover_${index}`] && (
+                                    <span className="text-red-500 text-sm mt-1 block">
+                                        {validationErrors[`stopover_${index}`]}
+                                    </span>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             ))}
@@ -252,7 +408,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     );
 
     const renderDestination = () => (
-        <>
+        <div className="space-y-4">
             <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
                 <div className="flex justify-center pt-8">
                     <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-20">
@@ -280,7 +436,9 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </div>
-        </>
+
+
+        </div>
     );
 
     const renderAddStopoverButton = () => (
@@ -312,6 +470,22 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     {renderAddStopoverButton()}
                     {renderDestination()}
                 </div>
+                {/* Add this block for the exact location button */}
+                {formData.destination && (
+                    <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
+                        <button
+                            type="button"
+                            onClick={() => handleOpenExactLocation(formData.destination!, 'destination')}
+                            className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                        >
+                            <Plus size={16} />
+                            <span>{translations.booking.addExactLocation}</span>
+                        </button>
+                        {validationErrors.destination && (
+                            <span className="text-red-500 text-sm mt-1">{validationErrors.destination}</span>
+                        )}
+                    </div>
+                )}
                 {validationErrors.destination && (
                     <div className="relative ml-[29px] xs:ml-[14px] sm:ml-[24px] lg:ml-[59px] mt-[-20px] top-[-24px]">
                         <span className="text-red-500 text-sm">{validationErrors.destination}</span>
@@ -388,6 +562,22 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </form>
+            {showExactLocationModal.isOpen && showExactLocationModal.location && (
+                <ExactLocationModal
+                    isOpen={showExactLocationModal.isOpen}
+                    onClose={() => setShowExactLocationModal({ isOpen: false })}
+                    location={showExactLocationModal.location}
+                    type={showExactLocationModal.type!}
+                    index={showExactLocationModal.index}
+                    parsedAddress={parseNetherlandsAddress(
+                        showExactLocationModal.location.mainAddress ||
+                        showExactLocationModal.location.value.description
+                    )}
+                    formData={formData}
+                    setFormData={setFormData}
+                    translations={translations}
+                />
+            )}
         </div>
     );
 };
