@@ -1,5 +1,6 @@
-import { Location } from '@/types/booking';
+import { Location, BookingFormData } from '@/types/booking';
 import { useState, useEffect } from 'react';
+import { WebsiteTranslations } from '@/types/translations';
 
 interface ParsedAddress {
   businessName: string;
@@ -16,9 +17,9 @@ interface ExactLocationModalProps {
   type: 'pickup' | 'stopover' | 'destination';
   index?: number;
   parsedAddress: ParsedAddress;
-  formData: any;
-  setFormData: (data: any) => void;
-  translations: any;
+  formData: BookingFormData;
+  setFormData: (data: BookingFormData) => void;
+  translations: WebsiteTranslations;
 }
 
 export const ExactLocationModal = ({
@@ -39,7 +40,12 @@ export const ExactLocationModal = ({
   useEffect(() => {
     setLocalStreetName(location.exactAddress?.streetName || parsedAddress.streetName || '');
     setLocalHouseNumber(location.exactAddress?.houseNumber || parsedAddress.houseNumber || '');
-  }, [location.value.place_id, parsedAddress]);
+  }, [
+    location.value.place_id,
+    parsedAddress,
+    location.exactAddress?.streetName,
+    location.exactAddress?.houseNumber
+  ]);
 
   const handleSave = () => {
     // Validation with proper translation keys

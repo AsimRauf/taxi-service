@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
 import { SingleValue } from 'react-select';
 type SelectOption = {
@@ -28,13 +28,7 @@ interface BookingFormProps {
     defaultDestination?: Location;
 }
 
-interface ParsedAddress {
-    businessName: string;
-    streetName: string;
-    houseNumber: string;
-    postalCode: string;
-    city: string;
-}
+
 
 // Add the address parser function
 const parseNetherlandsAddress = (address: string) => {
