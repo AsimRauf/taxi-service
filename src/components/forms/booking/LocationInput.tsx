@@ -58,6 +58,8 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   // Fix the any type with proper interface
   const inputRef = useRef<GooglePlacesInputRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  // Add a ref to track the latest selected value
+  const latestValueRef = useRef<Location | null>(null);
 
   const googlePlacesProps = createGooglePlacesConfig({
     ...translations,
@@ -82,13 +84,13 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     return () => clearTimeout(timer);
   }, []);
 
+  // Modify the value effect to use the ref
   useEffect(() => {
     if (value?.mainAddress) {
-      setInputValue(value.mainAddress);
+      latestValueRef.current = value;
       setSelectedLocation(value);
+      setInputValue(value.mainAddress);
     }
-    setIsLoading(false);
-    setIsMounted(true);
   }, [value]);
 
   useEffect(() => {
@@ -103,13 +105,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   }, [selectedLocation]);
 
-  // Add immediate update effect
-  useEffect(() => {
-    if (selectedLocation?.mainAddress) {
-      setInputValue(selectedLocation.mainAddress);
-    }
-  }, [selectedLocation]);
-
   const handleInputChange = (newValue: string, actionMeta: { action: string }) => {
     if (actionMeta.action === 'input-change') {
       setInputValue(newValue);
@@ -117,25 +112,29 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   };
 
+  // Modify the handleBlur function
   const handleBlur = () => {
-    // On blur, if no valid location is selected, revert to last selected location
-    setTimeout(() => {
-      if (selectedLocation && inputValue !== selectedLocation.mainAddress) {
-        setInputValue(selectedLocation.mainAddress || '');
-      }
-    }, 200);
+    // Use the ref to ensure we have the latest value
+    const currentValue = latestValueRef.current;
+    if (currentValue?.mainAddress && inputValue !== currentValue.mainAddress) {
+      setInputValue(currentValue.mainAddress);
+    }
   };
 
+  // Replace the handleLocationSelect function
   const handleLocationSelect = async (selected: SingleValue<SelectOption>) => {
     if (selected) {
       const newLocation = selected as unknown as Location;
       
-      // Update states synchronously
+      // Update ref immediately
+      latestValueRef.current = newLocation;
+
+      // Update all states synchronously
       setSelectedLocation(newLocation);
       setInputValue(selected.label);
       setShowSuggestions(false);
 
-      // Force immediate UI update
+      // Ensure UI update
       requestAnimationFrame(() => {
         if (containerRef.current) {
           containerRef.current.style.display = 'none';
@@ -144,9 +143,10 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         }
       });
 
-      // Call the onChange prop after state updates
+      // Call onChange
       await onChange(selected);
     } else {
+      latestValueRef.current = null;
       setSelectedLocation(null);
       setInputValue('');
       setShowSuggestions(false);
