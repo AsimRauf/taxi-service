@@ -45,6 +45,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [isMounted, setIsMounted] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const inputRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -52,6 +53,24 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     ...translations,
     locale: translations.locale || 'en'
   });
+
+  // Add error handling for Google Places initialization
+  useEffect(() => {
+    const checkGoogleApi = () => {
+      if (typeof window !== 'undefined' && !window.google) {
+        setHasError(true);
+        setIsLoading(false);
+        console.error('Google Maps API not loaded');
+        return;
+      }
+      setIsLoading(false);
+      setIsMounted(true);
+    };
+
+    // Check after a short delay to ensure API has time to load
+    const timer = setTimeout(checkGoogleApi, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (value?.mainAddress) {
@@ -88,6 +107,20 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
       }
     }, 200);
   };
+
+  if (hasError) {
+    return (
+      <div className="w-full min-h-[60px] relative">
+        <div className="h-[60px] border-2 border-red-300 rounded-xl bg-red-50 flex items-center justify-center">
+          <span className="text-red-500 text-sm">
+            {translations.locale === 'nl'
+              ? "Kon locatie service niet laden"
+              : "Could not load location service"}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full min-h-[60px] relative" ref={containerRef}>
@@ -140,15 +173,15 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                     }}
                     className="cursor-pointer p-2 text-gray-400 hover:text-[#0077BE] transition-colors"
                   >
-                    <svg 
-                      className="w-5 h-5" 
-                      viewBox="0 0 20 20" 
+                    <svg
+                      className="w-5 h-5"
+                      viewBox="0 0 20 20"
                       fill="currentColor"
                     >
-                      <path 
-                        fillRule="evenodd" 
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" 
-                        clipRule="evenodd" 
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
                       />
                     </svg>
                   </div>
@@ -187,7 +220,11 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   borderColor: 'transparent',
                   borderRadius: '0.75rem',
                   boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 119, 190, 0.1)' : 'none',
-                  overflow: 'visible',
+                  overflow: 'auto',
+                  scrollbarWidth: 'none',
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  },
                   transition: 'all 0.2s ease',
                   backgroundColor: state.isDisabled ? 'rgb(249 250 251)' : 'white',
                   '&:hover': {
@@ -206,7 +243,11 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   color: '#333333',
                   fontSize: '1rem',
                   fontWeight: '500',
-                  overflow: 'hidden',
+                  overflow: 'auto',
+                  scrollbarWidth: 'none',
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  },
                   textOverflow: 'clip',
                   whiteSpace: 'nowrap',
                   width: '100%',
@@ -222,17 +263,29 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                 valueContainer: (provided) => ({
                   ...provided,
                   padding: '8px 16px',
-                  overflow: 'visible',
+                  overflow: 'auto',
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  },
+                  scrollbarWidth: 'none',  // Firefox
+                  msOverflowStyle: 'none',  // IE/Edge
+                  '-ms-overflow-style': 'none', // IE/Edge
                 }),
                 singleValue: (provided) => ({
                   ...provided,
                   color: '#333333',
                   fontSize: '1rem',
                   fontWeight: '500',
-                  overflow: 'hidden',
+                  overflow: 'auto',
                   textOverflow: 'ellipsis',
                   whiteSpace: 'nowrap',
                   maxWidth: '100%',
+                  '&::-webkit-scrollbar': {
+                    display: 'none'
+                  },
+                  scrollbarWidth: 'none',  // Firefox
+                  msOverflowStyle: 'none',  // IE/Edge
+                  '-ms-overflow-style': 'none', // IE/Edge
                 }),
                 placeholder: (provided) => ({
                   ...provided,
