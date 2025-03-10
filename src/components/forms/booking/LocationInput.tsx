@@ -103,6 +103,13 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   }, [selectedLocation]);
 
+  // Add immediate update effect
+  useEffect(() => {
+    if (selectedLocation?.mainAddress) {
+      setInputValue(selectedLocation.mainAddress);
+    }
+  }, [selectedLocation]);
+
   const handleInputChange = (newValue: string, actionMeta: { action: string }) => {
     if (actionMeta.action === 'input-change') {
       setInputValue(newValue);
@@ -117,6 +124,34 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         setInputValue(selectedLocation.mainAddress || '');
       }
     }, 200);
+  };
+
+  const handleLocationSelect = async (selected: SingleValue<SelectOption>) => {
+    if (selected) {
+      const newLocation = selected as unknown as Location;
+      
+      // Update states synchronously
+      setSelectedLocation(newLocation);
+      setInputValue(selected.label);
+      setShowSuggestions(false);
+
+      // Force immediate UI update
+      requestAnimationFrame(() => {
+        if (containerRef.current) {
+          containerRef.current.style.display = 'none';
+          void containerRef.current.offsetHeight;
+          containerRef.current.style.display = '';
+        }
+      });
+
+      // Call the onChange prop after state updates
+      await onChange(selected);
+    } else {
+      setSelectedLocation(null);
+      setInputValue('');
+      setShowSuggestions(false);
+      onClear?.();
+    }
   };
 
   if (hasError) {
@@ -154,18 +189,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
               onMenuClose: () => setShowSuggestions(false),
               onInputChange: handleInputChange,
               onBlur: handleBlur,
-              onChange: (selected) => {
-                if (selected) {
-                  setSelectedLocation(selected as unknown as Location);
-                  setInputValue(selected.label);
-                  onChange(selected);
-                } else {
-                  setInputValue('');
-                  setSelectedLocation(null);
-                  onClear?.();
-                }
-                setShowSuggestions(false);
-              },
+              onChange: handleLocationSelect,
               isSearchable: true,
               isClearable: true,
               placeholder,
@@ -345,4 +369,5 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         )
       )}
     </div>
-  );};
+  );
+};
