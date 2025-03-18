@@ -1,159 +1,246 @@
-import { useState } from 'react'
-import { useRouter } from 'next/router'
-import Link from 'next/link'
-import { Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
-import { useTranslation } from 'next-i18next'
-import { GetStaticProps } from 'next'
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
+import { useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
+import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from 'next-i18next';
+import { GetStaticProps } from 'next';
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+import Image from 'next/image';
 
-export const getStaticProps: GetStaticProps = async ({ locale }) => {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale ?? 'nl', ['common'])),
-    },
-  }
-}
 export default function SignIn() {
-  const { t } = useTranslation('common')
-  const [credentials, setCredentials] = useState({
-    email: '',
-    password: ''
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState('')
-  const router = useRouter()
-  const { login } = useAuth()
+  const { t } = useTranslation('common');
+  const [credentials, setCredentials] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError('')
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     try {
       const res = await fetch('/api/auth/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(credentials)
-      })
+      });
       
-      const data = await res.json()
+      const data = await res.json();
       
       if (!res.ok) {
-        throw new Error(data.message || t('auth.invalidCredentials'))
+        throw new Error(data.message || t('auth.invalidCredentials'));
       }
       
-      login(data.token, data.user)
-      router.push('/')
+      login(data.token, data.user);
+      router.push('/');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('auth.unknownError'))
+      setError(err instanceof Error ? err.message : t('auth.unknownError'));
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row items-center bg-gradient-to-br from-primary to-white">
-      {/* Left Side - Title Section */}
-      <div className="w-full lg:w-1/2 px-4 lg:px-12 py-8 lg:py-0">
-        <div className="max-w-xl mx-auto lg:mx-0 text-center lg:text-start">
-          <h1 className="text-4xl lg:text-6xl font-heading font-bold text-white mb-6 mt-14 lg:mt-0">
-            {t('auth.signInTitle')}
-          </h1>
-          <p className="text-lg lg:text-xl text-white/80">
-            {t('auth.signInMessage')}
-          </p>
-        </div>
-      </div>
-
-      {/* Right Side - Form Section */}
-      <div className="w-full lg:w-1/2 px-4 lg:px-12 py-8 lg:py-0 mt-[-24px] lg:mt-32">
-      <div className="max-w-md mx-auto">
-          <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 lg:p-8">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  autoComplete="email"
-                  className="block w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors border-gray-300"
-                  value={credentials.email}
-                  onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">
-                  {t('auth.password')}
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    autoComplete="current-password"
-                    className="block w-full border rounded-lg py-3 px-4 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors border-gray-300"
-                    value={credentials.password}
-                    onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-gray-400" />
-                    ) : (
-                      <Eye className="h-5 w-5 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <p className="text-sm text-red-600 text-center">
-                  {error}
+    <main className="min-h-screen bg-white">
+      <div className="flex min-h-screen">
+        {/* Left Section - Brand Image */}
+        <div className="hidden lg:block relative w-1/2 overflow-hidden">
+          <Image
+            src="/images/taxi-auth.jpg"
+            alt="Taxi Service"
+            fill
+            className="object-cover opacity-40 mix-blend-multiply"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary via-primary/95 to-primary/90" />
+          <div className="relative h-full flex items-center p-12">
+            <div className="max-w-xl text-white space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-4xl xs:text-5xl font-bold tracking-tight">
+                  {t('auth.welcomeBack')}
+                </h1>
+                <p className="text-xl text-white/90 leading-relaxed">
+                  {t('auth.signInMessage')}
                 </p>
-              )}
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex items-center justify-center py-3 px-4 rounded-lg text-primary bg-secondary hover:bg-secondary-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all duration-300"
-              >
-                {isLoading ? (
-                  <div className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span className="text-base font-medium">{t('auth.signingIn')}</span>
-                  </div>
-                ) : (
-                  <span className="text-base font-medium">{t('auth.signIn')}</span>
-                )}
-              </button>
-            </form>
-
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <div className="text-center">
-                <span className="text-sm text-gray-500">
-                  {t('auth.noAccount')}
-                </span>
-                <Link
-                  href="/auth/signup"
-                  className="ml-2 text-sm font-medium text-primary hover:text-primary-dark transition-colors"
-                >
-                  {t('auth.createAccount')}
-                </Link>
+              </div>
+              
+              {/* Features List */}
+              <div className="space-y-4 text-lg">
+                <div className="flex items-center space-x-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>{t('auth.feature1')}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>{t('auth.feature2')}</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>{t('auth.feature3')}</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Right Section - Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-md space-y-8">
+            {/* Logo */}
+            <div className="text-center">
+              <Link href="/" className="inline-block">
+                <Image
+                  src="/images/Logo.png"
+                  alt="Logo"
+                  width={160}
+                  height={48}
+                  className="h-12 w-auto"
+                />
+              </Link>
+            </div>
+
+            <div>
+              <div className="text-center">
+                <h2 className="text-2xl xs:text-3xl font-bold text-gray-900">
+                  {t('auth.signInTitle')}
+                </h2>
+                <p className="mt-2 text-sm xs:text-base text-gray-600">
+                  {t('auth.signInSubtitle')}
+                </p>
+              </div>
+
+              <form onSubmit={handleSubmit} className="mt-8 space-y-6">
+                <div className="space-y-2">
+                  <label className="block text-base font-medium text-gray-700">
+                    {t('auth.email')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Mail className="h-5 w-5 text-secondary" />
+                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      autoComplete="email"
+                      required
+                      className="block w-full pl-12 pr-4 h-[52px] text-base
+                        border-2 border-gray-200 rounded-xl
+                        focus:outline-none focus:border-secondary focus:ring-0
+                        transition-all duration-200
+                        placeholder:text-gray-400 text-gray-900
+                        bg-white shadow-sm"
+                      value={credentials.email}
+                      onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+                      placeholder={t('auth.emailPlaceholder')}
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="block text-base font-medium text-gray-700">
+                    {t('auth.password')}
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                      <Lock className="h-5 w-5 text-secondary" />
+                    </div>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      required
+                      className="block w-full pl-12 pr-12 h-[52px] text-base
+                        border-2 border-gray-200 rounded-xl
+                        focus:outline-none focus:border-secondary focus:ring-0
+                        transition-all duration-200
+                        placeholder:text-gray-400 text-gray-900
+                        bg-white shadow-sm"
+                      value={credentials.password}
+                      onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+                      placeholder={t('auth.passwordPlaceholder')}
+                    />
+                    <button
+                      type="button"
+                      className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 
+                        hover:text-secondary transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Mobile adjustments for the form container */}
+                <div className="w-full max-w-md mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                  {error && (
+                    <div className="p-4 rounded-xl bg-red-50 border-2 border-red-100 mb-6">
+                      <p className="text-sm text-red-600">{error}</p>
+                    </div>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-secondary text-white font-semibold h-[52px] text-base
+                      rounded-xl hover:bg-primary/90 focus:outline-none
+                      transition-all duration-200 
+                      disabled:opacity-50 disabled:cursor-not-allowed
+                      shadow-sm hover:shadow-md"
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="w-5 h-5 border-2 border-secondary/30 border-t-secondary 
+                          rounded-full animate-spin mr-2" />
+                        {t('auth.signingIn')}
+                      </div>
+                    ) : (
+                      t('auth.signIn')
+                    )}
+                  </button>
+                </div>
+
+                <div className="relative my-6">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200" />
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-white text-gray-500">
+                      {t('auth.or')}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="text-center text-sm">
+                  <span className="text-gray-600">
+                    {t('auth.noAccount')}{' '}
+                  </span>
+                  <Link
+                    href="/auth/signup"
+                    className="font-semibold text-secondary hover:text-secondary/80 transition-colors"
+                  >
+                    {t('auth.createAccount')}
+                  </Link>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  )
+    </main>
+  );
 }
+
+export const getStaticProps: GetStaticProps = async ({ locale }) => {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale ?? 'nl', ['common'])),
+    },
+  };
+};
