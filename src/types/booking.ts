@@ -88,17 +88,38 @@ export interface BookingData {
 export interface Booking {
   _id: string;
   clientBookingId: string;
+  userId: string;
   sourceAddress: string;
   destinationAddress: string;
+  stopovers: Location[];
   pickupDateTime: string;
+  returnDateTime?: string;
   passengers: number;
   hasLuggage: boolean;
+  luggage?: {
+    regularLuggage: {
+      large: number;
+      small: number;
+      handLuggage: number;
+    };
+    specialLuggage: {
+      foldableWheelchair: number;
+      rollator: number;
+      pets: number;
+      bicycle: number;
+      winterSports: number;
+      stroller: number;
+      golfBag: number;
+      waterSports: number;
+    };
+  };
   price: number;
-  status: string;
+  status: BookingStatus;
   directDistance: string;
+  extraDistance?: string;
   vehicle: string;
   isReturn: boolean;
-  bookingType: string;
+  bookingType: 'individual' | 'business';
   isFixedPrice: boolean;
   flightNumber?: string;
   remarks?: string;
@@ -106,5 +127,62 @@ export interface Booking {
     fullName: string;
     email: string;
     phoneNumber: string;
+    additionalPhoneNumber?: string;
+    hasAdditionalPhone?: boolean;
   };
+  bookingForOther?: {
+    fullName: string;
+    phoneNumber: string;
+  };
+  businessInfo?: {
+    companyName: string;
+    businessAddress: Location;
+  };
+  cancellation?: {
+    requestedAt: string;
+    reason: string;
+    status: CancellationStatus;
+    adminResponse?: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type BookingStatus = 
+  | 'pending'      // Initial state when booking is created
+  | 'confirmed'    // After admin/system confirms
+  | 'in-progress'  // When ride has started
+  | 'completed'    // After ride completion
+  | 'cancelled'    // If booking is cancelled
+  | 'no-show';     // If passenger doesn't show up
+
+export type CancellationStatus = 
+  | 'requested'    // Initial state when cancellation is requested
+  | 'approved'     // After admin approves cancellation
+  | 'rejected'     // If admin rejects cancellation
+  | 'auto-approved'; // For automatic approvals within cancellation window
+
+export type PaymentStatus =
+  | 'pending'
+  | 'processing'
+  | 'completed'
+  | 'failed'
+  | 'refunded';
+
+export type PaymentMethod =
+  | 'credit_card'
+  | 'debit_card'
+  | 'bank_transfer'
+  | 'cash'
+  | 'invoice';
+
+export interface Payment {
+  bookingId: string;
+  amount: number;
+  currency: string;
+  status: PaymentStatus;
+  method: PaymentMethod;
+  transactionId?: string;
+  paidAt?: string;
+  refundedAt?: string;
 }
