@@ -51,6 +51,34 @@ const businessInfoSchema = new mongoose.Schema({
     businessAddress: addressSchema
 });
 
+// Add Cancellation Schema
+const CancellationSchema = new Schema({
+  requestedAt: {
+    type: Date,
+    required: true,
+    default: Date.now
+  },
+  reason: {
+    type: String,
+    required: true
+  },
+  status: {
+    type: String,
+    enum: ['requested', 'approved', 'rejected'],
+    default: 'requested'
+  },
+  adminResponse: {
+    type: String
+  },
+  processedAt: {
+    type: Date
+  },
+  processedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }
+});
+
 const bookingSchema = new mongoose.Schema({
     // Keep MongoDB's default _id
     clientBookingId: {
@@ -106,6 +134,11 @@ const bookingSchema = new mongoose.Schema({
         type: String,
         enum: ['pending', 'confirmed', 'completed', 'cancelled'],
         default: 'pending'
+    },
+    // Add the cancellation field
+    cancellation: {
+        type: CancellationSchema,
+        default: null
     }
 }, {
     timestamps: true
@@ -120,6 +153,15 @@ bookingSchema.statics.findByUser = function(userId) {
         .sort({ createdAt: -1 })
         .populate('user', 'name email');
 };
+
+// Add any pre-save or methods you need
+bookingSchema.pre('save', function(next) {
+  // If this is a new booking, generate ID
+  if (this.isNew) {
+    this.clientBookingId = new Date().getTime().toString();
+  }
+  next();
+});
 
 const Booking = mongoose.models.Booking || mongoose.model('Booking', bookingSchema);
 
