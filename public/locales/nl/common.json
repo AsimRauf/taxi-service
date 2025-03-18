@@ -11,7 +11,11 @@
     "pendingBookings": "Openstaande Boekingen",
     "noBookings": "Geen openstaande boekingen",
     "viewAll": "Alle Boekingen Bekijken",
-    "cart": "Boekingsmandje"
+    "cart": "Boekingsmandje",
+    "myAccount": "Mijn Account",
+    "settings": "Instellingen",
+    "upcomingRides": "Aankomende Ritten",
+    "noUpcomingRides": "Geen aankomende ritten gevonden"
   },
   "hero": {
     "title": "Boek Uw Rit met Vertrouwen",
@@ -185,7 +189,35 @@
     "enterHouseNumberOptional": "Voer huisnummer in (optioneel)",
     "optional": "optioneel",
     "houseNumberOptionalForBusiness": "Huisnummer is optioneel voor bedrijfslocaties",
-    "exactLocationRequired": "Voeg exacte locatiegegevens toe"
+    "exactLocationRequired": "Voeg exacte locatiegegevens toe",
+    "status": {
+      "pending": "In Behandeling",
+      "confirmed": "Bevestigd",
+      "completed": "Voltooid",
+      "cancelled": "Geannuleerd"
+    },
+    "timeRemaining": {
+      "days": "{{days}}d {{hours}}u tot ophalen",
+      "hours": "{{hours}}u {{minutes}}m tot ophalen",
+      "minutes": "{{minutes}}m tot ophalen",
+      "soon": "Ophaaltijd nadert"
+    },
+    "cancelBooking": "Boeking Annuleren",
+    "cancelBookingTitle": "Annuleer Uw Boeking",
+    "cancelBookingDescription": "Geef een reden op voor annulering. Uw verzoek wordt beoordeeld door ons team.",
+    "cancellationReason": "Reden voor annulering",
+    "cancellationReasonPlaceholder": "Leg uit waarom u deze boeking wilt annuleren...",
+    "confirmCancellation": "Annuleringsverzoek Indienen",
+    "cancellationRequestSubmitted": "Annuleringsverzoek succesvol ingediend",
+    "cancellationError": "Annuleringsverzoek indienen mislukt",
+    "provideCancellationReason": "Geef een reden op voor annulering",
+    "cannotCancel": "Kan boeking niet annuleren",
+    "cancellationStatus": {
+      "requested": "Annuleringsverzoek in behandeling",
+      "approved": "Annulering goedgekeurd",
+      "rejected": "Annuleringsverzoek afgewezen"
+    },
+    "vehicleNotAvailable": "Reguliere taxi is niet beschikbaar voor deze hoeveelheid bagage. Voertuigtype is automatisch bijgewerkt naar bus"
   },
   "luggage": {
     "title": "Bagagegegevens",
@@ -282,7 +314,17 @@
     "stepTwoDesc": "Stel uw accountbeveiliging in",
     "continue": "Doorgaan",
     "back": "Terug",
-    "welcomeMessage": "Begin uw reis met ons. Maak een account aan om toegang te krijgen tot gepersonaliseerde taxi diensten en exclusieve voordelen."
+    "welcomeMessage": "Begin uw reis met ons. Maak een account aan om toegang te krijgen tot gepersonaliseerde taxi diensten en exclusieve voordelen.",
+    "unauthorized": "Log in om deze pagina te bekijken",
+    "redirecting": "Doorsturen naar inloggen...",
+    "email": "E-mailadres",
+    "emailPlaceholder": "Voer uw e-mail in",
+    "feature1": "Boek snel en eenvoudig ritten",
+    "feature2": "Volg uw rit in realtime",
+    "feature3": "24/7 klantenservice beschikbaar",
+    "forgotPassword": "Wachtwoord vergeten?",
+    "or": "OF",
+    "welcomeBack": "Welkom Terug!"
   },
   "offers": {
     "title": "Selecteer Uw Voertuig",
@@ -345,7 +387,9 @@
       "generic": "Er is iets misgegaan. Probeer het opnieuw."
     },
     "save": "Opslaan",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "saving": "Opslaan...",
+    "processing": "Verwerken..."
   },
   "travelInfo": {
     "title": "Reisinformatie",
@@ -457,5 +501,16 @@
       "flightTracking": "Gratis vlucht tracking",
       "meetGreet": "Meet & Greet service"
     }
+  },
+  "profile": {
+    "title": "Mijn Profiel",
+    "personalInfo": "Persoonlijke Informatie",
+    "changePassword": "Wachtwoord Wijzigen",
+    "currentPassword": "Huidig Wachtwoord",
+    "newPassword": "Nieuw Wachtwoord",
+    "confirmNewPassword": "Bevestig Nieuw Wachtwoord",
+    "passwordsMustMatch": "Nieuwe wachtwoorden moeten overeenkomen",
+    "updateSuccess": "Profiel succesvol bijgewerkt",
+    "updateError": "Profiel bijwerken mislukt"
   }
 }
