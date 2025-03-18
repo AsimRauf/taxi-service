@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Booking } from '@/types/booking';
 
@@ -6,7 +6,7 @@ interface UseUserBookingsReturn {
   bookings: Booking[];
   loading: boolean;
   error: Error | null;
-  refetch: () => Promise<void>;
+  refetch: () => void;
 }
 
 export function useUserBookings(): UseUserBookingsReturn {
@@ -14,15 +14,16 @@ export function useUserBookings(): UseUserBookingsReturn {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | null>(null);
   const { token } = useAuth();
+  const isFirstRender = useRef(true);
 
-  const fetchBookings = async () => {
+  const fetchBookings = useCallback(async () => {
     if (!token) {
       setLoading(false);
       return;
     }
 
-    setLoading(true);
     try {
+      setLoading(true);
       const response = await fetch('/api/bookings/user-bookings', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -42,11 +43,23 @@ export function useUserBookings(): UseUserBookingsReturn {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
+  // Debounced refetch function
+  const refetch = useCallback(() => {
+    const timeoutId = setTimeout(() => {
+      fetchBookings();
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [fetchBookings]);
+
+  // Initial fetch only
   useEffect(() => {
-    fetchBookings();
-  }, [token, setBookings, fetchBookings]);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      fetchBookings();
+    }
+  }, [fetchBookings]);
 
-  return { bookings, loading, error, refetch: fetchBookings };
+  return { bookings, loading, error, refetch };
 }
