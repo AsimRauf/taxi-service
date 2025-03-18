@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
@@ -16,25 +16,29 @@ const UpcomingRidesPage: FC = () => {
   const [sortedBookings, setSortedBookings] = useState<Booking[]>([]);
   const [now, setNow] = useState(new Date());
 
+  // Memoize the sorting function to prevent unnecessary re-renders
+  const sortBookings = useCallback((bookingsToSort: Booking[]) => {
+    return [...bookingsToSort].sort((a, b) => {
+      const timeA = new Date(a.pickupDateTime).getTime();
+      const timeB = new Date(b.pickupDateTime).getTime();
+      return timeA - timeB;
+    });
+  }, []);
+
   // Update current time every minute
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000);
     return () => clearInterval(timer);
-  }, []);
+  }, []); // Empty dependency array since we don't need to recreate the interval
 
   // Sort bookings by closest pickup time
   useEffect(() => {
     if (bookings) {
-      const sorted = [...bookings].sort((a, b) => {
-        const timeA = new Date(a.pickupDateTime).getTime();
-        const timeB = new Date(b.pickupDateTime).getTime();
-        return timeA - timeB;
-      });
-      setSortedBookings(sorted);
+      setSortedBookings(sortBookings(bookings));
     }
-  }, [bookings]);
+  }, [bookings, sortBookings]); // Only re-run when bookings or sortBookings changes
 
-  const getTimeRemaining = (pickupTime: string) => {
+  const getTimeRemaining = useCallback((pickupTime: string) => {
     const pickup = new Date(pickupTime);
     const diff = pickup.getTime() - now.getTime();
     
@@ -51,7 +55,7 @@ const UpcomingRidesPage: FC = () => {
     } else {
       return t('booking.timeRemaining.soon');
     }
-  };
+  }, [now, t]); // Only recreate when now or t changes
 
   if (error) {
     return (
