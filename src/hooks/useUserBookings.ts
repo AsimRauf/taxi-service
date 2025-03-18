@@ -46,7 +46,7 @@ export function useUserBookings(): UseUserBookingsReturn {
 
   useEffect(() => {
     fetchBookings();
-  }, [token, setBookings]);
+  }, [token, setBookings, fetchBookings]);
 
   return { bookings, loading, error, refetch: fetchBookings };
 }
