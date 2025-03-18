@@ -37,6 +37,7 @@
     "react-country-flag": "^3.1.0",
     "react-day-picker": "^9.5.1",
     "react-dom": "^18.2.0",
+    "react-feather": "^2.0.10",
     "react-google-places-autocomplete": "^4.1.0",
     "react-i18next": "^15.4.0",
     "react-select": "^5.10.0",
