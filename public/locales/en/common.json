@@ -13,7 +13,20 @@
     "viewAll": "View All Bookings",
     "cart": "Booking Cart",
     "myAccount": "My Account",
-    "settings": "Settings"
+    "settings": "Settings",
+    "upcomingRides": "Upcoming Rides",
+    "noUpcomingRides": "No upcoming rides found"
+  },
+  "profile": {
+    "title": "My Profile",
+    "personalInfo": "Personal Information",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "passwordsMustMatch": "New passwords must match",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile"
   },
   "hero": {
     "title": "Book Your Ride with Confidence",
@@ -112,6 +125,27 @@
       "confirmed": "Confirmed",
       "completed": "Completed",
       "cancelled": "Cancelled"
+    },
+    "timeRemaining": {
+      "days": "{{days}}d {{hours}}h until pickup",
+      "hours": "{{hours}}h {{minutes}}m until pickup",
+      "minutes": "{{minutes}}m until pickup",
+      "soon": "Pickup time approaching"
+    },
+    "cancelBooking": "Cancel Booking",
+    "cancelBookingTitle": "Cancel Your Booking",
+    "cancelBookingDescription": "Please provide a reason for cancellation. Your request will be reviewed by our team.",
+    "cancellationReason": "Reason for cancellation",
+    "cancellationReasonPlaceholder": "Please explain why you need to cancel this booking...",
+    "confirmCancellation": "Submit Cancellation Request",
+    "cancellationRequestSubmitted": "Cancellation request submitted successfully",
+    "cancellationError": "Failed to submit cancellation request",
+    "provideCancellationReason": "Please provide a reason for cancellation",
+    "cannotCancel": "Cannot cancel booking",
+    "cancellationStatus": {
+      "requested": "Cancellation request pending",
+      "approved": "Cancellation approved",
+      "rejected": "Cancellation request rejected"
     },
     "title": "Booking Reference",
     "vehicleType": "Vehicle Type",
@@ -398,7 +432,9 @@
       "generic": "Something went wrong. Please try again."
     },
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "saving": "Saving...",
+    "processing": "Processing..."
   },
   "travelInfo": {
     "title": "Travel Information",
