@@ -203,197 +203,209 @@ const BookingCard: FC<BookingCardProps> = ({ booking, onRefresh }) => {
               </div>
             </div>
 
-            {/* Date */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Calendar className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('booking.pickupTime')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900">{formattedDate}</p>
-              </div>
-            </div>
-            {/* Time */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Clock className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('booking.pickupTime')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900">{formattedTime}</p>
-              </div>
-            </div>
-            {/* Passengers */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Users className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('booking.passengers')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900">{booking.passengers}</p>
-              </div>
-            </div>
-            {/* Luggage */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Briefcase className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('luggage.title')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900">{booking.hasLuggage ? t('booking.yes') : t('booking.no')}</p>
-              </div>
-            </div>
-
-            {/* Vehicle Type */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Car className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('booking.vehicleType')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900 capitalize">{booking.vehicle}</p>
-              </div>
-            </div>
-
-            {/* Booking Type */}
-            <div className="flex items-center gap-2 xs:gap-3">
-              <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                <Tag className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
-              </div>
-              <div>
-                <p className="text-xs xs:text-sm text-gray-500">{t('booking.type')}</p>
-                <p className="text-sm xs:text-base font-medium text-gray-900 capitalize">{booking.bookingType}</p>
-              </div>
-            </div>
-
-            {/* Flight Number (if exists) */}
-            {booking.flightNumber && (
+            {/* Replace the existing details section with this grid layout */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 xs:gap-6">
+              {/* Date */}
               <div className="flex items-center gap-2 xs:gap-3">
                 <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
-                  <Plane className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                  <Calendar className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
                 </div>
                 <div>
-                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.flightNumber')}</p>
-                  <p className="text-sm xs:text-base font-medium text-gray-900">{booking.flightNumber}</p>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.pickupDate')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900">{formattedDate}</p>
                 </div>
               </div>
-            )}
 
-            {/* Return Trip Badge (if applicable) */}
-            {booking.isReturn && (
-              <div className="flex items-center">
-                <span className="px-2.5 py-1 bg-primary/10 text-secondary text-xs xs:text-sm rounded-lg">
-                  {t('booking.returnTrip')}
-                </span>
+              {/* Time */}
+              <div className="flex items-center gap-2 xs:gap-3">
+                <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                  <Clock className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.pickupTime')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900">{formattedTime}</p>
+                </div>
+              </div>
+
+              {/* Passengers */}
+              <div className="flex items-center gap-2 xs:gap-3">
+                <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                  <Users className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.passengers')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900">{booking.passengers}</p>
+                </div>
+              </div>
+
+              {/* Luggage */}
+              <div className="flex items-center gap-2 xs:gap-3">
+                <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                  <Briefcase className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('luggage.title')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900">
+                    {booking.hasLuggage ? t('booking.yes') : t('booking.no')}
+                  </p>
+                </div>
+              </div>
+
+              {/* Vehicle Type */}
+              <div className="flex items-center gap-2 xs:gap-3">
+                <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                  <Car className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.vehicleType')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900 capitalize">{booking.vehicle}</p>
+                </div>
+              </div>
+
+              {/* Booking Type */}
+              <div className="flex items-center gap-2 xs:gap-3">
+                <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                  <Tag className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                </div>
+                <div>
+                  <p className="text-xs xs:text-sm text-gray-500">{t('booking.type')}</p>
+                  <p className="text-sm xs:text-base font-medium text-gray-900 capitalize">{booking.bookingType}</p>
+                </div>
+              </div>
+
+              {/* Flight Number (if exists) */}
+              {booking.flightNumber && (
+                <div className="flex items-center gap-2 xs:gap-3">
+                  <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                    <Plane className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-xs xs:text-sm text-gray-500">{t('booking.flightNumber')}</p>
+                    <p className="text-sm xs:text-base font-medium text-gray-900">{booking.flightNumber}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Return Trip Badge (if applicable) */}
+              {booking.isReturn && (
+                <div className="flex items-center gap-2 xs:gap-3">
+                  <div className="bg-primary/10 p-1.5 xs:p-2 rounded-lg">
+                    <RotateCcw className="w-3.5 h-3.5 xs:w-4 xs:h-4 text-secondary" />
+                  </div>
+                  <div>
+                    <p className="text-xs xs:text-sm text-gray-500">{t('booking.returnTrip')}</p>
+                    <p className="text-sm xs:text-base font-medium text-gray-900">{t('booking.yes')}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Remarks (if exists) */}
+            {booking.remarks && (
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs xs:text-sm text-gray-500 mb-1">{t('booking.remarks')}</p>
+                <p className="text-sm xs:text-base text-gray-900">{booking.remarks}</p>
               </div>
             )}
+
+            <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-2 pt-3 xs:pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2">
+                <span className="text-xs xs:text-sm text-gray-500">{t('booking.distance')}:</span>
+                <span className="text-sm xs:text-base font-medium text-gray-900">{booking.directDistance}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs xs:text-sm text-gray-500">
+                  {booking.isFixedPrice ? t('booking.fixedPrice') : t('booking.estimatedPrice')}:
+                </span>
+                <span className="text-base xs:text-lg sm:text-xl font-semibold text-secondary">
+                  €{booking.price.toFixed(2)}
+                </span>
+              </div>
+            </div>
           </div>
 
-          {/* Remarks (if exists) */}
-          {booking.remarks && (
-            <div className="bg-gray-50 rounded-lg p-3">
-              <p className="text-xs xs:text-sm text-gray-500 mb-1">{t('booking.remarks')}</p>
-              <p className="text-sm xs:text-base text-gray-900">{booking.remarks}</p>
+          {/* Add Cancel Button */}
+          {isCancellable() && (
+            <div className="px-3 xs:px-4 sm:px-6 pb-3 xs:pb-4 sm:pb-6 mt-4 pt-4 border-t border-gray-100">
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 
+                border border-red-100 rounded-lg hover:bg-red-100 
+                transition-colors duration-200"
+              >
+                {t('booking.cancelBooking')}
+              </button>
             </div>
           )}
 
-          <div className="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-2 pt-3 xs:pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-2">
-              <span className="text-xs xs:text-sm text-gray-500">{t('booking.distance')}:</span>
-              <span className="text-sm xs:text-base font-medium text-gray-900">{booking.directDistance}</span>
+          {/* Cancellation Status */}
+          {booking.cancellation && (
+            <div className="px-3 xs:px-4 sm:px-6 pb-3 xs:pb-4 sm:pb-6">
+              <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
+                <AlertCircle className="h-5 w-5 text-yellow-500" />
+                <p className="text-sm text-yellow-700">
+                  {t(`booking.cancellationStatus.${booking.cancellation.status}`)}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs xs:text-sm text-gray-500">
-                {booking.isFixedPrice ? t('booking.fixedPrice') : t('booking.estimatedPrice')}:
-              </span>
-              <span className="text-base xs:text-lg sm:text-xl font-semibold text-secondary">
-                €{booking.price.toFixed(2)}
-              </span>
-            </div>
-          </div>
-        </div>
+          )}
 
-        {/* Add Cancel Button */}
-        {isCancellable() && (
-          <div className="px-3 xs:px-4 sm:px-6 pb-3 xs:pb-4 sm:pb-6 mt-4 pt-4 border-t border-gray-100">
-            <button
-              onClick={() => setShowCancelModal(true)}
-              className="w-full px-4 py-2 text-sm font-medium text-red-600 bg-red-50 
-                border border-red-100 rounded-lg hover:bg-red-100 
-                transition-colors duration-200"
-            >
-              {t('booking.cancelBooking')}
-            </button>
-          </div>
-        )}
-
-        {/* Cancellation Status */}
-        {booking.cancellation && (
-          <div className="px-3 xs:px-4 sm:px-6 pb-3 xs:pb-4 sm:pb-6">
-            <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg border border-yellow-100">
-              <AlertCircle className="h-5 w-5 text-yellow-500" />
-              <p className="text-sm text-yellow-700">
-                {t(`booking.cancellationStatus.${booking.cancellation.status}`)}
+          {/* Cancellation Modal */}
+          <Modal
+            isOpen={showCancelModal}
+            onClose={() => {
+              setShowCancelModal(false);
+              setCancellationReason('');
+            }}
+            title={t('booking.cancelBookingTitle')}
+          >
+            <div className="p-6">
+              <p className="text-sm text-gray-600 mb-4">
+                {t('booking.cancelBookingDescription')}
               </p>
-            </div>
-          </div>
-        )}
-
-        {/* Cancellation Modal */}
-        <Modal
-          isOpen={showCancelModal}
-          onClose={() => {
-            setShowCancelModal(false);
-            setCancellationReason('');
-          }}
-          title={t('booking.cancelBookingTitle')}
-        >
-          <div className="p-6">
-            <p className="text-sm text-gray-600 mb-4">
-              {t('booking.cancelBookingDescription')}
-            </p>
             
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {t('booking.cancellationReason')} <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                value={cancellationReason}
-                onChange={(e) => setCancellationReason(e.target.value)}
-                rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('booking.cancellationReason')} <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={cancellationReason}
+                  onChange={(e) => setCancellationReason(e.target.value)}
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 
                   focus:ring-primary/20 focus:border-primary resize-none"
-                placeholder={t('booking.cancellationReasonPlaceholder')}
-              />
-            </div>
+                  placeholder={t('booking.cancellationReasonPlaceholder')}
+                />
+              </div>
 
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowCancelModal(false);
-                  setCancellationReason('');
-                }}
-                disabled={isSubmitting}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowCancelModal(false);
+                    setCancellationReason('');
+                  }}
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white 
                   border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                {t('common.cancel')}
-              </button>
+                >
+                  {t('common.cancel')}
+                </button>
               
-              <button
-                type="button"
-                onClick={handleCancelRequest}
-                disabled={isSubmitting || !cancellationReason.trim()}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 
+                <button
+                  type="button"
+                  onClick={handleCancelRequest}
+                  disabled={isSubmitting || !cancellationReason.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 
                   rounded-lg hover:bg-red-700 disabled:opacity-50 
                   disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? t('common.processing') : t('booking.confirmCancellation')}
-              </button>
+                >
+                  {isSubmitting ? t('common.processing') : t('booking.confirmCancellation')}
+                </button>
+              </div>
             </div>
-          </div>
-        </Modal>
+          </Modal>
+        </div>
       </div>
     </div>
   );
