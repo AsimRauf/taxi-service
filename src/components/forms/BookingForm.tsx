@@ -223,7 +223,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
             const { errors } = validateBookingForm(formData, translations);
             
-            let hasErrors = Object.keys(errors).length > 0;
+            const hasErrors = Object.keys(errors).length > 0;
             let exactAddressErrors = false;
 
             // Check exact address for pickup
