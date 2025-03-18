@@ -1,7 +1,7 @@
 import { FC, ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { User, BookOpen, Settings } from 'react-feather';
+import { User, BookOpen, Clock } from 'react-feather';
 import { useTranslation } from 'next-i18next';
 
 interface AccountLayoutProps {
@@ -19,18 +19,19 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
       icon: <BookOpen size={18} />,
       active: router.pathname === '/account/bookings'
     },
+    {
+      label: t('nav.upcomingRides'),
+      href: '/account/upcoming',
+      icon: <Clock size={18} />,
+      active: router.pathname === '/account/upcoming'
+    },
     { 
       label: t('nav.profile'), 
       href: '/account/profile', 
       icon: <User size={18} />,
       active: router.pathname === '/account/profile'
     },
-    { 
-      label: t('nav.settings'), 
-      href: '/account/settings', 
-      icon: <Settings size={18} />,
-      active: router.pathname === '/account/settings'
-    },
+    
   ];
 
   return (
