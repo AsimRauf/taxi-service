@@ -11,7 +11,9 @@
     "pendingBookings": "Pending Bookings",
     "noBookings": "No pending bookings",
     "viewAll": "View All Bookings",
-    "cart": "Booking Cart"
+    "cart": "Booking Cart",
+    "myAccount": "My Account",
+    "settings": "Settings"
   },
   "hero": {
     "title": "Book Your Ride with Confidence",
@@ -90,7 +92,6 @@
     }
   },
   "booking": {
-    "title": "Comfort Taxi Service",
     "from": "From",
     "to": "To",
     "via": "Via",
@@ -106,6 +107,21 @@
     "returnIncluded": "*Return trip included in total price",
     "back": "Back",
     "bookNow": "Book Now",
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "title": "Booking Reference",
+    "vehicleType": "Vehicle Type",
+    "type": "Booking Type",
+    "returnTrip": "Return Trip",
+    "remarks": "Notes",
+    "fixedPrice": "Fixed Price",
+    "estimatedPrice": "Estimated Price",
+    "bookingReference": "Booking Reference",
+    "flightNumber": "Flight Number",
     "steps": {
       "luggage": "Luggage",
       "offers": "Offers",
@@ -275,13 +291,14 @@
   },
   "auth": {
     "registrationError": "Registration failed. Please try again.",
-    "signInTitle": "Welcome back",
-    "signInMessage": "Log in to access your account and manage your taxi bookings.",
+    "signInTitle": "Sign in to your account",
+    "signInSubtitle": "Welcome back! Please enter your details.",
+    "signInMessage": "Your trusted partner for comfortable and reliable taxi services",
     "signingIn": "Signing in...",
     "signIn": "Login",
     "noAccount": "Don't have an account?",
     "invalidCredentials": "Invalid email or password",
-    "unknownError": "An unknown error occurred",
+    "unknownError": "Something went wrong. Please try again.",
     "createAccount": "Create your account",
     "fullName": "Full Name",
     "nameRequired": "Name is required",
@@ -308,7 +325,17 @@
     "stepTwoDesc": "Set up your account security",
     "continue": "Continue",
     "back": "Back",
-    "welcomeMessage": "Start your journey with us. Create an account to access personalized taxi services and exclusive benefits."
+    "welcomeMessage": "Start your journey with us. Create an account to access personalized taxi services and exclusive benefits.",
+    "unauthorized": "Please log in to access this page",
+    "redirecting": "Redirecting to login...",
+    "email": "Email address",
+    "emailPlaceholder": "Enter your email",
+    "feature1": "Book rides quickly and easily",
+    "feature2": "Track your journey in real-time",
+    "feature3": "24/7 customer support available",
+    "forgotPassword": "Forgot password?",
+    "or": "OR",
+    "welcomeBack": "Welcome Back!"
   },
   "offers": {
     "title": "Select Your Vehicle",
