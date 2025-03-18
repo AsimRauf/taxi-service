@@ -84,3 +84,27 @@ export interface BookingData {
     businessAddress: Location;
   };
 }
+
+export interface Booking {
+  _id: string;
+  clientBookingId: string;
+  sourceAddress: string;
+  destinationAddress: string;
+  pickupDateTime: string;
+  passengers: number;
+  hasLuggage: boolean;
+  price: number;
+  status: string;
+  directDistance: string;
+  vehicle: string;
+  isReturn: boolean;
+  bookingType: string;
+  isFixedPrice: boolean;
+  flightNumber?: string;
+  remarks?: string;
+  contactInfo?: {
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+  };
+}
