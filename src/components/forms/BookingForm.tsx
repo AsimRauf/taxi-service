@@ -98,15 +98,36 @@ const parseNetherlandsAddress = (address: string) => {
 };
 
 const validateExactLocation = (location: Location) => {
+    // If it's an airport or business location, it's valid
     if (location.mainAddress?.toLowerCase().includes('airport') ||
-        location.exactAddress?.businessName) {
+        location.mainAddress?.toLowerCase().includes('station') ||
+        location.mainAddress?.toLowerCase().includes('hotel') ||
+        location.mainAddress?.toLowerCase().includes('terminal')) {
         return true;
     }
 
-    if (!location || !location.mainAddress || !location.exactAddress) return false;
+    // Parse the address if exactAddress is not already set
+    if (!location.exactAddress) {
+        const parsedAddress = parseNetherlandsAddress(
+            location.mainAddress || location.value.description
+        );
+        
+        // If it's a business location from parsed address
+        if (parsedAddress.businessName) {
+            return true;
+        }
 
-    const { streetName, houseNumber } = location.exactAddress;
-    return Boolean(streetName?.trim() && houseNumber?.trim());
+        // If it has valid street name and house number from parsed address
+        if (parsedAddress.streetName && parsedAddress.houseNumber) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Check existing exactAddress if it exists
+    const { streetName, houseNumber, businessName } = location.exactAddress;
+    return Boolean(businessName || (streetName?.trim() && houseNumber?.trim()));
 };
 
 export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
@@ -135,6 +156,12 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
     // Update the handleLocationUpdate function
     const handleLocationUpdate = (place: SingleValue<SelectOption>, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
+        // Clear validation error for the specific field
+        setValidationErrors(prev => ({
+            ...prev,
+            [type]: undefined
+        }));
+
         if (!place) {
             if (type === 'stopover' && typeof index === 'number') {
                 const newStopovers = [...formData.stopovers];
@@ -162,7 +189,13 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             }
         };
 
-        // Update form data without showing modal
+        // Parse and set exact address automatically if possible
+        const parsedAddress = parseNetherlandsAddress(place.value.description);
+        if (parsedAddress.businessName || (parsedAddress.streetName && parsedAddress.houseNumber)) {
+            location.exactAddress = parsedAddress;
+        }
+
+        // Update form data
         if (type === 'stopover' && typeof index === 'number') {
             const newStopovers = [...formData.stopovers];
             newStopovers[index] = location;
@@ -185,24 +218,41 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const handleCalculate = async () => {
         setIsLoading(true);
         try {
-            const { errors } = validateBookingForm(formData, translations);
-            setValidationErrors(errors);
+            // Clear all validation errors first
+            setValidationErrors({});
 
-            // Add exact address validation
+            const { errors } = validateBookingForm(formData, translations);
+            
+            let hasErrors = Object.keys(errors).length > 0;
+            let exactAddressErrors = false;
+
+            // Check exact address for pickup
             if (formData.pickup && !validateExactLocation(formData.pickup)) {
                 setValidationErrors(prev => ({
                     ...prev,
                     pickup: translations.booking.errors.exactAddressRequired
                 }));
-                setIsLoading(false);
-                return;
+                exactAddressErrors = true;
             }
 
+            // Check exact address for destination
             if (formData.destination && !validateExactLocation(formData.destination)) {
                 setValidationErrors(prev => ({
                     ...prev,
                     destination: translations.booking.errors.exactAddressRequired
                 }));
+                exactAddressErrors = true;
+            }
+
+            // If there are only exact address errors, don't show other validation errors
+            if (exactAddressErrors) {
+                setIsLoading(false);
+                return;
+            }
+
+            // If there are other validation errors, show them
+            if (hasErrors) {
+                setValidationErrors(errors);
                 setIsLoading(false);
                 return;
             }
@@ -480,11 +530,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         )}
                     </div>
                 )}
-                {validationErrors.destination && (
-                    <div className="relative ml-[29px] xs:ml-[14px] sm:ml-[24px] lg:ml-[59px] mt-[-20px] top-[-24px]">
-                        <span className="text-red-500 text-sm">{validationErrors.destination}</span>
-                    </div>
-                )}
+               
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
                     <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
                         <LuggageCheckbox
@@ -559,7 +605,17 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             {showExactLocationModal.isOpen && showExactLocationModal.location && (
                 <ExactLocationModal
                     isOpen={showExactLocationModal.isOpen}
-                    onClose={() => setShowExactLocationModal({ isOpen: false })}
+                    onClose={() => {
+                        // Clear validation errors for the location type that was being edited
+                        const type = showExactLocationModal.type;
+                        if (type && (type === 'pickup' || type === 'stopover' || type === 'destination')) {
+                            setValidationErrors(prev => ({
+                                ...prev,
+                                [type]: undefined
+                            }));
+                        }
+                        setShowExactLocationModal({ isOpen: false });
+                    }}
                     location={showExactLocationModal.location}
                     type={showExactLocationModal.type!}
                     index={showExactLocationModal.index}
