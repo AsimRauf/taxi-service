@@ -6,41 +6,67 @@ import mongoose from 'mongoose';
 import { sendBookingConfirmation } from '@/utils/emailService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    try {
-        await connectToDatabase();
-        const bookingData = req.body;
-        console.log('Booking data received:', bookingData.id);
-        
-        const { id, userId, ...restBookingData } = bookingData;
-        
-        const booking = new Booking({
-            clientBookingId: id,
-            user: new mongoose.Types.ObjectId(userId),
-            userId,
-            ...restBookingData,
-            status: 'pending'
-        });
+    if (req.method !== 'POST') {
+        return res.status(405).json({ message: 'Method not allowed' });
+    }
 
+    try {
+        // Connect to database first
+        await connectToDatabase();
+        
+        const bookingData = req.body;
+        console.log('Raw booking data:', JSON.stringify(bookingData, null, 2));
+
+        // Validate essential fields
+        if (!bookingData.clientBookingId || !bookingData.userId) {
+            throw new Error('Missing required fields: clientBookingId or userId');
+        }
+
+        // Format the data for MongoDB
+        const bookingDoc = {
+            clientBookingId: bookingData.clientBookingId,
+            user: new mongoose.Types.ObjectId(bookingData.userId),
+            userId: bookingData.userId,
+            pickup: bookingData.pickup,
+            destination: bookingData.destination,
+            stopovers: bookingData.stopovers || [],
+            pickupDateTime: bookingData.pickupDateTime,
+            returnDateTime: bookingData.returnDateTime,
+            hasLuggage: bookingData.hasLuggage,
+            passengers: bookingData.passengers,
+            status: 'pending',
+            vehicle: bookingData.vehicle,
+            price: bookingData.price || 0,
+            directDistance: bookingData.directDistance,
+            extraDistance: bookingData.extraDistance,
+            bookingType: bookingData.bookingType,
+            isReturn: bookingData.isReturn || false,
+            luggage: bookingData.luggage || {
+                regularLuggage: { large: 0, small: 0, handLuggage: 0 },
+                specialLuggage: {
+                    foldableWheelchair: 0, rollator: 0, pets: 0,
+                    bicycle: 0, winterSports: 0, stroller: 0,
+                    golfBag: 0, waterSports: 0
+                }
+            }
+        };
+
+        // Create and save the booking
+        const booking = new Booking(bookingDoc);
         const savedBooking = await booking.save();
+        
+        // Populate user details
         const populatedBooking = await savedBooking.populate('user', 'name email');
         
         // Send confirmation email asynchronously
-        try {
-            console.log('Attempting to send confirmation email...');
-            await sendBookingConfirmation(savedBooking);
-            console.log('Email sent successfully for booking:', id);
-        } catch (error) {
-            console.error('Email sending failed in API route:', {
-                bookingId: id,
-                error: error instanceof Error ? error.message : 'Unknown error',
-                timestamp: new Date().toISOString()
-            });
-        }
+        sendBookingConfirmation(savedBooking).catch(error => {
+            console.error('Email sending failed:', error);
+        });
         
-        res.status(201).json(populatedBooking);
+        return res.status(201).json(populatedBooking);
     } catch (error) {
-        console.error('Booking error:', error);
-        res.status(400).json({ 
+        console.error('Booking creation error:', error);
+        return res.status(400).json({ 
             message: 'Error creating booking',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
