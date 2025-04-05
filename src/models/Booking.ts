@@ -139,6 +139,19 @@ const bookingSchema = new mongoose.Schema({
     cancellation: {
         type: CancellationSchema,
         default: null
+    },
+    assignedCompany: {
+        type: Schema.Types.ObjectId,
+        ref: 'Company',
+        default: null
+    },
+    companyAssignedAt: {
+        type: Date,
+        default: null
+    },
+    companyAssignedBy: {
+        type: String,  // or Schema.Types.ObjectId if you're referencing users
+        default: null
     }
 }, {
     timestamps: true

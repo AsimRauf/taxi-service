@@ -29,6 +29,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             userId: bookingData.userId,
             pickup: bookingData.pickup,
             destination: bookingData.destination,
+            
+            // Updated contactInfo with additional phone number
+            contactInfo: {
+                fullName: bookingData.contactInfo?.fullName || '',
+                email: bookingData.contactInfo?.email || '',
+                phoneNumber: bookingData.contactInfo?.phoneNumber || '',
+                additionalPhoneNumber: bookingData.contactInfo?.additionalPhoneNumber || ''
+            },
+            
+            // Add bookingForOther information
+            bookingForOther: bookingData.bookingForOther ? {
+                fullName: bookingData.bookingForOther.fullName || '',
+                phoneNumber: bookingData.bookingForOther.phoneNumber || ''
+            } : null,
+            
+            // Add other potentially missing fields
+            flightNumber: bookingData.flightNumber || '',
+            remarks: bookingData.remarks || '',
+            isFixedPrice: bookingData.isFixedPrice || false,
+            sourceAddress: bookingData.sourceAddress,
+            destinationAddress: bookingData.destinationAddress,
+            
+            // ...rest of existing fields...
             stopovers: bookingData.stopovers || [],
             pickupDateTime: bookingData.pickupDateTime,
             returnDateTime: bookingData.returnDateTime,
@@ -55,8 +78,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const booking = new Booking(bookingDoc);
         const savedBooking = await booking.save();
         
-        // Populate user details
-        const populatedBooking = await savedBooking.populate('user', 'name email');
+        // Populate user details - fixed version
+        const populatedBooking = await Booking.findById(savedBooking._id)
+            .populate('user', 'name email')
+            .lean();
         
         // Send confirmation email asynchronously
         sendBookingConfirmation(savedBooking).catch(error => {
