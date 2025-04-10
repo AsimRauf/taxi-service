@@ -66,7 +66,7 @@ export const ServicesSection = ({ translations }: ServicesSectionProps) => {
     ]
   
     return (
-      <section className="bg-gradient-to-b from-primary to-primary/90 text-white py-16">
+      <section id="services" className="bg-gradient-to-b from-primary to-primary/90 text-white py-16">
         <div className="w-[95%] md:w-[90%] max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -140,4 +140,4 @@ export const ServicesSection = ({ translations }: ServicesSectionProps) => {
       </section>
     )
   }
-  
+

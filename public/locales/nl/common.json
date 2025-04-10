@@ -15,7 +15,8 @@
     "myAccount": "Mijn Account",
     "settings": "Instellingen",
     "upcomingRides": "Aankomende Ritten",
-    "noUpcomingRides": "Geen aankomende ritten gevonden"
+    "noUpcomingRides": "Geen aankomende ritten gevonden",
+    "faq": "FAQ"
   },
   "hero": {
     "title": "Boek Uw Rit met Vertrouwen",
@@ -512,5 +513,209 @@
     "passwordsMustMatch": "Nieuwe wachtwoorden moeten overeenkomen",
     "updateSuccess": "Profiel succesvol bijgewerkt",
     "updateError": "Profiel bijwerken mislukt"
+  },
+  "faq": {
+    "title": "Veelgestelde Vragen",
+    "booking": {
+      "title": "Taxi bestellen",
+      "orderConfirmation": {
+        "question": "Hoe weet ik of mijn bestelling is verwerkt?",
+        "answer": "U ontvangt een bevestiging via de mail."
+      },
+      "otherAirports": {
+        "question": "Kan ik een taxi reserveren voor een andere vliegveld dan Schiphol?",
+        "answer": "Ja, u kunt een taxi reserveren voor andere luchthavens dan Schiphol. Wij bieden vervoer van en naar alle luchthavens in Nederland, België en Duitsland."
+      },
+      "confirmationEmail": {
+        "question": "Krijg ik een bevestiging na het bestellen van een taxi?",
+        "answer": "U ontvangt een bevestiging via de mail."
+      },
+      "nationalCoverage": {
+        "question": "Kan ik in heel Nederland worden opgehaald?",
+        "answer": "Uiteraard is dat mogelijk. Indien uw woonplaats niet bij 'tarieven' staat vermeld kunt u contact opnemen voor een offerte."
+      }
+    },
+    "schipholReturn": {
+      "title": "Terugkomst op Schiphol",
+      "pickupLocation": {
+        "question": "Op welke locatie word ik opgehaald op Schiphol?",
+        "answer": "U wordt verwacht bij vertrekhal 3 uitgang C van Schiphol. In geval van vertragingen kunt u er op rekenen dat wij deze nauwlettend in de gaten houden. Na aankomst op de luchthaven dient u uw mobiel aan te zetten, zodat de chauffeur u kunt bereiken."
+      }
+    },
+    "additionalPickup": {
+      "title": "Extra ophaaladres",
+      "multipleAddresses": {
+        "question": "Kunnen we op verschillende adressen opgehaald worden?",
+        "answer": "Ja, dat kan! Het kost €10 extra per extra adres binnen dezelfde woonplaats en €20 extra per adres in een andere plaats."
+      },
+      "whereToSpecify": {
+        "question": "Waar kan ik mijn adres opgeven?",
+        "answer": "U kunt het extra adres opgeven bij de opmerkingen in het bestelformulier."
+      }
+    },
+    "luggage": {
+      "title": "Bagage",
+      "stationWagon": {
+        "question": "Wat is de maximale hoeveelheid bagage die ik mee kan nemen in een stationwagen?",
+        "answer": "Een stationwagen taxi kan 4 grote koffers en 4 cabine trolleys meenemen."
+      },
+      "bus": {
+        "question": "Wat is de maximale hoeveelheid bagage die ik mee kan nemen in een bus?",
+        "answer": "Een taxi bus kan 8 grote koffers en 8 cabine trolleys meenemen."
+      }
+    },
+    "rates": {
+      "title": "Tarieven",
+      "fixedRate": {
+        "question": "Hanteert Taxi Ritje een vast tarief voor ritten naar Schiphol?",
+        "answer": "Wij hanteren vaste tarieven voor een taxi naar en van Schiphol."
+      }
+    },
+    "duringRide": {
+      "title": "Tijdens de rit",
+      "passengers": {
+        "question": "Hoeveel personen mogen er in een taxi meerijden?",
+        "answer": "Een stationwagen taxi biedt plaats aan maximaal 4 passagiers, terwijl een busje taxi tot 8 passagiers kan vervoeren."
+      }
+    },
+    "payment": {
+      "title": "Betalen",
+      "howToPay": {
+        "question": "Hoe kan ik mijn geboekte rit betalen?",
+        "answer": "Bij Taxi Ritje hanteren wij een vooraf betaalbeleid voor al onze ritten. Dit zorgt voor een soeple, betrouwbare en zorgloze reis voor zowel u als onze chauffeurs. Wij danken u voor uw begrip en kijken ernaar uit om u veilig en comfortabel naar uw bestemming te brengen!"
+      },
+      "businessAccount": {
+        "question": "Kan ik op rekening rijden?",
+        "answer": "Dit is alleen mogelijk voor bedrijven."
+      }
+    },
+    "specialRequests": {
+      "title": "Speciale wensen",
+      "cancellation": {
+        "question": "Kan ik mijn reis nog annuleren?",
+        "answer": "U kunt uw reis 12 uur voor vertrek annuleren daar aan zijn geen kosten verbonden."
+      },
+      "wheelchair": {
+        "question": "Kan ik een rolstoel in de taxi meenemen?",
+        "answer": "Dit is alleen mogelijk bij een inklapbare rolstoel."
+      },
+      "bicycle": {
+        "question": "Kan ik mijn fiets meenemen in de taxi?",
+        "answer": "Alleen als u naar Schiphol gaat en uw fiets is al verpakt in een doos, dan kan hij mee in een taxibusje."
+      },
+      "pets": {
+        "question": "Mag mijn huisdier mee in de taxi?",
+        "answer": "Huisdieren zijn alleen toegestaan in de taxi als ze in een tas of bench zitten."
+      }
+    },
+    "travelingWithChildren": {
+      "title": "Reizen met kinderen",
+      "childSeat": {
+        "question": "Hebben jullie een kinderstoel in de taxi?",
+        "answer": "In Nederland mogen kinderen in een taxi zonder kinderstoel zitten. Baby's mogen op schoot worden gehouden en oudere kinderen mogen op een gewone stoel zitten met de gordel om."
+      }
+    },
+    "complaints": {
+      "title": "Klachten",
+      "howToFile": {
+        "question": "Hoe kan ik een klacht indienen?",
+        "answer": "U kunt uw klacht via de contactformulier doorgeven of mail ons naar info@taxiritje.nl"
+      }
+    },
+    "additionalServices": {
+      "title": "Service overige",
+      "assistance": {
+        "question": "Helpt de chauffeur met het instappen en/of het tillen van mijn bagage?",
+        "answer": "Ja, iedere chauffeur helpt met instappen en/of bagage."
+      }
+    }
+  },
+  "about": {
+    "title": "Over Ons",
+    "subtitle": "Uw Betrouwbare Rit, Elke Keer",
+    "welcome": {
+      "title": "Welkom bij Taxi Ritje",
+      "description": "Bij Taxi Ritje zijn we meer dan alleen een taxiservice — we zijn uw vertrouwde partner voor veilig, comfortabel en stipt vervoer. Of u nu naar het vliegveld gaat, naar uw werk reist of een avondje uit plant, wij zorgen ervoor dat uw reis soepel en zorgeloos verloopt."
+    },
+    "mission": {
+      "title": "Onze Missie",
+      "description": "Het bieden van veilig, betaalbaar en gemakkelijk vervoer dat voldoet aan de dagelijkse behoeften van onze klanten — van korte stadsritten tot langeafstandsritten."
+    },
+    "whyChooseUs": "Waarom Taxi Ritje",
+    "features": {
+      "availability": {
+        "title": "24/7 Beschikbaar",
+        "description": "Dag en nacht, wij staan altijd voor u klaar"
+      },
+      "booking": {
+        "title": "Eenvoudig Online Boeken",
+        "description": "Boek uw taxi met enkele klikken"
+      },
+      "drivers": {
+        "title": "Professionele Chauffeurs",
+        "description": "Vriendelijk, betrouwbaar en volledig gecertificeerd"
+      },
+      "pricing": {
+        "title": "Transparante Prijzen",
+        "description": "Geen verrassingen, alleen eerlijke vooraf bekende tarieven"
+      },
+      "comfort": {
+        "title": "Comfort & Netheid",
+        "description": "Reis in stijl en comfort, elke keer weer"
+      },
+      "experience": {
+        "title": "Jarenlange Ervaring",
+        "description": "Vertrouw op onze bewezen staat van dienst"
+      }
+    },
+    "ourValues": "Onze Waarden",
+    "values": {
+      "customerFirst": {
+        "title": "Klant Eerst",
+        "description": "Uw tevredenheid stuurt alles wat we doen"
+      },
+      "safety": {
+        "title": "Veiligheid",
+        "description": "We nemen veiligheid serieus, voor zowel passagiers als chauffeurs"
+      },
+      "integrity": {
+        "title": "Integriteit",
+        "description": "Eerlijke communicatie en transparante prijzen"
+      },
+      "innovation": {
+        "title": "Innovatie",
+        "description": "We omarmen technologie om uw ervaring te verbeteren"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact",
+    "subtitle": "Neem contact met ons op voor al uw vragen",
+    "getInTouch": "Neem Contact Op",
+    "sendMessage": "Stuur ons een Bericht",
+    "fullName": "Volledige Naam",
+    "email": "E-mail",
+    "phone": "Telefoon",
+    "subject": "Onderwerp",
+    "message": "Bericht",
+    "send": "Verstuur Bericht",
+    "sending": "Versturen...",
+    "thankYou": "Bedankt!",
+    "responseMessage": "We hebben uw bericht ontvangen en nemen zo snel mogelijk contact met u op.",
+    "address": "Adres",
+    "addressDetails": "Nederland",
+    "hours": "Openingstijden",
+    "available247": "24/7 beschikbaar voor boekingen",
+    "selectSubject": "Selecteer een onderwerp",
+    "subjects": {
+      "booking": "Boeking Vraag",
+      "support": "Klantenservice",
+      "feedback": "Feedback",
+      "complaint": "Klacht",
+      "other": "Anders"
+    },
+    "errors": {
+      "submitFailed": "Formulier verzenden mislukt. Probeer het opnieuw."
+    }
   }
 }

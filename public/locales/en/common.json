@@ -15,7 +15,8 @@
     "myAccount": "My Account",
     "settings": "Settings",
     "upcomingRides": "Upcoming Rides",
-    "noUpcomingRides": "No upcoming rides found"
+    "noUpcomingRides": "No upcoming rides found",
+    "faq": "FAQ"
   },
   "profile": {
     "title": "My Profile",
@@ -531,6 +532,206 @@
       "service24h": "24/7 service available",
       "flightTracking": "Free flight tracking",
       "meetGreet": "Meet & Greet service"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "booking": {
+      "title": "Booking a Taxi",
+      "orderConfirmation": {
+        "question": "How do I know if my order has been processed?",
+        "answer": "You will receive a confirmation via email."
+      },
+      "otherAirports": {
+        "question": "Can I book a taxi for airports other than Schiphol?",
+        "answer": "Yes, you can book a taxi for airports other than Schiphol. We provide transportation to and from all airports in the Netherlands, Belgium, and Germany."
+      },
+      "confirmationEmail": {
+        "question": "Will I receive a confirmation after booking a taxi?",
+        "answer": "You will receive a confirmation via email."
+      },
+      "nationalCoverage": {
+        "question": "Can I be picked up anywhere in the Netherlands?",
+        "answer": "Yes, that's possible. If your location is not listed under 'rates', please contact us for a quote."
+      }
+    },
+    "schipholReturn": {
+      "title": "Returning to Schiphol",
+      "pickupLocation": {
+        "question": "Where will I be picked up at Schiphol?",
+        "answer": "You are expected at departure hall 3 exit C of Schiphol. In case of delays, you can count on us to monitor them closely. After arriving at the airport, please turn on your mobile phone so the driver can reach you."
+      }
+    },
+    "additionalPickup": {
+      "title": "Additional Pickup Address",
+      "multipleAddresses": {
+        "question": "Can we be picked up at different addresses?",
+        "answer": "Yes, you can! It costs €10 extra per additional address within the same city and €20 extra per address in another city."
+      },
+      "whereToSpecify": {
+        "question": "Where can I specify my address?",
+        "answer": "You can specify the additional address in the remarks section of the booking form."
+      }
+    },
+    "luggage": {
+      "title": "Luggage",
+      "stationWagon": {
+        "question": "What is the maximum amount of luggage I can take in a station wagon?",
+        "answer": "A station wagon taxi can accommodate 4 large suitcases and 4 cabin trolleys."
+      },
+      "bus": {
+        "question": "What is the maximum amount of luggage I can take in a bus?",
+        "answer": "A taxi bus can accommodate 8 large suitcases and 8 cabin trolleys."
+      }
+    },
+    "rates": {
+      "title": "Rates",
+      "fixedRate": {
+        "question": "Does Taxi Ritje charge a fixed rate for rides to Schiphol?",
+        "answer": "We maintain fixed rates for taxis to and from Schiphol."
+      }
+    },
+    "duringRide": {
+      "title": "During the Ride",
+      "passengers": {
+        "question": "How many passengers can ride in a taxi?",
+        "answer": "A station wagon taxi can accommodate up to 4 passengers, while a taxi bus can transport up to 8 passengers."
+      }
+    },
+    "payment": {
+      "title": "Payment",
+      "howToPay": {
+        "question": "How can I pay for my booked ride?",
+        "answer": "At Taxi Ritje, we maintain a prepayment policy for all our rides. This ensures a smooth, reliable, and worry-free journey for both you and our drivers. We thank you for your understanding and look forward to bringing you safely and comfortably to your destination!"
+      }
+    },
+    "specialRequests": {
+      "title": "Special Requests",
+      "cancellation": {
+        "question": "Can I cancel my trip?",
+        "answer": "You can cancel your trip 12 hours before departure without any charges."
+      },
+      "wheelchair": {
+        "question": "Can I take a wheelchair in the taxi?",
+        "answer": "This is only possible with a foldable wheelchair."
+      },
+      "bicycle": {
+        "question": "Can I take my bicycle in the taxi?",
+        "answer": "Only if you're going to Schiphol and your bicycle is already packed in a box, it can be transported in a taxi bus."
+      },
+      "pets": {
+        "question": "Can I take my pet in the taxi?",
+        "answer": "Pets are only allowed in the taxi if they are in a bag or carrier."
+      }
+    },
+    "travelingWithChildren": {
+      "title": "Traveling with Children",
+      "childSeat": {
+        "question": "Do you have child seats in the taxi?",
+        "answer": "In the Netherlands, children are allowed to ride in a taxi without a child seat. Babies can be held on the lap, and older children can sit in a regular seat with the seatbelt on."
+      }
+    },
+    "complaints": {
+      "title": "Complaints",
+      "howToFile": {
+        "question": "How can I file a complaint?",
+        "answer": "You can submit your complaint via the contact form or email us at info@taxiritje.nl"
+      }
+    },
+    "additionalServices": {
+      "title": "Additional Services",
+      "assistance": {
+        "question": "Does the driver help with getting in and/or lifting my luggage?",
+        "answer": "Yes, every driver helps with getting in and/or handling luggage."
+      }
+    }
+  },
+  "about": {
+    "title": "About Us",
+    "subtitle": "Your Reliable Ride, Every Time",
+    "welcome": {
+      "title": "Welcome to Taxi Ritje",
+      "description": "At Taxi Ritje, we're more than just a taxi service — we're your trusted partner for safe, comfortable, and on-time travel. Whether you're heading to the airport, commuting to work, or planning a night out, we're here to make your journey smooth and stress-free."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "description": "To provide safe, affordable, and convenient transportation that meets the everyday needs of our customers — from quick city rides to long-distance trips."
+    },
+    "whyChooseUs": "Why Choose Taxi Ritje",
+    "features": {
+      "availability": {
+        "title": "24/7 Availability",
+        "description": "Day or night, we're always ready to ride"
+      },
+      "booking": {
+        "title": "Easy Online Booking",
+        "description": "Book your taxi in just a few clicks"
+      },
+      "drivers": {
+        "title": "Professional Drivers",
+        "description": "Friendly, reliable, and fully certified"
+      },
+      "pricing": {
+        "title": "Transparent Pricing",
+        "description": "No surprises, just fair upfront rates"
+      },
+      "comfort": {
+        "title": "Comfort & Cleanliness",
+        "description": "Ride in style and comfort, every time"
+      },
+      "experience": {
+        "title": "Years of Experience",
+        "description": "Trust in our proven track record"
+      }
+    },
+    "ourValues": "Our Values",
+    "values": {
+      "customerFirst": {
+        "title": "Customer First",
+        "description": "Your satisfaction drives everything we do"
+      },
+      "safety": {
+        "title": "Safety",
+        "description": "We take safety seriously, for both passengers and drivers"
+      },
+      "integrity": {
+        "title": "Integrity",
+        "description": "Honest communication and transparent pricing"
+      },
+      "innovation": {
+        "title": "Innovation",
+        "description": "We embrace technology to improve your experience"
+      }
+    }
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Get in touch with us for any questions or concerns",
+    "getInTouch": "Get in Touch",
+    "sendMessage": "Send us a Message",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "subject": "Subject",
+    "message": "Message",
+    "send": "Send Message",
+    "sending": "Sending...",
+    "thankYou": "Thank You!",
+    "responseMessage": "We've received your message and will get back to you soon.",
+    "address": "Address",
+    "addressDetails": "Netherlands",
+    "hours": "Business Hours",
+    "available247": "Available 24/7 for bookings",
+    "selectSubject": "Select a subject",
+    "subjects": {
+      "booking": "Booking Inquiry",
+      "support": "Customer Support",
+      "feedback": "Feedback",
+      "complaint": "Complaint",
+      "other": "Other"
+    },
+    "errors": {
+      "submitFailed": "Failed to submit form. Please try again."
     }
   }
 }
