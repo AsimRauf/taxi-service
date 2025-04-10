@@ -716,6 +716,14 @@
     },
     "errors": {
       "submitFailed": "Formulier verzenden mislukt. Probeer het opnieuw."
-    }
+    },
+    "companyInfo": "Bedrijfsinformatie",
+    "bookingNumber": "Reserveringnr./Ritnr.",
+    "bookingNumberPlaceholder": "Vul uw reserverings- of ritnummer in (indien van toepassing)",
+    "phoneNumber": "010-843 77 62",
+    "emailAddress": "info@taxiritje.nl",
+    "officeAddress": "Dwerggras 30\n3068PC Rotterdam",
+    "vatNumber": "BTW: NL814157932B01",
+    "chamberOfCommerce": "KVK: 24369978"
   }
 }

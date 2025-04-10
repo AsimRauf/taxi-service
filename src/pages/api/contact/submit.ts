@@ -4,14 +4,14 @@ import Contact from '@/models/Contact'
 import type { IContact } from '@/models/Contact'
 import nodemailer from 'nodemailer'
 
-// Create email transporter with support email credentials
+// Update transporter to use support email credentials
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT),
   secure: false,
   auth: {
-    user: process.env.SUPPORT_EMAIL, // Using support email
-    pass: process.env.SMTP_PASSWORD  // Using same password
+    user: process.env.SUPPORT_EMAIL, // Use support email
+    pass: process.env.SMTP_PASSWORD
   }
 })
 
@@ -25,8 +25,7 @@ export default async function handler(
 
   try {
     await connectToDatabase()
-
-    const { fullName, email, phoneNumber, subject, message } = req.body
+    const { fullName, email, phoneNumber, subject, message, bookingNumber } = req.body
 
     // Save to database with proper typing
     const contact: Partial<IContact> = {
@@ -35,6 +34,7 @@ export default async function handler(
       phoneNumber,
       subject,
       message,
+      bookingNumber,
       createdAt: new Date(),
       status: 'new'
     }
@@ -42,15 +42,25 @@ export default async function handler(
     const newContact = new Contact(contact)
     await newContact.save()
 
-    // Send notification email to your personal email
+    // Send notification email to support
     const supportMailOptions = {
-      from: process.env.SUPPORT_EMAIL,
-      to: 'asimraufbuzz@gmail.com', // Your personal email
+      from: {
+        name: 'Taxi Ritje Contact Form',
+        address: process.env.SUPPORT_EMAIL as string // Use support email as sender
+      },
+      to: process.env.SUPPORT_EMAIL, // Send to support email
+      replyTo: email,
       subject: `New Contact Form Submission: ${subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px;">New Contact Form Submission</h2>
           
+          ${bookingNumber ? `
+          <div style="background: #f5f5f5; padding: 15px; border-radius: 5px; margin: 20px 0;">
+            <p style="margin: 5px 0;"><strong>Booking/Ride Number:</strong> ${bookingNumber}</p>
+          </div>
+          ` : ''}
+
           <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin: 20px 0;">
             <p style="margin: 5px 0;"><strong>Name:</strong> ${fullName}</p>
             <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
@@ -66,9 +76,12 @@ export default async function handler(
       `
     }
 
-    // Send auto-reply from support email
+    // Auto-reply to customer using same support email
     const customerMailOptions = {
-      from: process.env.SUPPORT_EMAIL,
+      from: {
+        name: 'Taxi Ritje',
+        address: process.env.SUPPORT_EMAIL as string // Use support email as sender
+      },
       to: email,
       subject: 'Thank you for contacting Taxi Ritje',
       html: `
@@ -105,7 +118,7 @@ export default async function handler(
     console.error('Contact form submission error:', error)
     return res.status(500).json({ 
       success: false, 
-      error: 'Internal server error' 
+      error: 'Failed to submit form. Please try again.' 
     })
   }
 }

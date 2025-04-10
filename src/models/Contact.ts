@@ -6,6 +6,7 @@ export interface IContact extends Document {
   phoneNumber: string
   subject: string
   message: string
+  bookingNumber?: string // Add optional bookingNumber field
   createdAt: Date
   status: 'new' | 'inProgress' | 'resolved'
 }
@@ -31,6 +32,10 @@ const contactSchema = new Schema<IContact>({
   message: {
     type: String,
     required: [true, 'Message is required']
+  },
+  bookingNumber: { // Add bookingNumber to schema
+    type: String,
+    required: false
   },
   createdAt: {
     type: Date,

@@ -732,6 +732,14 @@
     },
     "errors": {
       "submitFailed": "Failed to submit form. Please try again."
-    }
+    },
+    "companyInfo": "Company Information",
+    "bookingNumber": "Booking/Ride Number",
+    "bookingNumberPlaceholder": "Enter your booking or ride number (if applicable)",
+    "phoneNumber": "010-843 77 62",
+    "emailAddress": "info@taxiritje.nl",
+    "officeAddress": "Dwerggras 30\n3068PC Rotterdam",
+    "vatNumber": "VAT: NL814157932B01",
+    "chamberOfCommerce": "Chamber of Commerce: 24369978"
   }
 }

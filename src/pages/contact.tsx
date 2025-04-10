@@ -10,12 +10,23 @@ import {
   MapPin, 
   Clock, 
   Send,
-  CheckCircle
+  CheckCircle,
+  FileText
 } from 'lucide-react'
+
+interface FormData {
+  bookingNumber?: string;
+  fullName: string;
+  email: string;
+  phoneNumber: string;
+  subject: string;
+  message: string;
+}
 
 const Contact: NextPage = () => {
   const { t } = useTranslation('common')
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
+    bookingNumber: '',
     fullName: '',
     email: '',
     phoneNumber: '',
@@ -48,7 +59,8 @@ const Contact: NextPage = () => {
         email: '',
         phoneNumber: '',
         subject: '',
-        message: ''
+        message: '',
+        bookingNumber: ''
       })
     } catch (error) {
       setError(t('contact.errors.submitFailed'))
@@ -98,6 +110,16 @@ const Contact: NextPage = () => {
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-3 rounded-lg">
+                    <Phone className="w-6 h-6 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">{t('contact.phone')}</h3>
+                    <p className="text-gray-600">010-843 77 62</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-primary/10 p-3 rounded-lg">
                     <Mail className="w-6 h-6 text-primary" />
                   </div>
                   <div>
@@ -108,21 +130,23 @@ const Contact: NextPage = () => {
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-3 rounded-lg">
-                    <Phone className="w-6 h-6 text-primary" />
+                    <MapPin className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{t('contact.phone')}</h3>
-                    <p className="text-gray-600">+31 (0) XXX XXX XXX</p>
+                    <h3 className="font-medium text-gray-900">{t('contact.address')}</h3>
+                    <p className="text-gray-600">Dwerggras 30</p>
+                    <p className="text-gray-600">3068PC Rotterdam</p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
                   <div className="bg-primary/10 p-3 rounded-lg">
-                    <MapPin className="w-6 h-6 text-primary" />
+                    <FileText className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">{t('contact.address')}</h3>
-                    <p className="text-gray-600">{t('contact.addressDetails')}</p>
+                    <h3 className="font-medium text-gray-900">{t('contact.companyInfo')}</h3>
+                    <p className="text-gray-600">BTW: NL814157932B01</p>
+                    <p className="text-gray-600">KVK: 24369978</p>
                   </div>
                 </div>
 
@@ -168,6 +192,20 @@ const Contact: NextPage = () => {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="bookingNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      {t('contact.bookingNumber')}
+                    </label>
+                    <input
+                      type="text"
+                      id="bookingNumber"
+                      name="bookingNumber"
+                      value={formData.bookingNumber}
+                      onChange={handleChange}
+                      placeholder={t('contact.bookingNumberPlaceholder')}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                    />
+                  </div>
                   <div>
                     <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
                       {t('contact.fullName')}
