@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/mongodb';
 import Booking from '@/models/Booking';
+import Notification from '@/models/Notification'; 
 import '@/models/User';
 import mongoose from 'mongoose';
 import { sendBookingConfirmation } from '@/utils/emailService';
@@ -20,6 +21,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Validate essential fields
         if (!bookingData.clientBookingId || !bookingData.userId) {
             throw new Error('Missing required fields: clientBookingId or userId');
+        }
+
+        // Add type validation for vehicle
+        if (!['sedan', 'stationWagon', 'bus'].includes(bookingData.vehicle)) {
+            throw new Error('Invalid vehicle type');
         }
 
         // Format the data for MongoDB
@@ -58,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             hasLuggage: bookingData.hasLuggage,
             passengers: bookingData.passengers,
             status: 'pending',
-            vehicle: bookingData.vehicle,
+            vehicle: bookingData.vehicle as 'sedan' | 'stationWagon' | 'bus',
             price: bookingData.price || 0,
             directDistance: bookingData.directDistance,
             extraDistance: bookingData.extraDistance,
@@ -77,7 +83,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Create and save the booking
         const booking = new Booking(bookingDoc);
         const savedBooking = await booking.save();
-        
+
+        // Create admin notification
+        const adminNotification = new Notification({
+            type: 'new_booking',
+            recipientType: 'admin',
+            bookingId: savedBooking._id,
+            message: `New booking #${savedBooking.clientBookingId} has been created.`,
+            status: 'info',
+            read: false,
+            metadata: {
+                bookingDetails: {
+                    clientBookingId: savedBooking.clientBookingId,
+                    pickupDateTime: savedBooking.pickupDateTime,
+                    vehicle: savedBooking.vehicle,
+                    price: savedBooking.price,
+                    passengers: savedBooking.passengers
+                }
+            }
+        });
+
+        // Save the notification
+        await adminNotification.save();
+
         // Populate user details - fixed version
         const populatedBooking = await Booking.findById(savedBooking._id)
             .populate('user', 'name email')
