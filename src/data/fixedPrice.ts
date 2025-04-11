@@ -2,79 +2,359 @@ import { FixedRouteMap } from '@/types/pricing';
 
 export const fixedRoutes: FixedRouteMap = {
     "Amsterdam Airport Schiphol (AMS)": {
-        "Rotterdam": { regular: 77.50, van: 107.50 },
-        "Schiedam": { regular: 77.50, van: 107.50 },
-        "Vlaardingen": { regular: 77.50, van: 107.50 },
-        "Spijkenisse": { regular: 87.50, van: 117.50 },
-        "Capelle aan den Ijssel": { regular: 87.50, van: 117.50 },
-        "Krimpen aan den Ijssel": { regular: 97.50, van: 127.50 },
-        "Hoogvliet Rotterdam": { regular: 87.50, van: 117.50 },
-        "Hellevoetsluis": { regular: 97.50, van: 127.50 },
-        "Brielle": { regular: 97.50, van: 127.50 },
-        "Oostvoorne": { regular: 97.50, van: 127.50 },
-        "Dordrecht": { regular: 97.50, van: 127.50 },
-        "Papendrecht": { regular: 97.50, van: 127.50 },
-        "Zwijndrecht": { regular: 97.50, van: 127.50 },
-        "Hendrik-Ido-Ambacht": { regular: 97.50, van: 127.50 },
-        "Ridderkerk": { regular: 87.50, van: 117.50 },
-        "Barendrecht": { regular: 87.50, van: 117.50 },
-        "Alblasserdam": { regular: 97.50, van: 127.50 },
-        "Rozenburg": { regular: 97.50, van: 127.50 },
-        "Berkel en Rodenrijs": { regular: 77.50, van: 107.50 },
-        "Bleiswijk": { regular: 77.50, van: 107.50 },
-        "Bergschenhoek": { regular: 77.50, van: 107.50 },
-        "Hekelingen": { regular: 97.50, van: 127.50 },
-        "Geervliet": { regular: 97.50, van: 127.50 },
-        "Heenvliet": { regular: 97.50, van: 127.50 },
-        "Zuidland": { regular: 97.50, van: 127.50 },
-        "Abbenbroek": { regular: 97.50, van: 127.50 },
-        "Oud-Beijerland": { regular: 97.50, van: 127.50 },
-        "Strijen": { regular: 97.50, van: 127.50 },
-        "Klaaswaal": { regular: 97.50, van: 127.50 },
-        "Numansdorp": { regular: 97.50, van: 127.50 },
-        "Nieuw-Beijerland": { regular: 97.50, van: 127.50 },
-        "Zuid-Beijerland": { regular: 97.50, van: 127.50 },
-        "Mijnsheerenland": { regular: 97.50, van: 127.50 },
-        "Puttershoek": { regular: 97.50, van: 127.50 },
-        "'s-Gravendeel": { regular: 97.50, van: 127.50 },
-        "Europoort Rotterdam": { regular: 107.50, van: 137.50 },
-        "Maasvlakte Rotterdam": { regular: 107.50, van: 137.50 },
-        "Botlek Rotterdam": { regular: 87.50, van: 117.50 },
-        "Pernis": { regular: 77.50, van: 107.50 },
-        "Piershil": { regular: 97.50, van: 127.50 },
-        "Heinenoord": { regular: 97.50, van: 127.50 },
-        "Goudswaard": { regular: 97.50, van: 127.50 },
-        "Maasdam": { regular: 97.50, van: 127.50 },
-        "Maassluis": { regular: 87.50, van: 117.50 },
-        "Sliedrecht": { regular: 97.50, van: 127.50 },
-        "Nieuwerkerk aan den IJssel": { regular: 87.50, van: 117.50 },
-        "Rhoon": { regular: 87.50, van: 117.50 },
-        "Poortugaal": { regular: 87.50, van: 117.50 },
-        "Rockanje": { regular: 97.50, van: 127.50 },
-        "Amsterdam": { regular: 47.50, van: 57.50 }
+        "Rotterdam": { 
+            sedan: 77.50, 
+            stationWagon: 92.50, // 1.2x sedan price
+            bus: 107.50 
+        },
+        "Schiedam": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Vlaardingen": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Spijkenisse": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Capelle aan den Ijssel": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Krimpen aan den Ijssel": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Hoogvliet Rotterdam": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Hellevoetsluis": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Brielle": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Oostvoorne": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Dordrecht": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Papendrecht": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Zwijndrecht": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Hendrik-Ido-Ambacht": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Ridderkerk": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Barendrecht": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Alblasserdam": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Rozenburg": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Berkel en Rodenrijs": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Bleiswijk": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Bergschenhoek": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Hekelingen": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Geervliet": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Heenvliet": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Zuidland": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Abbenbroek": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Oud-Beijerland": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Strijen": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Klaaswaal": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Numansdorp": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Nieuw-Beijerland": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Zuid-Beijerland": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Mijnsheerenland": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Puttershoek": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "'s-Gravendeel": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Europoort Rotterdam": { 
+            sedan: 107.50, 
+            stationWagon: 129.00,
+            bus: 137.50 
+        },
+        "Maasvlakte Rotterdam": { 
+            sedan: 107.50, 
+            stationWagon: 129.00,
+            bus: 137.50 
+        },
+        "Botlek Rotterdam": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Pernis": { 
+            sedan: 77.50, 
+            stationWagon: 92.50,
+            bus: 107.50 
+        },
+        "Piershil": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Heinenoord": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Goudswaard": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Maasdam": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Maassluis": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Sliedrecht": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Nieuwerkerk aan den IJssel": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Rhoon": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Poortugaal": { 
+            sedan: 87.50, 
+            stationWagon: 105.00,
+            bus: 117.50 
+        },
+        "Rockanje": { 
+            sedan: 97.50, 
+            stationWagon: 117.00,
+            bus: 127.50 
+        },
+        "Amsterdam": { 
+            sedan: 47.50, 
+            stationWagon: 57.00,
+            bus: 57.50 
+        }
     },
     "Eindhoven Airport (EIN)": {
-        "Rotterdam": { regular: 150.00, van: 175.00 },
-        "Schiedam": { regular: 150.00, van: 175.00 },
-        "Vlaardingen": { regular: 150.00, van: 175.00 },
-        "Barendrecht": { regular: 150.00, van: 175.00 },
-        "Ridderkerk": { regular: 150.00, van: 175.00 },
-        "Spijkenisse": { regular: 150.00, van: 175.00 },
-        "Hoogvliet Rotterdam": { regular: 150.00, van: 175.00 },
-        "Capelle aan den ijssel": { regular: 150.00, van: 175.00 }
+        "Rotterdam": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Schiedam": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Vlaardingen": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Barendrecht": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Ridderkerk": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Spijkenisse": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Hoogvliet Rotterdam": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        },
+        "Capelle aan den ijssel": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 175.00 
+        }
     },
     "Rotterdam The Hague Airport (RTM)": {
-        "Leeuwarden": { regular: 330.00, van: 350.00 },
-        "Groningen": { regular: 400.00, van: 430.00 },
-        "Assen": { regular: 370.00, van: 400.00 },
-        "Zwolle": { regular: 240.00, van: 260.00 },
-        "Lelystad": { regular: 220.00, van: 240.00 },
-        "Haarlem": { regular: 100.00, van: 120.00 },
-        "Arnhem": { regular: 190.00, van: 200.00 },
-        "Utrecht": { regular: 90.00, van: 100.00 },
-        "Den Haag": { regular: 30.00, van: 35.00 },
-        "Den Bosch": { regular: 150.00, van: 160.00 },
-        "Middelburg": { regular: 170.00, van: 190.00 },
-        "Maastricht": { regular: 360.00, van: 380.00 }
+        "Leeuwarden": { 
+            sedan: 330.00, 
+            stationWagon: 396.00,
+            bus: 350.00 
+        },
+        "Groningen": { 
+            sedan: 400.00, 
+            stationWagon: 480.00,
+            bus: 430.00 
+        },
+        "Assen": { 
+            sedan: 370.00, 
+            stationWagon: 444.00,
+            bus: 400.00 
+        },
+        "Zwolle": { 
+            sedan: 240.00, 
+            stationWagon: 288.00,
+            bus: 260.00 
+        },
+        "Lelystad": { 
+            sedan: 220.00, 
+            stationWagon: 264.00,
+            bus: 240.00 
+        },
+        "Haarlem": { 
+            sedan: 100.00, 
+            stationWagon: 120.00,
+            bus: 120.00 
+        },
+        "Arnhem": { 
+            sedan: 190.00, 
+            stationWagon: 228.00,
+            bus: 200.00 
+        },
+        "Utrecht": { 
+            sedan: 90.00, 
+            stationWagon: 108.00,
+            bus: 100.00 
+        },
+        "Den Haag": { 
+            sedan: 30.00, 
+            stationWagon: 36.00,
+            bus: 35.00 
+        },
+        "Den Bosch": { 
+            sedan: 150.00, 
+            stationWagon: 180.00,
+            bus: 160.00 
+        },
+        "Middelburg": { 
+            sedan: 170.00, 
+            stationWagon: 204.00,
+            bus: 190.00 
+        },
+        "Maastricht": { 
+            sedan: 360.00, 
+            stationWagon: 432.00,
+            bus: 380.00 
+        }
     }
 };
