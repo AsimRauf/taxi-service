@@ -131,6 +131,30 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
   );
 };
 
+const getVehicleInfo = (vehicleType: 'sedan' | 'stationWagon' | 'bus', t: (key: string) => string) => {
+  const info = {
+    sedan: {
+      name: t('offers.sedanTaxi.name'),
+      icon: '🚗',
+      bgColor: 'bg-blue-50',
+      textColor: 'text-blue-700'
+    },
+    stationWagon: {
+      name: t('offers.stationWagonTaxi.name'),
+      icon: '🚙',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-700'
+    },
+    bus: {
+      name: t('offers.busTaxi.name'),
+      icon: '🚐',
+      bgColor: 'bg-purple-50',
+      textColor: 'text-purple-700'
+    }
+  };
+
+  return info[vehicleType];
+};
 
 const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess }: BookingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -269,12 +293,14 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
 
           {/* Middle Row - Vehicle Type */}
           <div className="flex items-center gap-2 mb-3">
-            <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-2 py-1 rounded-lg text-xs xs:text-sm">
-              <Car className="w-3 h-3 xs:w-4 xs:h-4 text-blue-700" />
-              <span className="whitespace-nowrap">
-                {booking.vehicle === 'regular' ? t('overview.regularTaxi') : t('overview.vanTaxi')}
-              </span>
-            </div>
+            {booking.vehicle && (
+              <div className={`flex items-center gap-2 ${getVehicleInfo(booking.vehicle, t).bgColor} ${getVehicleInfo(booking.vehicle, t).textColor} px-2 py-1 rounded-lg text-xs xs:text-sm`}>
+                <Car className={`w-3 h-3 xs:w-4 xs:h-4 ${getVehicleInfo(booking.vehicle, t).textColor}`} />
+                <span className="whitespace-nowrap">
+                  {getVehicleInfo(booking.vehicle, t).name}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Price and Actions - Reorganized for mobile */}
@@ -485,22 +511,44 @@ export const OverviewPage = () => {
           booking.luggage
         );
 
-        // Only update if regular taxi is selected but not available
-        if (booking.vehicle === 'regular' && !vehicleAvailability.regular) {
+        // Check vehicle availability and upgrade if necessary
+        if (booking.vehicle && !vehicleAvailability[booking.vehicle]) {
           updatedBookingIds.push(booking.id);
 
-          const basePrice = calculatePrice(
+          // Determine the most suitable vehicle
+          let newVehicle: 'sedan' | 'stationWagon' | 'bus';
+          if (vehicleAvailability.bus) {
+            newVehicle = 'bus';
+          } else if (vehicleAvailability.stationWagon) {
+            newVehicle = 'stationWagon';
+          } else {
+            newVehicle = 'sedan';
+          }
+
+          const calculatedPrices = calculatePrice(
             booking.sourceAddress,
             booking.destinationAddress,
             booking.directDistance,
-            booking.extraDistance
+            booking.extraDistance,
+            booking.pickup?.exactAddress ? {
+              businessName: booking.pickup.exactAddress.businessName || '',
+              city: booking.pickup.exactAddress.city
+            } : undefined,
+            booking.destination?.exactAddress ? {
+              businessName: booking.destination.exactAddress.businessName || '',
+              city: booking.destination.exactAddress.city
+            } : undefined
           );
+
+          // Calculate new price based on vehicle type
+          const basePrice = calculatedPrices[newVehicle];
+          const finalPrice = booking.isReturn ? basePrice * 2 : basePrice;
 
           return {
             ...booking,
-            vehicle: 'van' as const,
-            price: booking.isReturn ? basePrice.van * 2 : basePrice.van,
-            isFixedPrice: basePrice.isFixedPrice
+            vehicle: newVehicle,
+            price: finalPrice,
+            isFixedPrice: calculatedPrices.isFixedPrice
           };
         }
 
@@ -515,7 +563,7 @@ export const OverviewPage = () => {
     };
 
     validateAllBookings();
-  }, [bookings]); // Run whenever bookings change
+  }, [bookings]);
 
   // Remove the old validation effect since we're now checking continuously
   useEffect(() => {
@@ -602,7 +650,9 @@ export const OverviewPage = () => {
             <div className="space-y-1">
               <p className="font-semibold">{t('booking.vehicleUpdated.title')}</p>
               <p>{t('booking.vehicleUpdated.message')}</p>
-              <p className="text-sm text-gray-200">{t('booking.vehicleUpdated.tip')}</p>
+              <p className="text-sm text-gray-200">
+                {t('booking.vehicleUpdated.detailedMessage')}
+              </p>
             </div>
           }
           duration={20000} 
