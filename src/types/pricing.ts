@@ -1,6 +1,7 @@
 export interface FixedPrice {
-    regular: number;
-    van: number;
+    sedan: number;
+    stationWagon: number;
+    bus: number;
 }
 
 export interface FixedRouteMap {
@@ -10,7 +11,8 @@ export interface FixedRouteMap {
 }
 
 export interface PriceResult {
-    regular: number;
-    van: number;
+    sedan: number;
+    stationWagon: number;
+    bus: number;
     isFixedPrice: boolean;
 }

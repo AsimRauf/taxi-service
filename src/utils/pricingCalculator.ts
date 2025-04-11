@@ -3,7 +3,8 @@ import { fixedRoutes } from '@/data/fixedPrice';
 import { findCanonicalName } from '@/data/placeAliases';
 
 const PRICE_PER_KM = 2.5;
-const VAN_MULTIPLIER = 1.3;
+const STATION_WAGON_MULTIPLIER = 1.2;  // 20% more than sedan
+const BUS_MULTIPLIER = 1.4;            // 40% more than sedan
 
 export const determineVehicleAvailability = (
     passengers: number,
@@ -25,28 +26,34 @@ export const determineVehicleAvailability = (
     const totalSpecialItems = Object.values(specialLuggage).reduce((sum, val) => sum + val, 0);
 
     const result = {
-        regular: true,
-        van: true
+        sedan: true,
+        stationWagon: true,
+        bus: true
     };
 
-    // Regular taxi limitations based on new criteria
-    const combinedLuggage = totalLarge + totalSmall;
-    
-    // Hide regular taxi if:
-    // 1. More than 3 large bags
-    // 2. More than 4 small bags
-    // 3. Combined luggage > 3 (except when 3 small + 1 large)
+    // Sedan limitations
+    if (
+        passengers > 3 ||
+        totalLarge > 2 ||
+        totalSmall > 3 ||
+        (totalLarge + totalSmall > 2) ||
+        totalSpecialItems > 0
+    ) {
+        result.sedan = false;
+    }
+
+    // Station Wagon limitations
     if (
         passengers > 4 ||
         totalLarge > 3 ||
         totalSmall > 4 ||
-        (combinedLuggage > 3 && !(totalSmall === 3 && totalLarge === 1)) ||
-        totalSpecialItems > 0
+        (totalLarge + totalSmall > 3) ||
+        totalSpecialItems > 1
     ) {
-        result.regular = false;
+        result.stationWagon = false;
     }
 
-    // Van limitations
+    // Bus limitations
     if (
         passengers > 8 ||
         totalLarge > 8 ||
@@ -54,12 +61,7 @@ export const determineVehicleAvailability = (
         totalHandLuggage > 8 ||
         totalSpecialItems > 3
     ) {
-        result.van = false;
-    }
-
-    // If only van is available, ensure regular is not selectable
-    if (!result.regular && result.van) {
-        result.regular = false;
+        result.bus = false;
     }
 
     console.log('✅ Vehicle availability result:', result);
@@ -151,8 +153,9 @@ export const calculatePrice = (
     
     if (fixedPrice) {
         const result = {
-            regular: fixedPrice.regular + (extraDistanceKm * PRICE_PER_KM),
-            van: fixedPrice.van + (extraDistanceKm * PRICE_PER_KM),
+            sedan: fixedPrice.sedan + (extraDistanceKm * PRICE_PER_KM),
+            stationWagon: fixedPrice.stationWagon + (extraDistanceKm * PRICE_PER_KM * STATION_WAGON_MULTIPLIER),
+            bus: fixedPrice.bus + (extraDistanceKm * PRICE_PER_KM * BUS_MULTIPLIER),
             isFixedPrice: true
         };
         console.log('💰 Final fixed price:', result);
@@ -161,9 +164,12 @@ export const calculatePrice = (
 
     // Dynamic pricing for non-fixed routes
     const totalDistance = mainDistanceKm + extraDistanceKm;
+    const basePrice = totalDistance * PRICE_PER_KM;
+    
     const result = {
-        regular: totalDistance * PRICE_PER_KM,
-        van: totalDistance * PRICE_PER_KM * VAN_MULTIPLIER,
+        sedan: basePrice,
+        stationWagon: basePrice * STATION_WAGON_MULTIPLIER,
+        bus: basePrice * BUS_MULTIPLIER,
         isFixedPrice: false
     };
     
