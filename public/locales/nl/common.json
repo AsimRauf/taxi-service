@@ -616,7 +616,7 @@
       }
     },
     "complaints": {
-      "title": "Klachten",
+      "title": "Klachtenprocedure",
       "howToFile": {
         "question": "Hoe kan ik een klacht indienen?",
         "answer": "U kunt uw klacht via de contactformulier doorgeven of mail ons naar info@taxiritje.nl"
@@ -725,5 +725,177 @@
     "officeAddress": "Dwerggras 30\n3068PC Rotterdam",
     "vatNumber": "BTW: NL814157932B01",
     "chamberOfCommerce": "KVK: 24369978"
+  },
+  "legal": {
+    "cookiePolicy": {
+      "title": "Cookiebeleid",
+      "whatAreCookies": {
+        "title": "Wat zijn Cookies",
+        "description": "Cookies zijn kleine tekstbestanden die op uw computer of mobiele apparaat worden geplaatst wanneer u onze website bezoekt. Ze helpen ons de site beter te laten werken en uw ervaring te verbeteren."
+      },
+      "howWeUse": {
+        "title": "Hoe wij Cookies gebruiken",
+        "types": [
+          "Essentiële cookies voor sitefunctionaliteit",
+          "Analytische cookies om te begrijpen hoe bezoekers onze site gebruiken",
+          "Voorkeurscookies om uw instellingen te onthouden",
+          "Authenticatiecookies om u ingelogd te houden"
+        ]
+      },
+      "yourChoices": {
+        "title": "Uw Cookie-keuzes",
+        "description": "U kunt cookies beheren via uw browserinstellingen. Het uitschakelen van bepaalde cookies kan echter uw gebruik van sommige functies van onze site beperken."
+      },
+      "contact": {
+        "title": "Contactgegevens",
+        "description": "Voor vragen over ons cookiebeleid:"
+      }
+    },
+    "privacyPolicy": {
+      "title": "Privacybeleid",
+      "introduction": {
+        "title": "Introductie",
+        "description": "Taxi Ritje respecteert uw privacy en zet zich in voor de bescherming van uw persoonlijke gegevens. Dit privacybeleid legt uit hoe wij uw gegevens verzamelen, gebruiken en beschermen."
+      },
+      "dataCollection": {
+        "title": "Gegevens die we verzamelen",
+        "items": [
+          "Naam en contactgegevens",
+          "E-mailadres en telefoonnummer",
+          "Ophaal- en afleverlocaties",
+          "Betalingsinformatie",
+          "Reisvoorkeuren en geschiedenis",
+          "Communicatiegegevens",
+          "Apparaat- en browserinformatie"
+        ]
+      },
+      "dataUsage": {
+        "title": "Hoe we uw gegevens gebruiken",
+        "items": [
+          "Om onze taxidiensten te leveren",
+          "Om uw boekingen en betalingen te verwerken",
+          "Om te communiceren over uw ritten",
+          "Om onze diensten te verbeteren",
+          "Om relevante updates en aanbiedingen te sturen",
+          "Om te voldoen aan wettelijke verplichtingen"
+        ]
+      },
+      "dataProtection": {
+        "title": "Hoe we uw gegevens beschermen",
+        "description": "We implementeren passende technische en organisatorische beveiligingsmaatregelen om uw persoonlijke gegevens te beschermen tegen ongeoorloofde toegang, wijziging, openbaarmaking of vernietiging."
+      },
+      "yourRights": {
+        "title": "Uw privacyrechten",
+        "items": [
+          "Recht op inzage in uw persoonsgegevens",
+          "Recht op correctie van onjuiste gegevens",
+          "Recht om gegevensverwijdering aan te vragen",
+          "Recht op beperking van verwerking",
+          "Recht op gegevensoverdraagbaarheid",
+          "Recht om bezwaar te maken tegen verwerking"
+        ]
+      },
+      "contact": {
+        "title": "Contactgegevens",
+        "description": "Als u vragen heeft over dit Privacybeleid of onze gegevenspraktijken, neem dan contact met ons op:"
+      }
+    },
+    "termsConditions": {
+      "title": "Algemene Voorwaarden",
+      "introduction": {
+        "title": "Introductie",
+        "description": "Welkom bij Taxi Ritje. Door gebruik te maken van onze diensten gaat u akkoord met deze algemene voorwaarden. Lees ze zorgvuldig door."
+      },
+      "generalTerms": {
+        "title": "Algemene Bepalingen",
+        "items": [
+          "Deze voorwaarden zijn van toepassing op alle diensten van Taxi Ritje",
+          "Wij behouden het recht voor deze voorwaarden te wijzigen",
+          "Voortgezet gebruik van onze diensten betekent acceptatie van deze voorwaarden",
+          "Alle tarieven zijn inclusief BTW en andere toepasselijke belastingen",
+          "Wij opereren volgens de Nederlandse transportwetgeving"
+        ]
+      },
+      "bookingTerms": {
+        "title": "Boekingsvoorwaarden",
+        "items": [
+          "Boekingen kunnen online of telefonisch worden gemaakt",
+          "Gratis annulering tot 12 uur voor geplande ophaling",
+          "Bij late annuleringen kunnen kosten in rekening worden gebracht",
+          "Vluchtvertragingen worden gemonitord en meegenomen",
+          "Extra wachttijd kan in rekening worden gebracht na coulanceperiode"
+        ]
+      },
+      "paymentTerms": {
+        "title": "Betalingsvoorwaarden",
+        "items": [
+          "Betaling is vereist voor of bij voltooiing van de service",
+          "Wij accepteren belangrijke creditcards en contante betalingen",
+          "Zakelijke accounts beschikbaar voor bedrijfsklanten",
+          "Extra kosten kunnen van toepassing zijn voor aanvullende diensten",
+          "Bonnen worden verstrekt voor alle transacties"
+        ]
+      },
+      "liability": {
+        "title": "Aansprakelijkheid en Verzekering",
+        "items": [
+          "Wij hebben een uitgebreide verzekeringsdekking",
+          "Passagiers moeten veiligheidsinstructies opvolgen",
+          "Persoonlijke bezittingen blijven verantwoordelijkheid van de passagier",
+          "Overmachtssituaties kunnen de dienstverlening beïnvloeden",
+          "Claims moeten binnen 24 uur worden gemeld"
+        ]
+      },
+      "contact": {
+        "title": "Contactgegevens",
+        "description": "Voor vragen over deze algemene voorwaarden:"
+      }
+    },
+    "complaints": {
+      "title": "Klachtenprocedure",
+      "introduction": {
+        "title": "Introductie",
+        "description": "Bij Taxi Ritje streven we naar de best mogelijke service. Als u niet tevreden bent met onze service, horen we dat graag om onze diensten te verbeteren."
+      },
+      "howToFile": {
+        "title": "Hoe een Klacht in te dienen",
+        "description": "U kunt uw klacht indienen via ons contactformulier of direct via e-mail. Vermeld zo veel mogelijk details, inclusief uw boekingsreferentie indien van toepassing.",
+        "steps": "Volg deze stappen om uw klacht in te dienen:"
+      },
+      "responseTime": {
+        "title": "Reactietijd",
+        "description": "We nemen alle klachten serieus en streven naar een snelle oplossing:",
+        "initial": "Eerste reactie binnen 24 uur",
+        "investigation": "Volledig onderzoek binnen 2-5 werkdagen",
+        "resolution": "Oplossingvoorstel binnen 7 werkdagen"
+      },
+      "importantNotice": {
+        "title": "Belangrijke Mededeling",
+        "description": "Let op dat klachten binnen 24 uur na het incident moeten worden ingediend voor een goede afhandeling en oplossing."
+      },
+      "contact": {
+        "title": "Contactgegevens",
+        "description": "Voor klachten en feedback:",
+        "email": "info@taxiritje.nl",
+        "phone": "010-843 77 62"
+      },
+      "contactUs": "Neem Nu Contact Op"
+    }
+  },
+  "complaints": {
+    "title": "Klachtenprocedure",
+    "introduction": {
+      "title": "Hoe een Klacht in te dienen",
+      "description": "Wij streven ernaar de beste service te bieden. Als u niet tevreden bent met onze service, laat het ons dan weten en we doen ons best om het probleem op te lossen."
+    }
+  },
+  "footer": {
+    "quickLinks": "Snelle Links",
+    "legal": "Juridisch",
+    "privacyPolicy": "Privacybeleid",
+    "termsConditions": "Algemene Voorwaarden",
+    "cookiePolicy": "Cookiebeleid",
+    "complaints": "Klachtenprocedure",
+    "allRightsReserved": "Alle rechten voorbehouden"
   }
 }

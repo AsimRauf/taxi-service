@@ -741,5 +741,170 @@
     "officeAddress": "Dwerggras 30\n3068PC Rotterdam",
     "vatNumber": "VAT: NL814157932B01",
     "chamberOfCommerce": "Chamber of Commerce: 24369978"
+  },
+  "legal": {
+    "cookiePolicy": {
+      "title": "Cookie Policy",
+      "whatAreCookies": {
+        "title": "What Are Cookies",
+        "description": "Cookies are small text files that are placed on your computer or mobile device when you visit our website. They help us make the site work better and improve your experience."
+      },
+      "howWeUse": {
+        "title": "How We Use Cookies",
+        "types": [
+          "Essential cookies for site functionality",
+          "Analytics cookies to understand how visitors use our site",
+          "Preference cookies to remember your settings",
+          "Authentication cookies to keep you logged in"
+        ]
+      },
+      "yourChoices": {
+        "title": "Your Cookie Choices",
+        "description": "You can control cookies through your browser settings. However, disabling certain cookies may limit your ability to use some features of our site."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "For questions about our cookie policy:"
+      }
+    },
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "introduction": {
+        "title": "Introduction",
+        "description": "Taxi Ritje respects your privacy and is committed to protecting your personal data. This privacy policy explains how we collect, use, and safeguard your information."
+      },
+      "dataCollection": {
+        "title": "Information We Collect",
+        "items": [
+          "Name and contact details",
+          "Email address and phone number",
+          "Pickup and drop-off locations",
+          "Payment information",
+          "Travel preferences and history",
+          "Communication records",
+          "Device and browser information"
+        ]
+      },
+      "dataUsage": {
+        "title": "How We Use Your Data",
+        "items": [
+          "To provide our taxi services",
+          "To process your bookings and payments",
+          "To communicate about your rides",
+          "To improve our services",
+          "To send relevant updates and offers",
+          "To comply with legal obligations"
+        ]
+      },
+      "dataProtection": {
+        "title": "How We Protect Your Data",
+        "description": "We implement appropriate technical and organizational security measures to protect your personal data against unauthorized access, modification, disclosure or destruction."
+      },
+      "yourRights": {
+        "title": "Your Privacy Rights",
+        "items": [
+          "Right to access your personal data",
+          "Right to correct inaccurate data",
+          "Right to request data deletion",
+          "Right to restrict processing",
+          "Right to data portability",
+          "Right to object to processing"
+        ]
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "If you have any questions about this Privacy Policy or our data practices, please contact us:"
+      }
+    },
+    "termsConditions": {
+      "title": "Terms and Conditions",
+      "introduction": {
+        "title": "Introduction",
+        "description": "Welcome to Taxi Ritje. By using our services, you agree to these terms and conditions. Please read them carefully."
+      },
+      "generalTerms": {
+        "title": "General Terms",
+        "items": [
+          "These terms apply to all services provided by Taxi Ritje",
+          "We reserve the right to modify these terms at any time",
+          "Continued use of our services constitutes acceptance of these terms",
+          "All rates include VAT and other applicable taxes",
+          "We operate in accordance with Dutch transportation laws"
+        ]
+      },
+      "bookingTerms": {
+        "title": "Booking Terms",
+        "items": [
+          "Bookings can be made online or by phone",
+          "Free cancellation up to 12 hours before scheduled pickup",
+          "Late cancellations may incur charges",
+          "Flight delays are monitored and accounted for",
+          "Additional waiting time charges may apply after grace period"
+        ]
+      },
+      "paymentTerms": {
+        "title": "Payment Terms",
+        "items": [
+          "Payment is required before or upon completion of service",
+          "We accept major credit cards and cash payments",
+          "Business accounts available for corporate clients",
+          "Additional charges may apply for extra services",
+          "Receipts provided for all transactions"
+        ]
+      },
+      "liability": {
+        "title": "Liability and Insurance",
+        "items": [
+          "We maintain comprehensive insurance coverage",
+          "Passengers must follow safety instructions",
+          "Personal belongings remain passenger responsibility",
+          "Force majeure conditions may affect service delivery",
+          "Claims must be reported within 24 hours"
+        ]
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "For questions about these terms and conditions:"
+      }
+    },
+    "complaints": {
+      "title": "Complaints Procedure",
+      "introduction": {
+        "title": "Introduction",
+        "description": "At Taxi Ritje, we strive to provide the best possible service. If you're not satisfied with our service, we want to hear from you to improve our services."
+      },
+      "howToFile": {
+        "title": "How to File a Complaint",
+        "description": "You can submit your complaint through our contact form or directly via email. Please include as much detail as possible, including your booking reference if applicable.",
+        "steps": "Follow these steps to submit your complaint:"
+      },
+      "responseTime": {
+        "title": "Response Time",
+        "description": "We take all complaints seriously and aim to resolve them quickly:",
+        "initial": "Initial response within 24 hours",
+        "investigation": "Full investigation within 2-5 business days",
+        "resolution": "Resolution proposal within 7 business days"
+      },
+      "importantNotice": {
+        "title": "Important Notice",
+        "description": "Please note that complaints should be submitted within 24 hours of the incident to ensure proper investigation and resolution."
+      },
+      "contact": {
+        "title": "Contact Information",
+        "description": "For complaints and feedback:",
+        "email": "info@taxiritje.nl",
+        "phone": "010-843 77 62"
+      },
+      "contactUs": "Contact Us Now"
+    }
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms and Conditions",
+    "cookiePolicy": "Cookie Policy",
+    "complaints": "Complaints Procedure",
+    "allRightsReserved": "All rights reserved"
   }
 }
