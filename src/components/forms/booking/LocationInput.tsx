@@ -22,10 +22,25 @@ interface SelectOption {
 }
 
 const GooglePlacesAutocomplete = dynamic(
-  () => import('react-google-places-autocomplete'),
+  async () => {
+    // Create a properly typed promise
+    const loadComponent = new Promise<typeof import('react-google-places-autocomplete')>((resolve) => {
+      setTimeout(async () => {
+        const component = await import('react-google-places-autocomplete');
+        resolve(component);
+      }, 1500);
+    });
+    return loadComponent;
+  },
   {
     ssr: false,
-    loading: () => <div className="h-[60px] border border-gray-200 rounded-lg" />
+    loading: () => (
+      <div className="h-[60px] border-2 border-[#FFD700] rounded-xl animate-pulse bg-gray-50">
+        <div className="h-full flex items-center justify-start px-4 text-gray-400">
+          Loading...
+        </div>
+      </div>
+    )
   }
 )
 
@@ -54,7 +69,9 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [hasError, setHasError] = useState(false);
+  const [hasError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 3;
   // Fix the any type with proper interface
   const inputRef = useRef<GooglePlacesInputRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,21 +85,40 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
 
   // Add error handling for Google Places initialization
   useEffect(() => {
+    let mounted = true;
+    let timeoutId: NodeJS.Timeout;
+
     const checkGoogleApi = () => {
-      if (typeof window !== 'undefined' && !window.google) {
-        setHasError(true);
+      if (!mounted) return;
+
+      if (typeof window !== 'undefined' && window.google) {
         setIsLoading(false);
-        console.error('Google Maps API not loaded');
+        setIsMounted(true);
         return;
       }
-      setIsLoading(false);
-      setIsMounted(true);
+
+      if (retryCount < maxRetries) {
+        timeoutId = setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+          checkGoogleApi();
+        }, 1500);
+      } else {
+        setIsLoading(false);
+        setIsMounted(true);
+      }
     };
 
-    // Check after a short delay to ensure API has time to load
-    const timer = setTimeout(checkGoogleApi, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    // Initial delay with proper type
+    const initialTimeoutId = setTimeout(() => {
+      checkGoogleApi();
+    }, 1000);
+
+    return () => {
+      mounted = false;
+      clearTimeout(initialTimeoutId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [retryCount]);
 
   // Modify the value effect to use the ref
   useEffect(() => {
