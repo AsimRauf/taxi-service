@@ -10,17 +10,16 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     await connectToDatabase();
-    
-    const userId = req.query.id as string;
-    
-    const notifications = await Notification.find({
-      recipientType: 'user',
-      recipientId: userId
+    const userId = req.query.userId as string;
+
+    const notifications = await Notification.find({ 
+      userId: userId,
+      recipientType: 'user'
     })
     .sort({ createdAt: -1 })
-    .limit(20); // Limit to last 20 notifications
+    .limit(20);
 
-    return res.status(200).json({ notifications });
+    return res.status(200).json(notifications);
   } catch (error) {
     console.error('Error fetching notifications:', error);
     return res.status(500).json({ 

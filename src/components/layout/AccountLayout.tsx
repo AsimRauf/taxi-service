@@ -7,20 +7,27 @@ import { useAuth } from '@/contexts/AuthContext';
 import { formatDistanceToNow } from 'date-fns';
 import { nl, enUS } from 'date-fns/locale';
 
+interface NotificationMetadata {
+  clientBookingId?: string;
+  pickupDateTime?: string;
+  vehicle?: string;
+  price?: number;
+  passengers?: number;
+  hasCancellationRequest?: boolean;
+  cancellationStatus?: 'approved' | 'rejected';
+}
+
 interface Notification {
   _id: string;
-  type: string;
+  type: 'new_booking' | 'booking_update' | 'booking_cancelled' | 'booking_cancellation_request' | 'booking_confirmed' | 'payment_received';
   message: string;
-  createdAt: string;
+  createdAt: string | Date;
   read: boolean;
-  metadata?: {
-    bookingDetails?: {
-      clientBookingId: string;
-      pickupDateTime: string;
-      vehicle: string;
-      price: number;
-    }
-  }
+  status: 'info' | 'warning' | 'error' | 'success';
+  recipientType: 'user' | 'admin' | 'company';
+  bookingId: string;
+  userId: string;
+  metadata: NotificationMetadata;
 }
 
 interface AccountLayoutProps {
@@ -59,6 +66,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
   // Memoize fetchNotifications with useCallback
   const fetchNotifications = useCallback(async (userId: string) => {
     try {
+      console.log('Fetching notifications for user:', userId);
       const response = await fetch(`/api/notifications/user/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -67,26 +75,44 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to fetch notifications');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        throw new Error(`Failed to fetch notifications: ${response.status}`);
       }
 
-      return response.json();
+      const data = await response.json();
+      console.log('Raw API response:', data);
+      
+      // Always return an array of notifications
+      const notifications = Array.isArray(data) ? data : [];
+      console.log('Processed notifications:', notifications);
+      
+      return {
+        notifications: notifications
+      };
     } catch (error) {
-      console.error('Error fetching notifications:', error);
-      throw error;
+      console.error('Error in fetchNotifications:', error);
+      return { notifications: [] };
     }
-  }, [token]); // Add token as dependency
+  }, [token]);
 
   useEffect(() => {
     const fetchUserNotifications = async () => {
-      if (!user?.id || !token) return; // Check for both user and token
+      if (!user?.id || !token) {
+        console.log('Missing user ID or token:', { userId: user?.id, hasToken: !!token });
+        return;
+      }
 
       try {
+        console.log('Fetching notifications for user:', user.id);
         const data = await fetchNotifications(user.id);
-        setNotifications(data.notifications);
-        setUnreadCount(data.notifications.filter((n: Notification) => !n.read).length);
+        console.log('Fetched notifications data:', data);
+        setNotifications(data.notifications || []);
+        setUnreadCount((data.notifications || []).filter((n: Notification) => !n.read).length);
       } catch (error) {
-        console.error('Error fetching notifications:', error);
+        console.error('Error in fetchUserNotifications:', error);
+        setNotifications([]);
+        setUnreadCount(0);
       }
     };
 
@@ -101,7 +127,11 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
   const markAsRead = async (notificationId: string) => {
     try {
       const response = await fetch(`/api/notifications/${notificationId}/read`, {
-        method: 'PUT'
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       });
       
       if (response.ok) {
@@ -111,17 +141,66 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
             : notification
         ));
         setUnreadCount(prev => Math.max(0, prev - 1));
+      } else {
+        const errorData = await response.json();
+        console.error('Error marking notification as read:', errorData);
       }
     } catch (error) {
       console.error('Error marking notification as read:', error);
     }
   };
 
-  const formatNotificationDate = (date: string) => {
-    return formatDistanceToNow(new Date(date), {
+  const formatNotificationDate = (date: string | Date) => {
+    const parsedDate = typeof date === 'string' ? new Date(date) : date;
+    return formatDistanceToNow(parsedDate, {
       addSuffix: true,
       locale: router.locale === 'nl' ? nl : enUS
     });
+  };
+
+  const renderNotificationContent = (notification: Notification) => {
+    return (
+      <div 
+        key={notification._id}
+        className={`p-3 rounded-lg text-sm ${
+          notification.read ? 'bg-gray-50' : 'bg-blue-50'
+        } ${notification.status === 'warning' ? 'border-l-4 border-yellow-400' : 
+            notification.status === 'success' ? 'border-l-4 border-green-400' : ''}`}
+        onClick={() => markAsRead(notification._id)}
+      >
+        <p className="font-medium">{notification.message}</p>
+        {notification.metadata && (
+          <div className="mt-2 text-gray-600">
+            {notification.metadata.clientBookingId && (
+              <p className="text-sm">Booking #{notification.metadata.clientBookingId}</p>
+            )}
+            {notification.metadata.vehicle && (
+              <p className="text-sm">{notification.metadata.vehicle}</p>
+            )}
+            {notification.metadata.pickupDateTime && (
+              <p className="text-sm">
+                Pickup: {new Date(notification.metadata.pickupDateTime).toLocaleString()}
+              </p>
+            )}
+            {notification.metadata.price && (
+              <p className="text-sm">Price: €{notification.metadata.price.toFixed(2)}</p>
+            )}
+            {notification.metadata.cancellationStatus && (
+              <p className={`text-sm ${
+                notification.metadata.cancellationStatus === 'approved' 
+                  ? 'text-green-600' 
+                  : 'text-red-600'
+              }`}>
+                Cancellation {notification.metadata.cancellationStatus}
+              </p>
+            )}
+          </div>
+        )}
+        <p className="text-xs text-gray-500 mt-2">
+          {formatNotificationDate(notification.createdAt)}
+        </p>
+      </div>
+    );
   };
 
   return (
@@ -153,26 +232,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
                     <h3 className="font-medium mb-3">{t('notifications.title')}</h3>
                     {notifications.length > 0 ? (
                       <div className="space-y-3 max-h-[300px] overflow-y-auto">
-                        {notifications.map((notification) => (
-                          <div 
-                            key={notification._id}
-                            className={`p-3 rounded-lg text-sm ${
-                              notification.read ? 'bg-gray-50' : 'bg-blue-50'
-                            }`}
-                            onClick={() => markAsRead(notification._id)}
-                          >
-                            <p className="font-medium">{notification.message}</p>
-                            {notification.metadata?.bookingDetails && (
-                              <div className="mt-1 text-gray-600">
-                                <p>Booking #{notification.metadata.bookingDetails.clientBookingId}</p>
-                                <p>{notification.metadata.bookingDetails.vehicle}</p>
-                              </div>
-                            )}
-                            <p className="text-xs text-gray-500 mt-1">
-                              {formatNotificationDate(notification.createdAt)}
-                            </p>
-                          </div>
-                        ))}
+                        {notifications.map((notification) => renderNotificationContent(notification))}
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500">{t('notifications.empty')}</p>
@@ -237,26 +297,7 @@ const AccountLayout: FC<AccountLayoutProps> = ({ children }) => {
                 <h3 className="font-medium mb-3">{t('notifications.title')}</h3>
                 {notifications.length > 0 ? (
                   <div className="space-y-3">
-                    {notifications.map((notification) => (
-                      <div 
-                        key={notification._id}
-                        className={`p-3 rounded-lg text-sm ${
-                          notification.read ? 'bg-gray-50' : 'bg-blue-50'
-                        }`}
-                        onClick={() => markAsRead(notification._id)}
-                      >
-                        <p className="font-medium">{notification.message}</p>
-                        {notification.metadata?.bookingDetails && (
-                          <div className="mt-1 text-gray-600">
-                            <p>Booking #{notification.metadata.bookingDetails.clientBookingId}</p>
-                            <p>{notification.metadata.bookingDetails.vehicle}</p>
-                          </div>
-                        )}
-                        <p className="text-xs text-gray-500 mt-1">
-                          {formatNotificationDate(notification.createdAt)}
-                        </p>
-                      </div>
-                    ))}
+                    {notifications.map((notification) => renderNotificationContent(notification))}
                   </div>
                 ) : (
                   <p className="text-sm text-gray-500">{t('notifications.empty')}</p>

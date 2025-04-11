@@ -8,8 +8,11 @@ const NotificationSchema = new Schema({
             'new_booking',
             'booking_update',
             'booking_cancelled',
-            'booking_cancellation',  // Add this new type
-            'payment_received'
+            'booking_cancellation_request',
+            'booking_confirmed',
+            'payment_received',
+            'cancellation_request_approved',
+            'cancellation_request_rejected'
         ]
     },
     recipientType: {
@@ -26,6 +29,11 @@ const NotificationSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Booking',
         required: true
+    },
+    userId: {
+        type: String,
+        required: true,
+        index: true
     },
     message: {
         type: String,
@@ -55,6 +63,12 @@ NotificationSchema.index({ recipientType: 1, read: 1 });
 NotificationSchema.index({ createdAt: -1 });
 NotificationSchema.index({ bookingId: 1 });
 
-const Notification = mongoose.models.Notification || mongoose.model('Notification', NotificationSchema);
+// If you need to update an existing model, you'll need to update the collection
+// Add this before creating/getting the model
+if (mongoose.models.Notification) {
+    delete mongoose.models.Notification;
+}
+
+const Notification = mongoose.model('Notification', NotificationSchema);
 
 export default Notification;
