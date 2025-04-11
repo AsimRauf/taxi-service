@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { ServicesSection } from '@/components/sections/ServicesSection'
+import { Footer } from '@/components/Footer'
 import { createTranslationsObject } from '@/utils/translations'
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
@@ -27,9 +28,14 @@ const structuredData = {
   "priceRange": "€€",
   "address": {
     "@type": "PostalAddress",
-    "addressCountry": "NL"
+    "addressCountry": "NL",
+    "streetAddress": "Dwerggras 30",
+    "postalCode": "3068PC",
+    "addressLocality": "Rotterdam"
   },
-  "url": "https://taxiritje.nl"
+  "url": "https://taxiritje.nl",
+  "telephone": "010-843 77 62",
+  "email": "info@taxiritje.nl"
 }
 
 export default function Home() {
@@ -47,6 +53,7 @@ export default function Home() {
         <FeaturesSection translations={translations} />
         <ServicesSection translations={translations} />
       </main>
+      <Footer />
     </>
   )
 }
