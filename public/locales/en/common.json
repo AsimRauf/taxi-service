@@ -223,9 +223,9 @@
       "businessAddressPlaceholder": "Enter business address"
     },
     "vehicleUpdated": {
-      "title": "Vehicle Updated",
-      "message": "Your vehicle has been updated to a van due to luggage capacity requirements.",
-      "tip": "You can review available vehicles by clicking Actions > Edit Vehicle"
+      "title": "Vehicle Type Updated",
+      "message": "Some bookings have been updated to a different vehicle type based on passenger count and luggage.",
+      "detailedMessage": "This ensures you have the right vehicle size for your journey."
     },
     "errors": {
       "addressRequired": "Business address is required",
@@ -396,6 +396,39 @@
         "extraSpace": "Extra space for special items"
       }
     },
+    "sedanTaxi": {
+      "name": "Sedan Taxi",
+      "features": {
+        "passengers": "Up to 3 passengers",
+        "luggage": "Up to 2 large suitcases",
+        "freeTransport": "Free luggage transport",
+        "doorService": "Door-to-door service",
+        "fixedPrice": "Fixed price guarantee",
+        "comfort": "Premium comfort"
+      }
+    },
+    "stationWagonTaxi": {
+      "name": "Station Wagon Taxi",
+      "features": {
+        "passengers": "Up to 4 passengers",
+        "luggage": "Up to 3 large suitcases",
+        "freeTransport": "Free luggage transport",
+        "doorService": "Door-to-door service",
+        "fixedPrice": "Fixed price guarantee",
+        "extraSpace": "Extra luggage space"
+      }
+    },
+    "busTaxi": {
+      "name": "Bus Taxi",
+      "features": {
+        "passengers": "Up to 8 passengers",
+        "luggage": "Up to 8 large suitcases",
+        "freeTransport": "Free luggage transport",
+        "doorService": "Door-to-door service",
+        "fixedPrice": "Fixed price guarantee",
+        "groupTravel": "Perfect for group travel"
+      }
+    },
     "select": "Select",
     "selected": "Selected",
     "continue": "Continue to Travel Information",
@@ -489,6 +522,9 @@
     "delete": "Delete",
     "regularTaxi": "Regular Taxi",
     "vanTaxi": "Van Taxi",
+    "sedanTaxi": "Sedan Taxi",
+    "stationWagonTaxi": "Station Wagon",
+    "busTaxi": "Bus Taxi",
     "hideDetails": "Hide Details",
     "showDetails": "Show Details",
     "noBookings": "No bookings available.",
@@ -906,5 +942,11 @@
     "cookiePolicy": "Cookie Policy",
     "complaints": "Complaints Procedure",
     "allRightsReserved": "All rights reserved"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications",
+    "markAsRead": "Mark as read",
+    "new": "New"
   }
 }

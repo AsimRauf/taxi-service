@@ -218,7 +218,15 @@
       "approved": "Annulering goedgekeurd",
       "rejected": "Annuleringsverzoek afgewezen"
     },
-    "vehicleNotAvailable": "Reguliere taxi is niet beschikbaar voor deze hoeveelheid bagage. Voertuigtype is automatisch bijgewerkt naar bus"
+    "vehicleNotAvailable": "Reguliere taxi is niet beschikbaar voor deze hoeveelheid bagage. Voertuigtype is automatisch bijgewerkt naar bus",
+    "vehicleType": "Voertuigtype",
+    "type": "Boekingstype",
+    "returnTrip": "Retourrit",
+    "remarks": "Opmerkingen",
+    "fixedPrice": "Vaste Prijs",
+    "estimatedPrice": "Geschatte Prijs",
+    "bookingReference": "Boekingsreferentie",
+    "flightNumber": "Vluchtnummer"
   },
   "luggage": {
     "title": "Bagagegegevens",
@@ -325,7 +333,9 @@
     "feature3": "24/7 klantenservice beschikbaar",
     "forgotPassword": "Wachtwoord vergeten?",
     "or": "OF",
-    "welcomeBack": "Welkom Terug!"
+    "welcomeBack": "Welkom Terug!",
+    "signInSubtitle": "Welkom terug! Vul uw gegevens in.",
+    "signInMessage": "Uw vertrouwde partner voor comfortabel en betrouwbaar taxivervoer"
   },
   "offers": {
     "title": "Selecteer Uw Voertuig",
@@ -349,6 +359,39 @@
         "doorService": "Deur-tot-deur service",
         "fixedPrice": "Vaste prijs garantie",
         "extraSpace": "Extra ruimte voor speciale items"
+      }
+    },
+    "sedanTaxi": {
+      "name": "Sedan Taxi",
+      "features": {
+        "passengers": "Tot 3 passagiers",
+        "luggage": "Tot 2 grote koffers",
+        "freeTransport": "Gratis bagagevervoer",
+        "doorService": "Deur-tot-deur service",
+        "fixedPrice": "Vaste prijs garantie",
+        "comfort": "Premium comfort"
+      }
+    },
+    "stationWagonTaxi": {
+      "name": "Stationwagen Taxi",
+      "features": {
+        "passengers": "Tot 4 passagiers",
+        "luggage": "Tot 3 grote koffers",
+        "freeTransport": "Gratis bagagevervoer",
+        "doorService": "Deur-tot-deur service",
+        "fixedPrice": "Vaste prijs garantie",
+        "extraSpace": "Extra bagageruimte"
+      }
+    },
+    "busTaxi": {
+      "name": "Bus Taxi",
+      "features": {
+        "passengers": "Tot 8 passagiers",
+        "luggage": "Tot 8 grote koffers",
+        "freeTransport": "Gratis bagagevervoer",
+        "doorService": "Deur-tot-deur service",
+        "fixedPrice": "Vaste prijs garantie",
+        "groupTravel": "Perfect voor groepsreizen"
       }
     },
     "select": "Selecteer",
@@ -454,7 +497,9 @@
     "booking": "Boeken...",
     "bookNow": "Nu Boeken",
     "fixedPrice": "Vaste Prijs",
-    "estimatedPrice": "Geschatte Prijs"
+    "estimatedPrice": "Geschatte Prijs",
+    "sedanTaxi": "Sedan Taxi",
+    "stationWagonTaxi": "Stationwagen Taxi"
   },
   "navigation": {
     "back": "Terug",
@@ -486,7 +531,13 @@
   "airports": {
     "schiphol": {
       "title": "Schiphol Luchthaven Transfer",
-      "description": "Boek uw betrouwbare luchthaventransfer van en naar Amsterdam Airport Schiphol. Vaste prijzen, professionele chauffeurs en 24/7 service."
+      "description": "Boek uw betrouwbare luchthaventransfer van en naar Amsterdam Airport Schiphol. Vaste prijzen, professionele chauffeurs en 24/7 service.",
+      "features": {
+        "fixedPrice": "Vaste prijs garantie",
+        "service24h": "24/7 service beschikbaar",
+        "flightTracking": "Gratis vlucht tracking",
+        "meetGreet": "Meet & Greet service"
+      }
     },
     "rotterdam": {
       "title": "Rotterdam The Hague Airport Transfer",
@@ -512,7 +563,8 @@
     "confirmNewPassword": "Bevestig Nieuw Wachtwoord",
     "passwordsMustMatch": "Nieuwe wachtwoorden moeten overeenkomen",
     "updateSuccess": "Profiel succesvol bijgewerkt",
-    "updateError": "Profiel bijwerken mislukt"
+    "updateError": "Profiel bijwerken mislukt",
+    "signOut": "Uitloggen"
   },
   "faq": {
     "title": "Veelgestelde Vragen",
@@ -897,5 +949,11 @@
     "cookiePolicy": "Cookiebeleid",
     "complaints": "Klachtenprocedure",
     "allRightsReserved": "Alle rechten voorbehouden"
+  },
+  "notifications": {
+    "title": "Meldingen",
+    "empty": "Geen meldingen",
+    "markAsRead": "Markeer als gelezen",
+    "new": "Nieuw"
   }
 }
