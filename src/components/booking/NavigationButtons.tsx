@@ -1,40 +1,42 @@
 import { useTranslation } from 'next-i18next';
-import { ArrowRight } from 'lucide-react';
 
 interface NavigationButtonsProps {
   onBack: () => void;
   onContinue: () => void;
+  loading?: boolean;
+  disabled?: boolean; // Add disabled prop
   continueText?: string;
   backText?: string;
-  disabled?: boolean;
-  loading?: boolean;
 }
 
-export const NavigationButtons = ({
+export const NavigationButtons: React.FC<NavigationButtonsProps> = ({
   onBack,
   onContinue,
+  loading = false,
+  disabled = false, // Add default value
   continueText,
   backText,
-  disabled = false,
-  loading = false
-}: NavigationButtonsProps) => {
-  const { t } = useTranslation();
+}) => {
+  const { t } = useTranslation('common');
 
   return (
-    <div className="w-full flex flex-col-reverse sm:flex-row justify-between gap-3 sm:gap-4">
+    <div className="flex justify-between gap-4">
       <button
         onClick={onBack}
-        className="w-full sm:w-auto px-6 py-3 text-gray-600 hover:text-gray-900 transition-colors text-center"
+        className="flex-1 py-3 px-4 rounded-lg text-primary hover:bg-primary/5 transition-colors"
       >
-        {backText || t('booking.back')}
+        {backText || t('common.back')}
       </button>
       <button
         onClick={onContinue}
-        disabled={disabled || loading}
-        className="w-full sm:w-auto bg-primary text-white px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        disabled={loading || disabled} // Add disabled to button
+        className="flex-1 py-3 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {loading ? t('common.loading') : continueText || t('booking.continue')}
-        {!loading && <ArrowRight size={18} />}
+        {loading ? (
+          <span>{t('common.processing')}</span>
+        ) : (
+          <span>{continueText || t('common.continue')}</span>
+        )}
       </button>
     </div>
   );
