@@ -14,7 +14,7 @@ import { NavigationButtons } from '@/components/booking/NavigationButtons'; // I
 
 
 interface VehicleOption {
-    id: 'regular' | 'van';
+    id: 'sedan' | 'stationWagon' | 'bus';
     name: string;
     features: string[];
 }
@@ -23,26 +23,39 @@ const useVehicleOptions = () => {
     const { t } = useTranslation();
     return [
         {
-            id: 'regular',
-            name: t('offers.regularTaxi.name'),
+            id: 'sedan',
+            name: t('offers.sedanTaxi.name'),
             features: [
-                t('offers.regularTaxi.features.passengers'),
-                t('offers.regularTaxi.features.luggage'),
-                t('offers.regularTaxi.features.freeTransport'),
-                t('offers.regularTaxi.features.doorService'),
-                t('offers.regularTaxi.features.fixedPrice')
+                t('offers.sedanTaxi.features.passengers'),
+                t('offers.sedanTaxi.features.luggage'),
+                t('offers.sedanTaxi.features.freeTransport'),
+                t('offers.sedanTaxi.features.doorService'),
+                t('offers.sedanTaxi.features.fixedPrice'),
+                t('offers.sedanTaxi.features.comfort')
             ]
         },
         {
-            id: 'van',
-            name: t('offers.vanTaxi.name'),
+            id: 'stationWagon',
+            name: t('offers.stationWagonTaxi.name'),
             features: [
-                t('offers.vanTaxi.features.passengers'),
-                t('offers.vanTaxi.features.luggage'),
-                t('offers.vanTaxi.features.freeTransport'),
-                t('offers.vanTaxi.features.doorService'),
-                t('offers.vanTaxi.features.fixedPrice'),
-                t('offers.vanTaxi.features.extraSpace')
+                t('offers.stationWagonTaxi.features.passengers'),
+                t('offers.stationWagonTaxi.features.luggage'),
+                t('offers.stationWagonTaxi.features.freeTransport'),
+                t('offers.stationWagonTaxi.features.doorService'),
+                t('offers.stationWagonTaxi.features.fixedPrice'),
+                t('offers.stationWagonTaxi.features.extraSpace')
+            ]
+        },
+        {
+            id: 'bus',
+            name: t('offers.busTaxi.name'),
+            features: [
+                t('offers.busTaxi.features.passengers'),
+                t('offers.busTaxi.features.luggage'),
+                t('offers.busTaxi.features.freeTransport'),
+                t('offers.busTaxi.features.doorService'),
+                t('offers.busTaxi.features.fixedPrice'),
+                t('offers.busTaxi.features.groupTravel')
             ]
         }
     ];
@@ -202,9 +215,9 @@ export const OffersPage = () => {
     const { t } = useTranslation();
     const vehicleOptions = useVehicleOptions();
     const [bookingData, setBookingData] = useState<BookingData | null>(null);
-    const [selectedVehicle, setSelectedVehicle] = useState<'regular' | 'van' | null>(null);
-    const [prices, setPrices] = useState({ regular: 0, van: 0 });
-    const [availableVehicles, setAvailableVehicles] = useState({ regular: true, van: true });
+    const [selectedVehicle, setSelectedVehicle] = useState<'sedan' | 'stationWagon' | 'bus' | null>(null);
+    const [prices, setPrices] = useState({ sedan: 0, stationWagon: 0, bus: 0 });
+    const [availableVehicles, setAvailableVehicles] = useState({ sedan: true, stationWagon: true, bus: true });
     const [isFixedPrice, setIsFixedPrice] = useState(false);
     const { isEditing, editingBookingId, setEditMode } = useEdit();
 
@@ -238,8 +251,9 @@ export const OffersPage = () => {
         );
 
         setPrices({
-            regular: calculatedPrices.regular,
-            van: calculatedPrices.van
+            sedan: calculatedPrices.sedan,
+            stationWagon: calculatedPrices.stationWagon,
+            bus: calculatedPrices.bus
         });
         setIsFixedPrice(calculatedPrices.isFixedPrice);
 
@@ -270,7 +284,7 @@ export const OffersPage = () => {
     }, [router]);
 
 
-    const handleVehicleSelect = (vehicleId: 'regular' | 'van') => {
+    const handleVehicleSelect = (vehicleId: 'sedan' | 'stationWagon' | 'bus') => {
         if (!bookingData) return;
 
         // Parse addresses for consistent pricing
@@ -389,9 +403,9 @@ export const OffersPage = () => {
                                 key={vehicle.id}
                                 vehicle={vehicle as VehicleOption}
                                 isSelected={selectedVehicle === vehicle.id}
-                                onSelect={() => handleVehicleSelect(vehicle.id as 'regular' | 'van')}
-                                isAvailable={availableVehicles[vehicle.id as 'regular' | 'van']}
-                                price={prices[vehicle.id as 'regular' | 'van']}
+                                onSelect={() => handleVehicleSelect(vehicle.id as 'sedan' | 'stationWagon' | 'bus')}
+                                isAvailable={availableVehicles[vehicle.id as 'sedan' | 'stationWagon' | 'bus']}
+                                price={prices[vehicle.id as 'sedan' | 'stationWagon' | 'bus']}
                                 bookingData={bookingData}
                             />
                         ))}
