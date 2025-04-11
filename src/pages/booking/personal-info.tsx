@@ -612,8 +612,8 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
               onBack={handleBack}
               onContinue={handleContinue}
               loading={isLoading}
-              continueText={isEditing ? t('common.update') : undefined}
-              backText={isEditing ? t('common.backToOverview') : undefined}
+              continueText={isEditing ? t('common.update') : t('common.continue')}
+              backText={isEditing ? t('common.backToOverview') : t('common.back')}
             />
           </div>
 
