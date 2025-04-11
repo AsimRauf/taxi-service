@@ -3,17 +3,9 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { authMiddleware } from '@/middleware/auth';
 import { TokenPayload } from '@/lib/jwt';
 import Booking from '@/models/Booking';
-import mongoose, { Connection } from 'mongoose';
+import Notification from '@/models/Notification'; // Add this import
+import mongoose from 'mongoose';
 
-// Add interface for notification
-interface BookingNotification {
-  type: 'booking_cancellation_request';
-  bookingId: mongoose.Types.ObjectId;
-  userId: string;
-  message: string;
-  createdAt: Date;
-  read: boolean;
-}
 
 interface AuthenticatedRequest extends NextApiRequest {
   user: TokenPayload;
@@ -104,24 +96,30 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     await booking.save();
     console.log('Cancellation request saved for booking:', booking.clientBookingId);
     
-    // Create a notification for admin (if you have a notification collection)
-    try {
-      const db = (mongoose.connection as Connection).db;
-      const notifications = db.collection<BookingNotification>('notifications');
-      await notifications.insertOne({
-        type: 'booking_cancellation_request',
-        bookingId: booking._id,
-        userId,
-        message: `Cancellation requested for booking #${booking.clientBookingId}`,
-        createdAt: new Date(),
-        read: false
-      });
-      console.log('Notification created for cancellation request');
-    } catch (notificationError) {
-      // Don't fail the whole request if notification creation fails
-      console.error('Failed to create notification:', notificationError);
-    }
-    
+    // Create admin notification using the Notification model
+    const adminNotification = new Notification({
+      type: 'booking_cancellation',  // Changed from booking_cancellation to match enum
+      recipientType: 'admin',
+      bookingId: booking._id,
+      message: `Cancellation requested for booking #${booking.clientBookingId}`,
+      status: 'info',
+      read: false,
+      metadata: {
+        bookingDetails: {
+          clientBookingId: booking.clientBookingId,
+          pickupDateTime: booking.pickupDateTime,
+          vehicle: booking.vehicle,
+          price: booking.price,
+          passengers: booking.passengers,
+          cancellationReason: reason
+        }
+      }
+    });
+
+    // Save the notification
+    await adminNotification.save();
+    console.log('Admin notification created for cancellation request');
+
     console.log('Cancellation request processed successfully');
     return res.status(200).json({ 
       success: true, 
