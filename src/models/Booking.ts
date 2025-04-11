@@ -116,7 +116,8 @@ const bookingSchema = new mongoose.Schema({
     luggage: luggageSchema,
     vehicle: {
         type: String,
-        enum: ['regular', 'van']
+        enum: ['sedan', 'stationWagon', 'bus'], // Updated vehicle types
+        required: true
     },
     isReturn: Boolean,
     price: Number,
