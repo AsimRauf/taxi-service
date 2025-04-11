@@ -814,7 +814,27 @@ export const TravelInfoPage = () => {
     });
   };
 
+  const getVehicleInfo = (vehicleType: 'sedan' | 'stationWagon' | 'bus') => {
+    const info = {
+      sedan: {
+        name: t('offers.sedanTaxi.name'),
+        capacity: t('offers.sedanTaxi.features.passengers'),
+        icon: '🚗'
+      },
+      stationWagon: {
+        name: t('offers.stationWagonTaxi.name'),
+        capacity: t('offers.stationWagonTaxi.features.passengers'),
+        icon: '🚙'
+      },
+      bus: {
+        name: t('offers.busTaxi.name'),
+        capacity: t('offers.busTaxi.features.passengers'),
+        icon: '🚐'
+      }
+    };
 
+    return info[vehicleType];
+  };
 
   const renderPickupLocation = () => (
     <div className="space-y-4">
@@ -1073,31 +1093,22 @@ export const TravelInfoPage = () => {
           <div className="flex items-start justify-between bg-gray-50 rounded-lg p-4 mb-6">
             <div className="space-y-1">
               <h3 className="text-base sm:text-lg font-medium text-gray-900">
-                {t('travelInfo.rideDetails')}
+                {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).name}
               </h3>
               <div className="space-y-1">
-                <div className="text-xl sm:text-2xl font-bold text-primary">
-                  €{bookingData?.price?.toFixed(2) || '0.00'}
-                  {bookingData?.returnDateTime !== null && bookingData?.price && (
-                    <span className="text-sm text-gray-500 ml-2">
-                      (€{(bookingData.price / 2).toFixed(2)} {t('offers.oneWayPrice')})
-                    </span>
-                  )}
-                </div>
-                {bookingData?.returnDateTime !== null && (
-                  <div className="text-sm text-gray-600">
-                    {t('offers.returnTripNote')}
-                  </div>
-                )}
+                <p className="text-sm text-gray-600">
+                  {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).capacity}
+                </p>
               </div>
             </div>
-
             <div className="text-right">
-              <div className="inline-block bg-primary/10 rounded-full px-3 sm:px-4 py-1.5 sm:py-2 text-primary text-sm sm:text-base font-medium">
-                {bookingData?.vehicle === 'regular' ? t('offers.regularTaxi.name') : t('offers.vanTaxi.name')}
+              <div className="text-2xl">
+                {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).icon}
               </div>
-              <div className="mt-1 sm:mt-2 text-xs sm:text-sm text-gray-600">
-                {t('travelInfo.totalPassengers', { count: bookingData?.passengers })}
+              <div className="mt-1 text-sm text-gray-600">
+                {bookingData?.isReturn ? t('offers.returnTotalPrice', { 
+                  price: (bookingData.price || 0).toFixed(2) 
+                }) : `€${(bookingData?.price || 0).toFixed(2)}`}
               </div>
             </div>
           </div>
