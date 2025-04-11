@@ -8,26 +8,33 @@ import { EditProvider } from '@/contexts/EditContext'
 import { DefaultSeo } from 'next-seo'
 
 const seoConfig = {
-  title: "TaxiRitje - Professionele Taxiservice Nederland",
-  description: "Boek betrouwbare taxidiensten in heel Nederland. Luchthaventransfers, zakelijk vervoer & meer. Vaste prijzen, 24/7 service.",
+  title: "TaxiRitje - Professionele Taxiservice Nederland | 24/7 Beschikbaar",
+  description: "✓ 24/7 Taxi Service ✓ Vaste Prijzen ✓ Luchthavenvervoer ✓ Directe Boeking. Betrouwbaar taxivervoer in heel Nederland met vooraf bekend tarief.",
   canonical: "https://taxiritje.nl",
   openGraph: {
     type: 'website',
     locale: 'nl_NL',
     url: 'https://taxiritje.nl',
     siteName: 'TaxiRitje',
+    title: "TaxiRitje - Professionele Taxiservice Nederland | 24/7 Beschikbaar",
+    description: "✓ 24/7 Taxi Service ✓ Vaste Prijzen ✓ Luchthavenvervoer ✓ Directe Boeking. Betrouwbaar taxivervoer in heel Nederland met vooraf bekend tarief.",
     images: [{
       url: '/images/Logo.png',
       width: 800,
       height: 600,
-      alt: 'TaxiRitje Nederland',
-    }],
+      alt: 'TaxiRitje - Professionele Taxiservice Nederland'
+    }]
   },
   additionalLinkTags: [{
     rel: 'alternate',
     hrefLang: 'nl',
     href: 'https://taxiritje.nl'
-  }]
+  }],
+  twitter: {
+    cardType: 'summary_large_image',
+    handle: '@taxiritje',
+    site: '@taxiritje'
+  }
 }
 
 declare global {
