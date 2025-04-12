@@ -88,6 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const adminNotification = new Notification({
             type: 'new_booking',
             recipientType: 'admin',
+            userId: bookingData.userId, // Add the userId field
             bookingId: savedBooking._id,
             message: `New booking #${savedBooking.clientBookingId} has been created.`,
             status: 'info',
