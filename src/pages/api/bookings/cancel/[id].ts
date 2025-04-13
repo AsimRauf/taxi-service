@@ -98,8 +98,9 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     
     // Create admin notification using the Notification model
     const adminNotification = new Notification({
-      type: 'booking_cancellation',  // Changed from booking_cancellation to match enum
+      type: 'booking_cancellation_request',  // Fixed: Changed to match enum value
       recipientType: 'admin',
+      userId: userId,  // Added missing required field
       bookingId: booking._id,
       message: `Cancellation requested for booking #${booking.clientBookingId}`,
       status: 'info',
