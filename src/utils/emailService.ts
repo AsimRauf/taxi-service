@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 import { BookingData } from '@/types/booking';
-import { createBookingConfirmationEmail } from './emailTemplates';
+import { createBookingConfirmationEmail, createAdminBookingNotificationEmail, createCancellationRequestEmail } from './emailTemplates';
 
 // Create reusable transporter object using SMTP transport
 const createTransporter = () => {
@@ -60,27 +60,41 @@ export async function sendBookingConfirmation(booking: BookingData) {
         });
         console.log('SMTP connection verified successfully');
 
-        const mailOptions = {
+        // Send customer confirmation email
+        const customerMailOptions = {
             from: `"Taxi Service" <${process.env.SMTP_USER}>`,
             to: booking.contactInfo?.email,
             subject: `Booking Confirmation - #${booking.clientBookingId}`,
             html: createBookingConfirmationEmail(booking),
         };
 
-        console.log('Sending email with options:', {
-            to: mailOptions.to,
-            subject: mailOptions.subject,
+        // Send admin notification email
+        const adminMailOptions = {
+            from: `"Taxi Service Booking System" <${process.env.SMTP_USER}>`,
+            to: 'info@taxiritje.nl',
+            subject: `New Booking Alert - #${booking.clientBookingId}`,
+            html: createAdminBookingNotificationEmail(booking),
+        };
+
+        // Send both emails concurrently
+        const [customerInfo, adminInfo] = await Promise.all([
+            transporter.sendMail(customerMailOptions),
+            transporter.sendMail(adminMailOptions)
+        ]);
+
+        console.log('Emails sent successfully:', {
+            customer: {
+                messageId: customerInfo.messageId,
+                recipient: booking.contactInfo?.email,
+            },
+            admin: {
+                messageId: adminInfo.messageId,
+                recipient: 'info@taxiritje.nl',
+            },
             timestamp: new Date().toISOString()
         });
 
-        const info = await transporter.sendMail(mailOptions);
-        console.log('Email sent successfully:', {
-            messageId: info.messageId,
-            recipient: booking.contactInfo?.email,
-            response: info.response,
-            timestamp: new Date().toISOString()
-        });
-        return info;
+        return { customerInfo, adminInfo };
 
     } catch (error) {
         console.error('Email sending failed:', {
@@ -89,6 +103,40 @@ export async function sendBookingConfirmation(booking: BookingData) {
             booking: {
                 id: booking.clientBookingId,
                 recipient: booking.contactInfo?.email
+            },
+            timestamp: new Date().toISOString()
+        });
+        throw error;
+    }
+}
+
+export async function sendCancellationEmail(booking: BookingData, reason: string) {
+    try {
+        const transporter = createTransporter();
+        
+        const mailOptions = {
+            from: `"Taxi Service System" <${process.env.SMTP_USER}>`,
+            to: 'info@taxiritje.nl',
+            subject: `Cancellation Request - Booking #${booking.clientBookingId}`,
+            html: createCancellationRequestEmail(booking, reason),
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+
+        console.log('Cancellation email sent successfully:', {
+            messageId: info.messageId,
+            recipient: 'info@taxiritje.nl',
+            bookingId: booking.clientBookingId,
+            timestamp: new Date().toISOString()
+        });
+
+        return info;
+
+    } catch (error) {
+        console.error('Failed to send cancellation email:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            booking: {
+                id: booking.clientBookingId,
             },
             timestamp: new Date().toISOString()
         });
