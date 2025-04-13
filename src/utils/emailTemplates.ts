@@ -1,4 +1,5 @@
-import { BookingData } from '@/types/booking';
+import { BookingData, Location } from '@/types/booking';
+import { LuggageFormData } from '@/types/luggage';
 import { formatCurrency } from '@/utils/formatters';
 
 export function createBookingConfirmationEmail(booking: BookingData): string {
@@ -7,7 +8,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
     const formattedPrice = formatCurrency(booking.price);
 
     // Helper function to format luggage items
-    const formatLuggage = (luggage: any) => {
+    const formatLuggage = (luggage: LuggageFormData) => {
         const items = [];
         
         // Regular luggage
@@ -209,7 +210,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
                         ${booking.pickup.mainAddress}
                         ${booking.pickup.exactAddress ? `<br>(${booking.pickup.exactAddress.businessName || ''} ${booking.pickup.exactAddress.city})` : ''}
                     </div>
-                    ${booking.stopovers.map((stop: any, index: number) => `
+                    ${booking.stopovers.map((stop: Location, index: number) => `
                         <div class="route-point">
                             <strong>Stopover ${index + 1}:</strong><br>
                             ${stop.mainAddress}
@@ -229,7 +230,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
                         <strong>Pickup:</strong><br>
                         ${booking.destination.mainAddress}
                     </div>
-                    ${booking.stopovers.slice().reverse().map((stop: any, index: number) => `
+                    ${booking.stopovers.slice().reverse().map((stop: Location, index: number) => `
                         <div class="route-point">
                             <strong>Stopover ${index + 1}:</strong><br>
                             ${stop.mainAddress}
@@ -416,7 +417,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
                 </div>
                 ${booking.stopovers.length > 0 ? `
                     <div class="label">Stopovers:</div>
-                    ${booking.stopovers.map((stop: any, index: number) => 
+                    ${booking.stopovers.map((stop: Location, index: number) => 
                         `<div>${index + 1}. ${stop.mainAddress}</div>`).join('')}
                 ` : ''}
             </div>
