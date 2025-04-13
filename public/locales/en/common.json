@@ -45,7 +45,12 @@
     "travelers": "Number of Travelers",
     "calculate": "Calculate Price",
     "formTitle": "Your Booking Details",
-    "returnPlaceholder": "Select return date and time"
+    "returnPlaceholder": "Select return date and time",
+    "features": {
+      "freeCancellation": "Free cancellation and changes",
+      "privateTaxi": "Always a private taxi",
+      "freeBaggage": "No baggage charges"
+    }
   },
   "features": {
     "prices": {

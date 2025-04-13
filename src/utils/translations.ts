@@ -53,8 +53,13 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
   },
   hero: {
     title: t('hero.title'),
-    formTitle: t('hero.formTitle'),
     subtitle: t('hero.subtitle'),
+    formTitle: t('hero.formTitle'),
+    features: {
+      freeCancellation: t('hero.features.freeCancellation'),
+      privateTaxi: t('hero.features.privateTaxi'),
+      freeBaggage: t('hero.features.freeBaggage')
+    },
     pickupPlaceholder: t('hero.pickupPlaceholder'),
     destinationPlaceholder: t('hero.destinationPlaceholder'),
     addStopover: t('hero.addStopover'),

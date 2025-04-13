@@ -34,7 +34,12 @@
     "travelers": "Aantal Reizigers",
     "calculate": "Prijs Berekenen",
     "formTitle": "Uw Boekingsgegevens",
-    "returnPlaceholder": "Selecteer retourdatum en tijd"
+    "returnPlaceholder": "Selecteer retourdatum en tijd",
+    "features": {
+      "freeCancellation": "Gratis annulering en wijzigingen",
+      "privateTaxi": "Altijd een privé taxi",
+      "freeBaggage": "Geen bagagekosten"
+    }
   },
   "features": {
     "heading": "Waarom voor ons kiezen?",

@@ -53,6 +53,11 @@ export interface WebsiteTranslations {
     title: string;
     subtitle: string;
     formTitle: string;
+    features: {
+      freeCancellation: string;
+      privateTaxi: string;
+      freeBaggage: string;
+    };
     pickupPlaceholder: string;
     destinationPlaceholder: string;
     addStopover: string;
