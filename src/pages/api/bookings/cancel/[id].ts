@@ -5,6 +5,7 @@ import { TokenPayload } from '@/lib/jwt';
 import Booking from '@/models/Booking';
 import Notification from '@/models/Notification'; // Add this import
 import mongoose from 'mongoose';
+import { sendCancellationEmail } from '@/utils/emailService';  // Add this import
 
 
 interface AuthenticatedRequest extends NextApiRequest {
@@ -120,6 +121,15 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     // Save the notification
     await adminNotification.save();
     console.log('Admin notification created for cancellation request');
+
+    // Send cancellation email
+    try {
+      await sendCancellationEmail(booking, reason);
+      console.log('Cancellation notification email sent successfully');
+    } catch (emailError) {
+      console.error('Failed to send cancellation email:', emailError);
+      // Don't fail the request if email fails
+    }
 
     console.log('Cancellation request processed successfully');
     return res.status(200).json({ 
