@@ -174,13 +174,18 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
 
     setIsBooking(true);
     try {
-      // Create a new object with only the needed fields
+      // Ensure we're using a consistent ID
+      const bookingId = booking.id || booking.clientBookingId;
+      
       const finalBookingData = {
         ...booking,
         userId: user.id,
-        clientBookingId: booking.id,
+        id: bookingId, // Use the same ID
+        clientBookingId: bookingId, // Use the same ID
         status: 'pending'
       };
+      
+      console.log('Sending booking with ID:', bookingId); // Add logging
 
       const response = await fetch('/api/bookings/create', {
         method: 'POST',
@@ -247,7 +252,7 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
           {/* Top Row - Booking ID and Actions */}
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs xs:text-sm">
-              #{booking.id.slice(0, 8)}
+              #{booking.id}
             </span>
 
             <Popover className="relative">
@@ -620,9 +625,11 @@ export const OverviewPage = () => {
   const handleDuplicate = (id: string) => {
     const bookingToDuplicate = bookings.find(booking => booking.id === id);
     if (bookingToDuplicate) {
+      const newId = generateBookingId(); // Generate ID once
       const newBooking = {
         ...bookingToDuplicate,
-        id: generateBookingId() // Use timestamp-based ID instead of UUID
+        id: newId, // Use the same ID
+        clientBookingId: newId // Use the same ID
       };
       const updatedBookings = [...bookings, newBooking];
       setBookings(updatedBookings);

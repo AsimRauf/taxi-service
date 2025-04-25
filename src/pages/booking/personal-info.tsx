@@ -12,6 +12,7 @@ import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
 import { useEdit } from '@/contexts/EditContext';
 import { NavigationButtons } from '@/components/booking/NavigationButtons'; // Import NavigationButtons
+import { generateBookingId } from '@/utils/generateId';
 
 
 
@@ -226,9 +227,11 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
       }
 
       // Create updated booking data
+      const bookingId = editingBookingId || generateBookingId(); // Generate ID once
       const updatedBookingData = {
         ...bookingDataToUse,
-        id: editingBookingId || bookingDataToUse?.id,
+        id: bookingId, // Use the same ID
+        clientBookingId: bookingId, // Use the same ID
         contactInfo: {
           fullName: personalInfo.fullName,
           email: personalInfo.email,
@@ -245,6 +248,8 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
           businessAddress: personalInfo.businessAddress,
         } : undefined,
       };
+
+      console.log('Generated booking with ID:', bookingId); // Add logging
 
       // Save to localStorage before any async operations
       const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');

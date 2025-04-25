@@ -31,9 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Create payment order
     console.log("Creating payment for booking:", bookingId);
+    console.log("Using client booking ID:", booking.clientBookingId);
+
     const paymentResponse = await createPaymentOrder({
       bookingId: booking._id.toString(),
-      clientBookingId: booking.clientBookingId,
+      clientBookingId: booking.clientBookingId, // Use the client booking ID
       amount: booking.price,
       currency: 'EUR',
       description: `Taxi booking #${booking.clientBookingId}`,
@@ -41,7 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       customerEmail: booking.contactInfo.email,
       customerPhone: booking.contactInfo.phoneNumber
     });
+
     console.log("Payment response from MultiSafepay:", paymentResponse);
+    console.log("Payment order created with ID:", paymentResponse.data?.order_id || paymentResponse.order_id);
     
     // Extract payment details from the nested response structure
     const paymentUrl = paymentResponse.data?.payment_url || paymentResponse.payment_url;

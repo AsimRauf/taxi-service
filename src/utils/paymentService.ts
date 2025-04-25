@@ -22,6 +22,8 @@ export async function createPaymentOrder(details: PaymentDetails) {
     // Convert amount to cents and to string (MultiSafepay expects string)
     const amountInCents = Math.round(details.amount * 100).toString();
     
+    console.log('Creating payment order with client booking ID:', details.clientBookingId);
+    
     const response = await client.orders.create({
       type: 'redirect',
       order_id: details.clientBookingId,

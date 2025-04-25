@@ -19,9 +19,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         console.log('Raw booking data:', JSON.stringify(bookingData, null, 2));
 
         // Validate essential fields
-        if (!bookingData.clientBookingId || !bookingData.userId) {
-            throw new Error('Missing required fields: clientBookingId or userId');
+        if (!bookingData.userId) {
+            throw new Error('Missing required field: userId');
         }
+
+        // Ensure we have a valid and consistent booking ID
+        const clientBookingId = bookingData.clientBookingId || bookingData.id;
+        console.log('Using booking ID:', clientBookingId);
 
         // Add type validation for vehicle
         if (!['sedan', 'stationWagon', 'bus'].includes(bookingData.vehicle)) {
@@ -30,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Format the data for MongoDB
         const bookingDoc = {
-            clientBookingId: bookingData.clientBookingId,
+            clientBookingId: clientBookingId,
             user: new mongoose.Types.ObjectId(bookingData.userId),
             userId: bookingData.userId,
             pickup: bookingData.pickup,
@@ -82,13 +86,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Create and save the booking
         const booking = new Booking(bookingDoc);
+
+        // Double-check the clientBookingId before saving
+        console.log('About to save booking with clientBookingId:', booking.clientBookingId);
+
         const savedBooking = await booking.save();
+
+        // Verify the clientBookingId after saving
+        console.log('Saved booking with clientBookingId:', savedBooking.clientBookingId);
+
+        // If the ID changed, force it back to the original
+        if (savedBooking.clientBookingId !== clientBookingId) {
+            console.log('Warning: clientBookingId changed during save, fixing it');
+            savedBooking.clientBookingId = clientBookingId;
+            await savedBooking.save();
+            console.log('Fixed clientBookingId to:', savedBooking.clientBookingId);
+        }
 
         // Create admin notification
         const adminNotification = new Notification({
             type: 'new_booking',
             recipientType: 'admin',
-            userId: bookingData.userId, // Add the userId field
+            userId: bookingData.userId,
             bookingId: savedBooking._id,
             message: `New booking #${savedBooking.clientBookingId} has been created.`,
             status: 'info',
@@ -107,12 +126,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Save the notification
         await adminNotification.save();
 
-        // Populate user details - fixed version
+        // Populate user details
         const populatedBooking = await Booking.findById(savedBooking._id)
             .populate('user', 'name email')
             .lean();
         
-        // Send confirmation email asynchronously
+        // Send confirmation email
         sendBookingConfirmation(savedBooking).catch(error => {
             console.error('Email sending failed:', error);
         });

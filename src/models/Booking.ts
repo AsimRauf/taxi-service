@@ -198,7 +198,7 @@ bookingSchema.statics.findByUser = function(userId) {
 // Add any pre-save or methods you need
 bookingSchema.pre('save', function(next) {
   // If this is a new booking, generate ID
-  if (this.isNew) {
+  if (this.isNew && !this.clientBookingId) {
     this.clientBookingId = new Date().getTime().toString();
   }
   next();
