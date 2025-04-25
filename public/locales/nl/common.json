@@ -296,7 +296,6 @@
   "auth": {
     "registrationError": "Registratie mislukt. Probeer het opnieuw.",
     "signInTitle": "Welkom terug",
-    "signInMessage": "Log in om toegang te krijgen tot uw account en uw taxi boekingen te beheren.",
     "signingIn": "Inloggen...",
     "signIn": "Inloggen",
     "noAccount": "Heeft u geen account?",
@@ -960,5 +959,25 @@
     "empty": "Geen meldingen",
     "markAsRead": "Markeer als gelezen",
     "new": "Nieuw"
+  },
+  "payment": {
+    "success": {
+      "title": "Betaling Geslaagd!",
+      "message": "Uw betaling is succesvol verwerkt. Bedankt voor uw boeking."
+    },
+    "failed": {
+      "title": "Betaling Mislukt",
+      "message": "We konden uw betaling niet verwerken. Probeer het opnieuw of gebruik een andere betaalmethode."
+    },
+    "bookingReference": "Boekingsreferentie",
+    "amount": "Bedrag",
+    "status": "Betalingsstatus",
+    "statusCompleted": "Voltooid",
+    "statusPending": "In behandeling",
+    "statusFailed": "Mislukt",
+    "viewBookings": "Bekijk Mijn Boekingen",
+    "retryPayment": "Betaling Opnieuw Proberen",
+    "backToBookings": "Terug naar Boekingen",
+    "backToHome": "Terug naar Home"
   }
 }

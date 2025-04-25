@@ -953,5 +953,25 @@
     "empty": "No notifications",
     "markAsRead": "Mark as read",
     "new": "New"
+  },
+  "payment": {
+    "success": {
+      "title": "Payment Successful!",
+      "message": "Your payment has been successfully processed. Thank you for your booking."
+    },
+    "failed": {
+      "title": "Payment Failed",
+      "message": "We couldn't process your payment. Please try again or use a different payment method."
+    },
+    "bookingReference": "Booking Reference",
+    "amount": "Amount",
+    "status": "Payment Status",
+    "statusCompleted": "Completed",
+    "statusPending": "Pending",
+    "statusFailed": "Failed",
+    "viewBookings": "View My Bookings",
+    "retryPayment": "Retry Payment",
+    "backToBookings": "Back to Bookings",
+    "backToHome": "Back to Home"
   }
 }

@@ -200,8 +200,34 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
         throw new Error('Failed to create booking');
       }
 
-      onBookingSuccess(booking.id);
-      router.push('/booking/success');
+      const bookingResult = await response.json();
+    
+      // Create payment for the booking
+      const paymentResponse = await fetch('/api/payments/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ bookingId: bookingResult._id }),
+      });
+
+      if (!paymentResponse.ok) {
+        throw new Error('Failed to create payment');
+      }
+
+      const paymentData = await paymentResponse.json();
+      console.log("Payment data received:", paymentData);
+    
+      if (paymentData && paymentData.paymentUrl) {
+        // IMPORTANT: Use this line to redirect to the payment URL
+        console.log("Redirecting to payment URL:", paymentData.paymentUrl);
+        window.location.href = paymentData.paymentUrl;
+      } else {
+        console.error("No payment URL received");
+        // Only as a fallback, go to success page
+        onBookingSuccess(booking.id);
+        router.push('/booking/success');
+      }
     } catch (error) {
       console.error('Booking error:', error);
       setIsBooking(false);

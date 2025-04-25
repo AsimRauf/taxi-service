@@ -158,6 +158,33 @@ const bookingSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Add this to your existing schema
+const paymentSchema = new mongoose.Schema({
+  orderId: String,
+  status: {
+    type: String,
+    enum: ['pending', 'completed', 'failed', 'refunded', 'expired'],
+    default: 'pending'
+  },
+  amount: Number,
+  currency: {
+    type: String,
+    default: 'EUR'
+  },
+  paymentUrl: String,
+  transactionId: String,
+  paymentMethod: String,
+  paidAt: Date
+}, { timestamps: true });
+
+// Add this to your bookingSchema
+bookingSchema.add({
+  payment: {
+    type: paymentSchema,
+    default: null
+  }
+});
+
 // Add compound index for user and clientBookingId
 bookingSchema.index({ user: 1, clientBookingId: 1 }, { unique: true });
 
