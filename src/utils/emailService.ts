@@ -62,7 +62,7 @@ export async function sendBookingConfirmation(booking: BookingData) {
 
         // Send customer confirmation email
         const customerMailOptions = {
-            from: `"Taxi Service" <${process.env.SMTP_USER}>`,
+            from: `"Taxi Ritje" <${process.env.SMTP_USER}>`,
             to: booking.contactInfo?.email,
             subject: `Booking Confirmation - #${booking.clientBookingId}`,
             html: createBookingConfirmationEmail(booking),
@@ -70,7 +70,7 @@ export async function sendBookingConfirmation(booking: BookingData) {
 
         // Send admin notification email
         const adminMailOptions = {
-            from: `"Taxi Service Booking System" <${process.env.SMTP_USER}>`,
+            from: `"Taxi Ritje Booking System" <${process.env.SMTP_USER}>`,
             to: 'info@taxiritje.nl',
             subject: `New Booking Alert - #${booking.clientBookingId}`,
             html: createAdminBookingNotificationEmail(booking),

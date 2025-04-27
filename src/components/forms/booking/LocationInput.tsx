@@ -72,10 +72,8 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   const [hasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
-  // Fix the any type with proper interface
   const inputRef = useRef<GooglePlacesInputRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  // Add a ref to track the latest selected value
   const latestValueRef = useRef<Location | null>(null);
 
   const googlePlacesProps = createGooglePlacesConfig({
@@ -83,7 +81,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     locale: translations.locale || 'en'
   });
 
-  // Add error handling for Google Places initialization
   useEffect(() => {
     let mounted = true;
     let timeoutId: NodeJS.Timeout;
@@ -108,7 +105,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
       }
     };
 
-    // Initial delay with proper type
     const initialTimeoutId = setTimeout(() => {
       checkGoogleApi();
     }, 1000);
@@ -120,7 +116,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     };
   }, [retryCount]);
 
-  // Modify the value effect to use the ref
   useEffect(() => {
     if (value?.mainAddress) {
       latestValueRef.current = value;
@@ -131,11 +126,9 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
 
   useEffect(() => {
     if (selectedLocation) {
-      // Force a reflow when location is selected
       if (containerRef.current) {
         containerRef.current.style.display = 'none';
-        // Fix the unused expression error by using void
-        void containerRef.current.offsetHeight; // Force reflow
+        void containerRef.current.offsetHeight;
         containerRef.current.style.display = '';
       }
     }
@@ -148,29 +141,26 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   };
 
-  // Modify the handleBlur function
   const handleBlur = () => {
-    // Use the ref to ensure we have the latest value
     const currentValue = latestValueRef.current;
-    if (currentValue?.mainAddress && inputValue !== currentValue.mainAddress) {
-      setInputValue(currentValue.mainAddress);
+    if (currentValue?.mainAddress) {
+        setInputValue(currentValue.mainAddress);
+        setShowSuggestions(false);
+    } else {
+        setInputValue('');
     }
   };
 
-  // Replace the handleLocationSelect function
   const handleLocationSelect = async (selected: SingleValue<SelectOption>) => {
     if (selected) {
       const newLocation = selected as unknown as Location;
       
-      // Update ref immediately
       latestValueRef.current = newLocation;
 
-      // Update all states synchronously
       setSelectedLocation(newLocation);
       setInputValue(selected.label);
       setShowSuggestions(false);
 
-      // Ensure UI update
       requestAnimationFrame(() => {
         if (containerRef.current) {
           containerRef.current.style.display = 'none';
@@ -179,7 +169,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
         }
       });
 
-      // Call onChange
       await onChange(selected);
     } else {
       latestValueRef.current = null;
@@ -222,12 +211,16 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
               inputValue,
               menuIsOpen: showSuggestions,
               onMenuOpen: () => setShowSuggestions(true),
-              onMenuClose: () => setShowSuggestions(false),
+              onMenuClose: () => {
+                setShowSuggestions(false);
+                handleBlur();
+              },
               onInputChange: handleInputChange,
               onBlur: handleBlur,
               onChange: handleLocationSelect,
               isSearchable: true,
               isClearable: true,
+              blurInputOnSelect: true,
               placeholder,
               noOptionsMessage: () => translations.locale === 'nl' ? "Geen locaties gevonden" : "No locations found",
               loadingMessage: () => translations.locale === 'nl' ? "Laden..." : "Loading...",
@@ -338,9 +331,9 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   '&::-webkit-scrollbar': {
                     display: 'none'
                   },
-                  scrollbarWidth: 'none',  // Firefox
-                  msOverflowStyle: 'none',  // IE/Edge
-                  '-ms-overflow-style': 'none', // IE/Edge
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  '-ms-overflow-style': 'none',
                 }),
                 singleValue: (provided) => ({
                   ...provided,
@@ -354,9 +347,9 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   '&::-webkit-scrollbar': {
                     display: 'none'
                   },
-                  scrollbarWidth: 'none',  // Firefox
-                  msOverflowStyle: 'none',  // IE/Edge
-                  '-ms-overflow-style': 'none', // IE/Edge
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  '-ms-overflow-style': 'none',
                 }),
                 placeholder: (provided) => ({
                   ...provided,
