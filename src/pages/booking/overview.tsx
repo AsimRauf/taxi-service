@@ -156,13 +156,12 @@ const getVehicleInfo = (vehicleType: 'sedan' | 'stationWagon' | 'bus', t: (key: 
   return info[vehicleType];
 };
 
-const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess }: BookingCardProps) => {
+const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [showDuplicateSnackbar, setShowDuplicateSnackbar] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const { t } = useTranslation();
   const { user } = useAuth();
-  const router = useRouter();
 
 
   const handleBookNow = async () => {
@@ -170,43 +169,24 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
     try {
       const bookingId = booking.id || booking.clientBookingId;
       
+      // Create temporary booking data without saving to database
       const finalBookingData = {
         ...booking,
-        userId: user?.id || null, // Make userId optional
+        userId: user?.id || null,
         id: bookingId,
         clientBookingId: bookingId,
         status: 'pending'
       };
-      
-      console.log('Sending booking with ID:', bookingId); // Add logging
 
-      const response = await fetch('/api/bookings/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(finalBookingData),
-      });
-
-      if (response.status === 409) {
-        setShowDuplicateSnackbar(true);
-        setIsBooking(false);
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error('Failed to create booking');
-      }
-
-      const bookingResult = await response.json();
-    
-      // Create payment for the booking
+      // Create payment first
       const paymentResponse = await fetch('/api/payments/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ bookingId: bookingResult._id }),
+        body: JSON.stringify({ 
+          bookingData: finalBookingData // Send full booking data
+        }),
       });
 
       if (!paymentResponse.ok) {
@@ -214,17 +194,11 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
       }
 
       const paymentData = await paymentResponse.json();
-      console.log("Payment data received:", paymentData);
-    
+      
       if (paymentData && paymentData.paymentUrl) {
-        // IMPORTANT: Use this line to redirect to the payment URL
-        console.log("Redirecting to payment URL:", paymentData.paymentUrl);
         window.location.href = paymentData.paymentUrl;
       } else {
-        console.error("No payment URL received");
-        // Only as a fallback, go to success page
-        onBookingSuccess(booking.id);
-        router.push('/booking/success');
+        throw new Error("No payment URL received");
       }
     } catch (error) {
       console.error('Booking error:', error);
@@ -631,6 +605,7 @@ export const OverviewPage = () => {
   };
 
   const handleBookingSuccess = (id: string) => {
+    // Remove booking from local storage
     const updatedBookings = bookings.filter(b => b.id !== id);
     setBookings(updatedBookings);
     localStorage.setItem('allBookings', JSON.stringify(updatedBookings));

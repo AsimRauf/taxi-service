@@ -10,38 +10,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     await connectToDatabase();
-    
-    const { bookingId } = req.body;
-    
-    if (!bookingId) {
-      return res.status(400).json({ message: 'Booking ID is required' });
+    const { bookingData } = req.body;
+
+    // Check for existing temporary booking
+    const existingBooking = await Booking.findOne({ 
+      clientBookingId: bookingData.clientBookingId,
+      isTemporary: true,
+      paymentPending: true
+    });
+
+    if (existingBooking && existingBooking.payment?.paymentUrl) {
+      // Return existing payment URL if booking exists
+      return res.status(200).json({
+        paymentUrl: existingBooking.payment.paymentUrl,
+        orderId: existingBooking.payment.orderId
+      });
     }
+
+    // If no existing booking or no payment URL, create new booking and payment
+    const { ...bookingDataWithoutId } = bookingData;
     
-    // Find the booking
-    const booking = await Booking.findById(bookingId);
-    
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-    
-    // Check if payment already exists
-    if (booking.payment && booking.payment.status === 'completed') {
-      return res.status(400).json({ message: 'Payment already completed' });
-    }
-    
-    // Create payment order
-    console.log("Creating payment for booking:", bookingId);
-    console.log("Using client booking ID:", booking.clientBookingId);
+    const tempBooking = existingBooking || new Booking({
+      ...bookingDataWithoutId,
+      isTemporary: true,
+      paymentPending: true
+    });
 
     const paymentResponse = await createPaymentOrder({
-      bookingId: booking._id.toString(),
-      clientBookingId: booking.clientBookingId, // Use the client booking ID
-      amount: booking.price,
+      bookingId: tempBooking._id.toString(),
+      clientBookingId: bookingData.clientBookingId,
+      amount: bookingData.price,
       currency: 'EUR',
-      description: `Taxi booking #${booking.clientBookingId}`,
-      customerName: booking.contactInfo.fullName,
-      customerEmail: booking.contactInfo.email,
-      customerPhone: booking.contactInfo.phoneNumber
+      description: `Taxi booking #${bookingData.clientBookingId}`,
+      customerName: bookingData.contactInfo.fullName,
+      customerEmail: bookingData.contactInfo.email,
+      customerPhone: bookingData.contactInfo.phoneNumber
     });
 
     console.log("Payment response from MultiSafepay:", paymentResponse);
@@ -56,15 +59,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     
     // Update booking with payment information
-    booking.payment = {
+    tempBooking.payment = {
       orderId: orderId,
       status: 'pending',
-      amount: booking.price,
+      amount: bookingData.price,
       currency: 'EUR',
       paymentUrl: paymentUrl,
     };
     
-    await booking.save();
+    await tempBooking.save();
     
     // Return the payment URL and order ID
     return res.status(200).json({ 
@@ -73,9 +76,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   } catch (error) {
     console.error('Payment creation error:', error);
-    return res.status(500).json({ 
-      message: 'Error creating payment',
-      error: error instanceof Error ? error.message : 'Unknown error'
-    });
+    return res.status(500).json({ error: 'Payment creation failed' });
   }
 }

@@ -24,6 +24,9 @@ export async function createPaymentOrder(details: PaymentDetails) {
     
     console.log('Creating payment order with client booking ID:', details.clientBookingId);
     
+    const webhookUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`;
+    console.log('Setting webhook URL:', webhookUrl);
+    
     const response = await client.orders.create({
       type: 'redirect',
       order_id: details.clientBookingId,
@@ -31,7 +34,8 @@ export async function createPaymentOrder(details: PaymentDetails) {
       amount: amountInCents,
       description: details.description,
       payment_options: {
-        notification_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`,
+        notification_url: webhookUrl,
+        notification_method: 'POST',
         redirect_url: `${process.env.NEXT_PUBLIC_BASE_URL}/booking/payment-success?bookingId=${details.bookingId}`,
         cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/booking/payment-failed?bookingId=${details.bookingId}`,
       },
@@ -47,6 +51,7 @@ export async function createPaymentOrder(details: PaymentDetails) {
       },
     });
     
+    console.log('MultiSafepay payment options:', response.data?.payment_options);
     return response;
   } catch (error) {
     console.error('MultiSafepay payment creation error:', error);

@@ -153,6 +153,14 @@ const bookingSchema = new mongoose.Schema({
     companyAssignedBy: {
         type: String,  // or Schema.Types.ObjectId if you're referencing users
         default: null
+    },
+    isTemporary: {
+        type: Boolean,
+        default: true
+    },
+    paymentPending: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true

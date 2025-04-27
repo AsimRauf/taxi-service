@@ -18,67 +18,34 @@ const PaymentSuccessPage = () => {
     };
   } | null>(null);
   const [loading, setLoading] = useState(true);
-  const [updateAttempted, setUpdateAttempted] = useState(false);
 
   useEffect(() => {
-    if (bookingId) {
+    if (bookingId && transactionid) {
       console.log("Fetching booking details for:", bookingId);
-      console.log("Transaction ID:", transactionid);
       
       // Fetch booking details
       fetch(`/api/bookings/${bookingId}`)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error(`Failed to fetch booking: ${res.status}`);
-          }
-          return res.json();
-        })
+        .then(res => res.json())
         .then(data => {
-          console.log("Booking details received:", data);
           setBookingDetails(data);
           
-          // If payment is still pending but we have a transaction ID, update it
-          if (data.payment?.status === 'pending' && transactionid && !updateAttempted) {
-            console.log("Payment still pending, updating status...");
-            setUpdateAttempted(true);
-            return fetch('/api/payments/update-status', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ 
-                bookingId: data._id,
-                transactionId: transactionid
-              }),
-            })
-            .then(res => {
-              if (!res.ok) {
-                console.warn("Failed to update payment status:", res.status);
-                return { success: false };
-              }
-              return res.json();
-            })
-            .then(updateResult => {
-              console.log("Payment status update result:", updateResult);
-              if (updateResult.success) {
-                // Refresh booking details
-                return fetch(`/api/bookings/${bookingId}`).then(res => res.json());
-              }
-              return data;
-            });
+          // If payment is completed, remove from local storage
+          if (data.payment?.status === 'completed') {
+            const savedBookings = localStorage.getItem('allBookings');
+            if (savedBookings) {
+              const bookings = JSON.parse(savedBookings);
+              const updatedBookings = bookings.filter((b: { clientBookingId: string }) => b.clientBookingId !== data.clientBookingId);
+              localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+            }
           }
-          return data;
-        })
-        .then(finalData => {
-          setBookingDetails(finalData);
+          
           setLoading(false);
-        })
-        .catch(err => {
+        })        .catch(err => {
           console.error('Error fetching booking:', err);
           setLoading(false);
         });
     }
-  }, [bookingId, transactionid, updateAttempted]);
+  }, [bookingId, transactionid]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-16 pb-16">
