@@ -156,7 +156,6 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
     // Update the handleLocationUpdate function
     const handleLocationUpdate = (place: SingleValue<SelectOption>, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
-        // Clear validation error for the specific field
         setValidationErrors(prev => ({
             ...prev,
             [type]: undefined
@@ -173,6 +172,8 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             return;
         }
 
+        const parsedAddress = parseNetherlandsAddress(place.value.description);
+        
         const location: Location = {
             label: place.label,
             mainAddress: place.value.description,
@@ -186,16 +187,21 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     secondary_text: place.value.structured_formatting?.secondary_text || '',
                     place_id: place.value.place_id
                 }
+            },
+            exactAddress: {
+                streetName: parsedAddress.streetName,
+                houseNumber: parsedAddress.houseNumber,
+                postalCode: parsedAddress.postalCode,
+                city: parsedAddress.city,
+                businessName: parsedAddress.businessName
             }
         };
 
-        // Parse and set exact address automatically if possible
-        const parsedAddress = parseNetherlandsAddress(place.value.description);
-        if (parsedAddress.businessName || (parsedAddress.streetName && parsedAddress.houseNumber)) {
-            location.exactAddress = parsedAddress;
+        // Update mainAddress with house number if available
+        if (location.exactAddress?.houseNumber) {
+            location.mainAddress = `${parsedAddress.streetName} ${parsedAddress.houseNumber}, ${parsedAddress.city}`;
         }
 
-        // Update form data
         if (type === 'stopover' && typeof index === 'number') {
             const newStopovers = [...formData.stopovers];
             newStopovers[index] = location;
@@ -344,6 +350,46 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
         }));
     };
 
+    // For pickup location
+    const handlePickupHouseNumber = (value: string) => {
+        if (!formData.pickup) return;
+        
+        const newPickup = {
+            ...formData.pickup,
+            exactAddress: {
+                ...(formData.pickup.exactAddress || {}),
+                houseNumber: value,
+                streetName: formData.pickup.exactAddress?.streetName || ''
+            },
+            mainAddress: `${formData.pickup.exactAddress?.streetName || ''} ${value}, ${formData.pickup.exactAddress?.city || ''}, Netherlands`
+        };
+        
+        setFormData(prev => ({
+            ...prev,
+            pickup: newPickup
+        }));
+    };
+
+    // For destination location
+    const handleDestinationHouseNumber = (value: string) => {
+        if (!formData.destination) return;
+        
+        const newDestination = {
+            ...formData.destination,
+            exactAddress: {
+                ...(formData.destination.exactAddress || {}),
+                houseNumber: value,
+                streetName: formData.destination.exactAddress?.streetName || ''
+            },
+            mainAddress: `${formData.destination.exactAddress?.streetName || ''} ${value}, ${formData.destination.exactAddress?.city || ''}, Netherlands`
+        };
+        
+        setFormData(prev => ({
+            ...prev,
+            destination: newDestination
+        }));
+    };
+
     const renderPickupLocation = () => (
         <div>
             <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
@@ -361,6 +407,15 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         translations={translations}
                         onClear={() => handleLocationUpdate(null, 'pickup')}
                     />
+                    {formData.pickup && !formData.pickup.exactAddress?.businessName && (
+                        <input
+                            type="text"
+                            placeholder={t('booking.houseNumber')}
+                            value={formData.pickup.exactAddress?.houseNumber || ''}
+                            onChange={(e) => handlePickupHouseNumber(e.target.value)}
+                            className="mt-2 w-32 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                        />
+                    )}
                 </div>
                 <div className="flex justify-center pt-7">
                     <button
@@ -468,6 +523,15 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         translations={translations}
                         onClear={() => handleLocationUpdate(null, 'destination')}
                     />
+                    {formData.destination && !formData.destination.exactAddress?.businessName && (
+                        <input
+                            type="text"
+                            placeholder={t('booking.houseNumber')}
+                            value={formData.destination.exactAddress?.houseNumber || ''}
+                            onChange={(e) => handleDestinationHouseNumber(e.target.value)}
+                            className="mt-2 w-32 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                        />
+                    )}
                 </div>
                 <div className="flex justify-center pt-7">
                     <button
@@ -480,8 +544,6 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </div>
-
-
         </div>
     );
 
