@@ -27,8 +27,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // If no existing booking or no payment URL, create new booking and payment
-    const { ...bookingDataWithoutId } = bookingData;
+    // Remove id fields while keeping other data
+    const bookingDataWithoutId = Object.fromEntries(
+      Object.entries(bookingData).filter(([key]) => !['_id', 'id'].includes(key))
+    );
     
     const tempBooking = existingBooking || new Booking({
       ...bookingDataWithoutId,
