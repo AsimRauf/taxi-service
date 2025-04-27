@@ -40,57 +40,33 @@ const parseNetherlandsAddress = (address: string) => {
         city: ''
     };
 
-    // Remove ", Netherlands" at the end (if present)
-    address = address.replace(/,?\s*Netherlands$/i, '').trim();
+    // Normalize country name variations and remove them
+    address = address.replace(/,?\s*(Netherlands|Nederland)s?$/gi, '').trim();
+
+    // Split and clean parts
     const parts = address.split(',').map(part => part.trim()).filter(Boolean);
 
     if (parts.length === 0) return result;
 
-    const postalCodeRegex = /\b(\d{4}\s?[A-Z]{2})\b/;
-    parts.forEach((part, index) => {
-        const match = part.match(postalCodeRegex);
-        if (match) {
-            result.postalCode = match[1];
-            parts[index] = part.replace(postalCodeRegex, '').trim();
-        }
-    });
-
-    const isBusinessLocation = (
-        parts[0].includes('Airport') ||
-        parts[0].includes('(AMS)') ||
-        parts[0].includes('Station') ||
-        parts[0].includes('Hotel') ||
-        parts[0].includes('Terminal') ||
-        parts[0].includes('Sports') ||
-        parts[0].includes('Mall') ||
-        parts[0].includes('Center') ||
-        parts[0].includes('Centre') ||
-        (parts.length >= 3 && !parts[1].match(/\d+/))
-    );
-
-    if (isBusinessLocation) {
-        result.businessName = parts[0];
-        if (parts.length >= 2) result.streetName = parts[1];
-        if (parts.length >= 3) result.city = parts[parts.length - 1];
-        if (result.city) {
-            result.city = result.city.replace(postalCodeRegex, '').trim();
-        }
-        return result;
+    // Check if first part contains street and house number
+    const streetMatch = parts[0].match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
+    if (streetMatch) {
+        result.streetName = streetMatch[1].trim();
+        result.houseNumber = streetMatch[2];
+    } else {
+        result.streetName = parts[0].trim();
     }
 
-    if (parts.length >= 1) {
-        result.city = parts[parts.length - 1].replace(postalCodeRegex, '').trim();
-        parts.pop();
-    }
-
-    if (parts.length > 0) {
-        const firstPart = parts[0];
-        const streetMatch = firstPart.match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
-        if (streetMatch) {
-            result.streetName = streetMatch[1].trim();
-            result.houseNumber = streetMatch[2];
+    // Set city from last part
+    if (parts.length > 1) {
+        const cityPart = parts[parts.length - 1];
+        // Check if city part contains house number
+        const cityMatch = cityPart.match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
+        if (cityMatch && !result.houseNumber) {
+            result.city = cityMatch[1].trim();
+            result.houseNumber = cityMatch[2];
         } else {
-            result.streetName = firstPart.trim();
+            result.city = cityPart.trim();
         }
     }
 
