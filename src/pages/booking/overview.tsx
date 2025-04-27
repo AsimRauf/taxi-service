@@ -166,22 +166,15 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit, onBookingSuccess 
 
 
   const handleBookNow = async () => {
-    if (!user) {
-      localStorage.setItem('pendingBooking', JSON.stringify(booking));
-      router.push('/auth/signin');
-      return;
-    }
-
     setIsBooking(true);
     try {
-      // Ensure we're using a consistent ID
       const bookingId = booking.id || booking.clientBookingId;
       
       const finalBookingData = {
         ...booking,
-        userId: user.id,
-        id: bookingId, // Use the same ID
-        clientBookingId: bookingId, // Use the same ID
+        userId: user?.id || null, // Make userId optional
+        id: bookingId,
+        clientBookingId: bookingId,
         status: 'pending'
       };
       
@@ -563,11 +556,11 @@ export const OverviewPage = () => {
             booking.extraDistance,
             booking.pickup?.exactAddress ? {
               businessName: booking.pickup.exactAddress.businessName || '',
-              city: booking.pickup.exactAddress.city
+              city: booking.pickup.exactAddress.city || ''
             } : undefined,
             booking.destination?.exactAddress ? {
               businessName: booking.destination.exactAddress.businessName || '',
-              city: booking.destination.exactAddress.city
+              city: booking.destination.exactAddress.city || ''
             } : undefined
           );
 
