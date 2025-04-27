@@ -89,12 +89,12 @@ const bookingSchema = new mongoose.Schema({
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        required: true,
+        required: false,
         index: true // For faster user-based queries
     },
     userId: {
         type: String,
-        required: true
+        required: false
     },
     pickup: {
         type: addressSchema,

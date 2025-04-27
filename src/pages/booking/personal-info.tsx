@@ -41,7 +41,6 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
   const { isEditing, editingBookingId, setEditMode } = useEdit();
   const router = useRouter();
   const { user, register } = useAuth();
-  const [showPassword, setShowPassword] = useState(false);
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
     bookingType: 'individual',
@@ -52,8 +51,6 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     bookingForOther: false,
     otherFullName: '',
     otherPhoneNumber: '',
-    password: '',
-    confirmPassword: '',
     companyName: '',
     businessAddress: undefined,
   });
@@ -137,151 +134,78 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     const newErrors: Record<string, string> = {};
     const savedData = localStorage.getItem('bookingData');
     const currentBookingData: BookingData | null = savedData ? JSON.parse(savedData) : null;
-
-    // Store booking data in a variable to prevent it from being lost
     const bookingDataToUse = currentBookingData || bookingData;
 
     if (!bookingDataToUse) {
-      router.push('/booking/travel-info');
-      return;
+        router.push('/booking/travel-info');
+        return;
     }
 
-    // Validation checks
+    // Basic validation for contact info only
     if (!personalInfo.fullName) {
-      newErrors.fullName = t('booking.personalInfo.errors.fullNameRequired');
+        newErrors.fullName = t('booking.personalInfo.errors.fullNameRequired');
     }
     if (!personalInfo.email) {
-      newErrors.email = t('booking.personalInfo.errors.emailRequired');
+        newErrors.email = t('booking.personalInfo.errors.emailRequired');
     } else if (!/^\S+@\S+\.\S+$/.test(personalInfo.email)) {
-      newErrors.email = t('booking.personalInfo.errors.invalidEmail');
+        newErrors.email = t('booking.personalInfo.errors.invalidEmail');
     }
     if (!personalInfo.phoneNumber) {
-      newErrors.phoneNumber = t('booking.personalInfo.errors.phoneRequired');
+        newErrors.phoneNumber = t('booking.personalInfo.errors.phoneRequired');
     } else if (!validatePhoneNumber(personalInfo.phoneNumber)) {
-      newErrors.phoneNumber = t('booking.personalInfo.errors.invalidPhone', {
-        format: '+31XXXXXXXXX',
-        example: '+31123456789'
-      });
-    }
-
-    if (personalInfo.additionalPhone) {
-      const additionalPhoneFormatted = personalInfo.additionalPhone.replace('+31', '');
-      if (!validatePhoneNumber(additionalPhoneFormatted)) {
-        newErrors.additionalPhone = t('booking.personalInfo.errors.invalidPhone', {
-          format: '+31XXXXXXXXX',
-          example: '+31123456789'
-        });
-      }
-    }
-
-    if (personalInfo.bookingForOther) {
-      if (!personalInfo.otherFullName) {
-        newErrors.otherFullName = t('booking.personalInfo.errors.otherFullNameRequired');
-      }
-      if (!personalInfo.otherPhoneNumber) {
-        newErrors.otherPhoneNumber = t('booking.personalInfo.errors.otherPhoneRequired');
-      } else if (!validatePhoneNumber(personalInfo.otherPhoneNumber)) {
-        newErrors.otherPhoneNumber = t('booking.personalInfo.errors.invalidPhone', {
-          format: '+31XXXXXXXXX',
-          example: '+31123456789'
-        });
-      }
-    }
-
-    if (!user) {
-      if (!personalInfo.password) {
-        newErrors.password = t('auth.passwordRequired');
-      } else if (personalInfo.password.length < 8) {
-        newErrors.password = t('auth.passwordLength');
-      }
-      if (personalInfo.password !== personalInfo.confirmPassword) {
-        newErrors.confirmPassword = t('auth.passwordMatch');
-      }
+        newErrors.phoneNumber = t('booking.personalInfo.errors.invalidPhone');
     }
 
     if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
+        setErrors(newErrors);
+        return;
     }
 
     setIsLoading(true);
 
     try {
-      let registrationSuccessful = false;
+        const bookingId = editingBookingId || generateBookingId();
+        const updatedBookingData = {
+            ...bookingDataToUse,
+            id: bookingId,
+            clientBookingId: bookingId,
+            contactInfo: {
+                fullName: personalInfo.fullName,
+                email: personalInfo.email,
+                phoneNumber: `+31${personalInfo.phoneNumber}`,
+                additionalPhoneNumber: personalInfo.additionalPhone ? 
+                    `+31${personalInfo.additionalPhone}` : undefined,
+            },
+            bookingForOther: personalInfo.bookingForOther ? {
+                fullName: personalInfo.otherFullName,
+                phoneNumber: `+31${personalInfo.otherPhoneNumber}`,
+            } : undefined,
+            businessInfo: personalInfo.bookingType === 'business' ? {
+                companyName: personalInfo.companyName,
+                businessAddress: personalInfo.businessAddress,
+            } : undefined,
+        };
 
-      if (!user && personalInfo.password) {
-        try {
-          await register({
-            name: personalInfo.fullName,
-            email: personalInfo.email,
-            phoneNumber: `+31${personalInfo.phoneNumber}`,
-            password: personalInfo.password
-          });
-          registrationSuccessful = true;
-        } catch (error) {
-          console.error('Registration error:', error);
-          setErrors({ form: t('auth.registrationError') });
-          setIsLoading(false);
-          return;
+        const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
+
+        if (isEditing && editingBookingId) {
+            const updatedBookings = existingBookings.map((booking: BookingData) =>
+                booking.id === editingBookingId ? updatedBookingData : booking
+            );
+            localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+            setEditMode(null);
+        } else {
+            const newBookings = [...existingBookings, updatedBookingData];
+            localStorage.setItem('allBookings', JSON.stringify(newBookings));
         }
-      }
 
-      // Create updated booking data
-      const bookingId = editingBookingId || generateBookingId(); // Generate ID once
-      const updatedBookingData = {
-        ...bookingDataToUse,
-        id: bookingId, // Use the same ID
-        clientBookingId: bookingId, // Use the same ID
-        contactInfo: {
-          fullName: personalInfo.fullName,
-          email: personalInfo.email,
-          phoneNumber: `+31${personalInfo.phoneNumber}`,
-          additionalPhoneNumber: personalInfo.additionalPhone ?
-            `+31${personalInfo.additionalPhone}` : undefined,
-        },
-        bookingForOther: personalInfo.bookingForOther ? {
-          fullName: personalInfo.otherFullName,
-          phoneNumber: `+31${personalInfo.otherPhoneNumber}`,
-        } : undefined,
-        businessInfo: personalInfo.bookingType === 'business' ? {
-          companyName: personalInfo.companyName,
-          businessAddress: personalInfo.businessAddress,
-        } : undefined,
-      };
-
-      console.log('Generated booking with ID:', bookingId); // Add logging
-
-      // Save to localStorage before any async operations
-      const existingBookings = JSON.parse(localStorage.getItem('allBookings') || '[]');
-
-      if (isEditing && editingBookingId) {
-        const updatedBookings = existingBookings.map((booking: BookingData) =>
-          booking.id === editingBookingId ? updatedBookingData : booking
-        );
-        localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
-        setEditMode(null);
-      } else {
-        const newBookings = [...existingBookings, updatedBookingData];
-        localStorage.setItem('allBookings', JSON.stringify(newBookings));
-      }
-
-      // Ensure we remove bookingData only after successful navigation
-      const navigateToOverview = () => {
         localStorage.removeItem('bookingData');
         router.push('/booking/overview');
-      };
-
-      // Add a small delay after registration to ensure auth state is updated
-      if (registrationSuccessful) {
-        setTimeout(navigateToOverview, 500);
-      } else {
-        navigateToOverview();
-      }
 
     } catch (error) {
-      console.error('Booking error:', error);
-      setErrors({ form: t('booking.error.generic') });
-      setIsLoading(false);
+        console.error('Booking error:', error);
+        setErrors({ form: t('booking.error.generic') });
+        setIsLoading(false);
     }
   };
 
@@ -426,71 +350,6 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
                 )}
               </div>
             </div>
-
-            {/* Password fields for new users */}
-            {!user && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <Lock className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {t('auth.password')}
-                    </h3>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={personalInfo.password}
-                      onChange={(e) => setPersonalInfo({ ...personalInfo, password: e.target.value })}
-                      placeholder={t('auth.passwordPlaceholder')}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5 text-gray-400" />
-                      ) : (
-                        <Eye className="w-5 h-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex items-center gap-3">
-                    <Lock className="w-5 h-5 text-primary" />
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {t('auth.confirmPassword')}
-                    </h3>
-                  </div>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={personalInfo.confirmPassword}
-                      onChange={(e) => setPersonalInfo({ ...personalInfo, confirmPassword: e.target.value })}
-                      placeholder={t('auth.confirmPasswordPlaceholder')}
-                      className="w-full p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-5 h-5 text-gray-400" />
-                      ) : (
-                        <Eye className="w-5 h-5 text-gray-400" />
-                      )}
-                    </button>
-                  </div>
-                  {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword}</p>}
-                </div>
-              </div>
-            )}
 
             {/* Booking for Someone Else */}
             <div className="space-y-4">

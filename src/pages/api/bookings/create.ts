@@ -18,11 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const bookingData = req.body;
         console.log('Raw booking data:', JSON.stringify(bookingData, null, 2));
 
-        // Validate essential fields
-        if (!bookingData.userId) {
-            throw new Error('Missing required field: userId');
-        }
-
         // Ensure we have a valid and consistent booking ID
         const clientBookingId = bookingData.clientBookingId || bookingData.id;
         console.log('Using booking ID:', clientBookingId);
@@ -35,8 +30,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Format the data for MongoDB
         const bookingDoc = {
             clientBookingId: clientBookingId,
-            user: new mongoose.Types.ObjectId(bookingData.userId),
-            userId: bookingData.userId,
+            user: bookingData.userId ? new mongoose.Types.ObjectId(bookingData.userId) : null,
+            userId: bookingData.userId || null,
             pickup: bookingData.pickup,
             destination: bookingData.destination,
             
@@ -103,11 +98,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             console.log('Fixed clientBookingId to:', savedBooking.clientBookingId);
         }
 
-        // Create admin notification
+        // Create admin notification without user reference if not logged in
         const adminNotification = new Notification({
             type: 'new_booking',
             recipientType: 'admin',
-            userId: bookingData.userId,
+            userId: bookingData.userId || 'guest',
             bookingId: savedBooking._id,
             message: `New booking #${savedBooking.clientBookingId} has been created.`,
             status: 'info',

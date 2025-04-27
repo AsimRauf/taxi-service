@@ -2,24 +2,24 @@
 import { LuggageFormData } from "./luggage"
 
 export interface Location {
-  description: string
-  label: string
+  description: string;
+  label: string;
   value: {
-    place_id: string
-    description: string
+    place_id: string;
+    description: string;
     structured_formatting: {
-      main_text: string
-      secondary_text: string
-      place_id: string
+      main_text: string;
+      secondary_text: string;
+      place_id: string;
     }
-  }
-  mainAddress?: string
-  secondaryAddress?: string
+  };
+  mainAddress?: string;
+  secondaryAddress?: string;
   exactAddress?: {
-    streetName: string;
-    houseNumber: string;
-    postalCode: string;
-    city: string;
+    streetName?: string;
+    houseNumber?: string;
+    postalCode?: string;
+    city?: string;
     businessName?: string;
   }
 }
