@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/mongodb';
 import Booking from '@/models/Booking';
+import Notification from '@/models/Notification';
 import { getPaymentStatus } from '@/utils/paymentService';
 import { sendBookingConfirmation } from '@/utils/emailService';
 
@@ -11,42 +12,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     console.log('💰 Webhook received at:', new Date().toISOString());
-    console.log('Webhook body:', req.body);
-    console.log('Webhook query:', req.query);
-    
     const order_id = req.body.order_id || req.query.transactionid;
-    
-    if (!order_id) {
-      console.error('No order_id found in request');
-      return res.status(400).json({ message: 'Order ID is required' });
-    }
-
     const paymentStatus = await getPaymentStatus(order_id);
-    console.log('Payment status from MultiSafepay:', paymentStatus);
     
     await connectToDatabase();
-    const booking = await Booking.findOne({ 
-      $or: [
-        { clientBookingId: order_id },
-        { 'payment.orderId': order_id }
-      ]
-    });
+    const booking = await Booking.findOne({ clientBookingId: order_id });
 
-    if (!booking) {
-      console.error(`Booking not found for order_id: ${order_id}`);
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-
-    console.log('Found booking:', booking._id);
-
-    if (paymentStatus.status === 'completed' || paymentStatus.data?.status === 'completed') {
+    if (paymentStatus.status === 'completed') {
+      // Update payment info
       booking.payment = {
         status: 'completed',
         orderId: order_id,
         amount: booking.price,
         paidAt: new Date(),
-        paymentMethod: paymentStatus.data?.payment_details?.type || 'unknown',
-        transactionId: paymentStatus.data?.transaction_id || order_id
+        paymentMethod: paymentStatus.payment_details?.type || 'unknown',
+        transactionId: paymentStatus.transaction_id
       };
       
       booking.isTemporary = false;
@@ -54,7 +34,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       booking.status = 'pending';
       
       await booking.save();
-      console.log('Updated booking payment status:', booking.payment);
+
+      // Create notification
+      const notification = await Notification.create({
+        type: 'payment_received',
+        recipientType: 'admin',
+        bookingId: booking._id,
+        userId: booking.userId || 'guest',
+        message: `Payment received for booking #${booking.clientBookingId}`,
+        status: 'info',
+        metadata: {
+          bookingDetails: {
+            clientBookingId: booking.clientBookingId,
+            pickupDateTime: booking.pickupDateTime,
+            vehicle: booking.vehicle,
+            price: booking.price,
+            passengers: booking.passengers,
+            paymentMethod: booking.payment.paymentMethod
+          }
+        }
+      });
+      console.log('Notification created:', notification);
 
       // Send confirmation email
       await sendBookingConfirmation({
