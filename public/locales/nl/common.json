@@ -156,7 +156,7 @@
         "passwordLength": "Wachtwoord moet minimaal 8 tekens zijn",
         "passwordMatch": "Wachtwoorden komen niet overeen"
       },
-      "individual": "Individu",
+      "individual": "Particulier",
       "business": "Zakelijk",
       "passengerFullName": "Volledige Naam van Passagier",
       "passengerFullNamePlaceholder": "Voer volledige naam van passagier in",
