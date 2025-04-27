@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
-import { User, Phone, Mail, UserCheck, Lock, Eye, EyeOff, MapPin } from 'lucide-react'; // Import MapPin
+import { User, Phone, Mail, UserCheck, MapPin } from 'lucide-react'; // Import MapPin
 import { Stepper } from '@/components/booking/Stepper';
 import { motion } from 'framer-motion';
 import { useAuth } from '@/contexts/AuthContext';
@@ -40,7 +40,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
   const i18n = useTranslation('common').i18n;
   const { isEditing, editingBookingId, setEditMode } = useEdit();
   const router = useRouter();
-  const { user, register } = useAuth();
+  const { user } = useAuth();
   const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoData>({
     bookingType: 'individual',

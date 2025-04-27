@@ -578,11 +578,11 @@ export const TravelInfoPage = () => {
         segments[1]?.distance || '0 km',
         updatedData.pickup.exactAddress ? {
           businessName: updatedData.pickup.exactAddress.businessName || '',
-          city: updatedData.pickup.exactAddress.city
+          city: updatedData.pickup.exactAddress.city || '',
         } : undefined,
         updatedData.destination.exactAddress ? {
           businessName: updatedData.destination.exactAddress.businessName || '',
-          city: updatedData.destination.exactAddress.city
+          city: updatedData.destination.exactAddress.city || '',
         } : undefined
       );
 
@@ -630,11 +630,11 @@ export const TravelInfoPage = () => {
         segments[1]?.distance || '0 km',
         updatedData.pickup.exactAddress ? {
           businessName: updatedData.pickup.exactAddress.businessName || '',
-          city: updatedData.pickup.exactAddress.city
+          city: updatedData.pickup.exactAddress.city || '' // Add default empty string
         } : undefined,
         updatedData.destination.exactAddress ? {
           businessName: updatedData.destination.exactAddress.businessName || '',
-          city: updatedData.destination.exactAddress.city
+          city: updatedData.destination.exactAddress.city || '' // Add default empty string
         } : undefined
       );
 
