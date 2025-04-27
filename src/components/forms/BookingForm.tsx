@@ -40,13 +40,37 @@ const parseNetherlandsAddress = (address: string) => {
         city: ''
     };
 
-    // Normalize country name variations and remove them
-    address = address.replace(/,?\s*(Netherlands|Nederland)s?$/gi, '').trim();
-
-    // Split and clean parts
+    // Enhanced country name normalization
+    address = address.replace(/,?\s*(Nederland|Nederlands|Netherlands|Nethelands)s?$/gi, '').trim();
     const parts = address.split(',').map(part => part.trim()).filter(Boolean);
 
     if (parts.length === 0) return result;
+
+    // Enhanced business location detection
+    const isBusinessLocation = (
+        parts[0].includes('Airport') ||
+        parts[0].includes('(AMS)') ||
+        parts[0].includes('Station') ||
+        parts[0].includes('Hotel') ||
+        parts[0].includes('Terminal') ||
+        parts[0].includes('Sports') ||
+        parts[0].includes('Mall') ||
+        parts[0].includes('Center') ||
+        parts[0].includes('Centre') ||
+        parts[0].includes('B.V.') ||
+        parts[0].includes('BV') ||
+        parts[0].includes('N.V.') ||
+        parts[0].includes('Bank') ||
+        parts[0].includes('Grondbank') ||
+        (parts.length >= 3 && !parts[1].match(/\d+/))
+    );
+
+    if (isBusinessLocation) {
+        result.businessName = parts[0];
+        if (parts.length >= 2) result.streetName = parts[1];
+        if (parts.length >= 3) result.city = parts[parts.length - 1];
+        return result;
+    }
 
     // Check if first part contains street and house number
     const streetMatch = parts[0].match(/^(.*?)(?:\s+(\d+[a-zA-Z]{0,2}))$/);
