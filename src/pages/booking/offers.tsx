@@ -14,7 +14,7 @@ import { NavigationButtons } from '@/components/booking/NavigationButtons'; // I
 
 
 interface VehicleOption {
-    id: 'sedan' | 'stationWagon' | 'bus';
+    id: 'stationWagon' | 'bus';
     name: string;
     features: string[];
 }
@@ -22,18 +22,6 @@ interface VehicleOption {
 const useVehicleOptions = () => {
     const { t } = useTranslation();
     return [
-        {
-            id: 'sedan',
-            name: t('offers.sedanTaxi.name'),
-            features: [
-                t('offers.sedanTaxi.features.passengers'),
-                t('offers.sedanTaxi.features.luggage'),
-                t('offers.sedanTaxi.features.freeTransport'),
-                t('offers.sedanTaxi.features.doorService'),
-                t('offers.sedanTaxi.features.fixedPrice'),
-                t('offers.sedanTaxi.features.comfort')
-            ]
-        },
         {
             id: 'stationWagon',
             name: t('offers.stationWagonTaxi.name'),
@@ -199,6 +187,14 @@ const PriceInfo = ({ isFixedPrice, bookingData }: { isFixedPrice: boolean, booki
                     </li>
                 ))}
             </ul>
+            <div className="mt-3 text-xs sm:text-sm text-gray-600">
+                <p className="font-medium">Pricing Information:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                    <li>Station Wagon: €3 per kilometer</li>
+                    <li>Bus: €5 per kilometer</li>
+                    <li>Minimum fare: €15</li>
+                </ul>
+            </div>
             {bookingData?.isReturn && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-700">
@@ -215,9 +211,9 @@ export const OffersPage = () => {
     const { t } = useTranslation();
     const vehicleOptions = useVehicleOptions();
     const [bookingData, setBookingData] = useState<BookingData | null>(null);
-    const [selectedVehicle, setSelectedVehicle] = useState<'sedan' | 'stationWagon' | 'bus' | null>(null);
-    const [prices, setPrices] = useState({ sedan: 0, stationWagon: 0, bus: 0 });
-    const [availableVehicles, setAvailableVehicles] = useState({ sedan: true, stationWagon: true, bus: true });
+    const [selectedVehicle, setSelectedVehicle] = useState<'stationWagon' | 'bus' | null>(null);
+    const [prices, setPrices] = useState({ stationWagon: 0, bus: 0 });
+    const [availableVehicles, setAvailableVehicles] = useState({ stationWagon: true, bus: true });
     const [isFixedPrice, setIsFixedPrice] = useState(false);
     const { isEditing, editingBookingId, setEditMode } = useEdit();
 
@@ -251,7 +247,6 @@ export const OffersPage = () => {
         );
 
         setPrices({
-            sedan: calculatedPrices.sedan,
             stationWagon: calculatedPrices.stationWagon,
             bus: calculatedPrices.bus
         });
@@ -284,7 +279,7 @@ export const OffersPage = () => {
     }, [router]);
 
 
-    const handleVehicleSelect = (vehicleId: 'sedan' | 'stationWagon' | 'bus') => {
+    const handleVehicleSelect = (vehicleId: 'stationWagon' | 'bus') => {
         if (!bookingData) return;
 
         // Parse addresses for consistent pricing
@@ -373,7 +368,7 @@ export const OffersPage = () => {
     return (
         <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
             <div className="max-w-4xl mx-auto px-4 flex flex-col items-center mt-8">
-                {isEditing ? (
+            {isEditing ? (
                     <button
                         onClick={handleBack}
                         className="text-white hover:text-gray-200 transition-colors lg:mb-[-70px] lg:mt-[-20px] mt-[-40px]"
@@ -403,9 +398,9 @@ export const OffersPage = () => {
                                 key={vehicle.id}
                                 vehicle={vehicle as VehicleOption}
                                 isSelected={selectedVehicle === vehicle.id}
-                                onSelect={() => handleVehicleSelect(vehicle.id as 'sedan' | 'stationWagon' | 'bus')}
-                                isAvailable={availableVehicles[vehicle.id as 'sedan' | 'stationWagon' | 'bus']}
-                                price={prices[vehicle.id as 'sedan' | 'stationWagon' | 'bus']}
+                                onSelect={() => handleVehicleSelect(vehicle.id as 'stationWagon' | 'bus')}
+                                isAvailable={availableVehicles[vehicle.id as 'stationWagon' | 'bus']}
+                                price={prices[vehicle.id as 'stationWagon' | 'bus']}
                                 bookingData={bookingData}
                             />
                         ))}
@@ -437,3 +432,4 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 };
 
 export default OffersPage;
+
