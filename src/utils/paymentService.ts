@@ -15,6 +15,8 @@ export interface PaymentDetails {
   customerName: string;
   customerEmail: string;
   customerPhone?: string;
+  webhookUrl?: string;  // Add optional webhookUrl parameter
+  redirectUrl?: string;  // Add optional redirectUrl parameter
 }
 
 export async function createPaymentOrder(details: PaymentDetails) {
@@ -24,8 +26,17 @@ export async function createPaymentOrder(details: PaymentDetails) {
     
     console.log('Creating payment order with client booking ID:', details.clientBookingId);
     
-    const webhookUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`;
+    // Use provided webhookUrl or fall back to environment variable
+    const webhookUrl = details.webhookUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`;
     console.log('Setting webhook URL:', webhookUrl);
+    
+    // Use provided redirectUrl or fall back to environment variable
+    const baseRedirectUrl = details.redirectUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/booking`;
+    const redirectUrl = `${baseRedirectUrl}/payment-success?bookingId=${details.bookingId}`;
+    const cancelUrl = `${baseRedirectUrl}/payment-failed?bookingId=${details.bookingId}`;
+    
+    console.log('Setting redirect URL:', redirectUrl);
+    console.log('Setting cancel URL:', cancelUrl);
     
     const response = await client.orders.create({
       type: 'redirect',
@@ -36,8 +47,8 @@ export async function createPaymentOrder(details: PaymentDetails) {
       payment_options: {
         notification_url: webhookUrl,
         notification_method: 'POST',
-        redirect_url: `${process.env.NEXT_PUBLIC_BASE_URL}/booking/payment-success?bookingId=${details.bookingId}`,
-        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/booking/payment-failed?bookingId=${details.bookingId}`,
+        redirect_url: redirectUrl,
+        cancel_url: cancelUrl,
       },
       customer: {
         first_name: details.customerName.split(' ')[0],
@@ -61,7 +72,9 @@ export async function createPaymentOrder(details: PaymentDetails) {
 
 export async function getPaymentStatus(orderId: string) {
   try {
-    return await client.orders.get(orderId);
+    const response = await client.orders.get(orderId);
+    console.log('Payment status response:', response);
+    return response;
   } catch (error) {
     console.error('MultiSafepay payment status error:', error);
     throw error;
