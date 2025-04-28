@@ -131,14 +131,25 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
   );
 };
 
-const getVehicleInfo = (vehicleType: 'sedan' | 'stationWagon' | 'bus', t: (key: string) => string) => {
-  const info = {
-    sedan: {
-      name: t('offers.sedanTaxi.name'),
-      icon: '🚗',
-      bgColor: 'bg-blue-50',
-      textColor: 'text-blue-700'
-    },
+// Define a type for the vehicle info object
+type VehicleInfo = {
+  name: string;
+  icon: string;
+  bgColor: string;
+  textColor: string;
+};
+
+// Define a type for the vehicle info map with an index signature
+type VehicleInfoMap = {
+  [key: string]: VehicleInfo;
+  stationWagon: VehicleInfo;
+  bus: VehicleInfo;
+  sedan: VehicleInfo;
+  default: VehicleInfo;
+};
+
+const getVehicleInfo = (vehicleType: 'stationWagon' | 'bus' | string | null | undefined, t: (key: string) => string) => {
+  const info: VehicleInfoMap = {
     stationWagon: {
       name: t('offers.stationWagonTaxi.name'),
       icon: '🚙',
@@ -150,8 +161,27 @@ const getVehicleInfo = (vehicleType: 'sedan' | 'stationWagon' | 'bus', t: (key: 
       icon: '🚐',
       bgColor: 'bg-purple-50',
       textColor: 'text-purple-700'
+    },
+    // Add a fallback for 'sedan' that maps to stationWagon
+    sedan: {
+      name: t('offers.stationWagonTaxi.name'),
+      icon: '🚙',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-700'
+    },
+    // Add a default fallback
+    default: {
+      name: t('offers.stationWagonTaxi.name'),
+      icon: '🚙',
+      bgColor: 'bg-indigo-50',
+      textColor: 'text-indigo-700'
     }
   };
+
+  // If vehicleType is undefined, null, or not in our info object, return the default
+  if (!vehicleType || !(vehicleType in info)) {
+    return info.default;
+  }
 
   return info[vehicleType];
 };
@@ -190,7 +220,9 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
       });
 
       if (!paymentResponse.ok) {
-        throw new Error('Failed to create payment');
+        const errorData = await paymentResponse.json();
+        console.error('Payment creation failed:', errorData);
+        throw new Error(`Failed to create payment: ${errorData.error || 'Unknown error'}`);
       }
 
       const paymentData = await paymentResponse.json();
@@ -206,7 +238,6 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
       alert(t('booking.errors.createFailed'));
     }
   };
-
 
   return (
     <>
@@ -514,13 +545,11 @@ export const OverviewPage = () => {
           updatedBookingIds.push(booking.id);
 
           // Determine the most suitable vehicle
-          let newVehicle: 'sedan' | 'stationWagon' | 'bus';
+          let newVehicle: 'stationWagon' | 'bus';
           if (vehicleAvailability.bus) {
             newVehicle = 'bus';
-          } else if (vehicleAvailability.stationWagon) {
-            newVehicle = 'stationWagon';
           } else {
-            newVehicle = 'sedan';
+            newVehicle = 'stationWagon';
           }
 
           const calculatedPrices = calculatePrice(
