@@ -62,6 +62,30 @@ export const placeAliases: PlaceAliasesMap = {
   // Add more city aliases
 };
 
+// Update vehicle aliases to only include stationWagon and bus
+export const vehicleAliases: Record<string, string[]> = {
+  "stationWagon": [
+    "station wagon",
+    "estate car",
+    "family car",
+    "combi",
+    "touring",
+    "break",
+    "sedan", // Add sedan as an alias for stationWagon
+    "car",
+    "taxi"
+  ],
+  "bus": [
+    "minibus",
+    "van",
+    "minivan",
+    "people carrier",
+    "mpv",
+    "large vehicle",
+    "group transport"
+  ]
+};
+
 // Export function to get all canonical names
 export const getCanonicalNames = (): string[] => {
   const sourceLocations = Object.keys(fixedRoutes);
