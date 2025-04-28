@@ -16,6 +16,7 @@ A full-featured taxi booking platform built with Next.js, focusing on airport tr
 - 📅 Return trip scheduling
 - 💰 Dynamic pricing system
 - 📱 Responsive design
+- 💳 Secure online payment with **MultiSafePay**
 
 ## Tech Stack
 
@@ -27,22 +28,13 @@ A full-featured taxi booking platform built with Next.js, focusing on airport tr
 - Google Maps API
 - MongoDB
 
+## Payment Integration
 
+To enhance user experience and ensure secure transactions, **MultiSafePay** has been implemented for handling booking payments online. This integration provides a seamless and secure online payment experience for our users.
 
 ## Project Structure
+├── public/ │ ├── locales/ # Translation files │ └── images/ # Static images ├── src/ │ ├── components/ # Reusable components │ ├── pages/ # Next.js pages │ ├── hooks/ # Custom hooks │ ├── utils/ # Utility functions │ ├── types/ # TypeScript types │ └── models/ # MongoDB models
 
-```
-├── public/
-│   ├── locales/         # Translation files
-│   └── images/          # Static images
-├── src/
-│   ├── components/      # Reusable components
-│   ├── pages/          # Next.js pages
-│   ├── hooks/          # Custom hooks
-│   ├── utils/          # Utility functions
-│   ├── types/          # TypeScript types
-│   └── models/         # MongoDB models
-```
 
 ## Key Features
 
