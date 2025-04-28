@@ -4,6 +4,16 @@ import Booking from '@/models/Booking';
 import { createPaymentOrder } from '@/utils/paymentService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  // Add CORS headers for ngrok
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -11,6 +21,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   try {
     await connectToDatabase();
     const { bookingData } = req.body;
+
+    console.log('Creating payment for booking:', bookingData.clientBookingId);
 
     // Check for existing temporary booking
     const existingBooking = await Booking.findOne({ 
@@ -20,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
 
     if (existingBooking && existingBooking.payment?.paymentUrl) {
+      console.log('Found existing payment URL for booking:', existingBooking.clientBookingId);
       // Return existing payment URL if booking exists
       return res.status(200).json({
         paymentUrl: existingBooking.payment.paymentUrl,
@@ -38,6 +51,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       paymentPending: true
     });
 
+    // Use the base URL from environment variable for consistent webhook URLs
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${req.headers.host}`;
+    const webhookUrl = `${baseUrl}/api/payments/webhook`;
+    const redirectUrl = `${baseUrl}/booking`;    console.log('Using webhook URL:', webhookUrl);
+    console.log('Using redirect URL base:', redirectUrl);
+
     const paymentResponse = await createPaymentOrder({
       bookingId: tempBooking._id.toString(),
       clientBookingId: bookingData.clientBookingId,
@@ -46,7 +65,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       description: `Taxi booking #${bookingData.clientBookingId}`,
       customerName: bookingData.contactInfo.fullName,
       customerEmail: bookingData.contactInfo.email,
-      customerPhone: bookingData.contactInfo.phoneNumber
+      customerPhone: bookingData.contactInfo.phoneNumber,
+      webhookUrl: webhookUrl,
+      redirectUrl: redirectUrl
     });
 
     console.log("Payment response from MultiSafepay:", paymentResponse);
@@ -70,14 +91,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     };
     
     await tempBooking.save();
+    console.log('Temporary booking saved with payment info:', tempBooking._id.toString());
     
     // Return the payment URL and order ID
     return res.status(200).json({ 
       paymentUrl: paymentUrl,
       orderId: orderId
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Payment creation error:', error);
-    return res.status(500).json({ error: 'Payment creation failed' });
+    const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+    return res.status(500).json({ error: 'Payment creation failed', details: errorMessage });
   }
 }
