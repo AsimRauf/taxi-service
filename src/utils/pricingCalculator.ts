@@ -2,9 +2,10 @@ import { FixedPrice, PriceResult } from '@/types/pricing';
 import { fixedRoutes } from '@/data/fixedPrice';
 import { findCanonicalName } from '@/data/placeAliases';
 
-const PRICE_PER_KM = 2.5;
-const STATION_WAGON_MULTIPLIER = 1.2;  // 20% more than sedan
-const BUS_MULTIPLIER = 1.4;            // 40% more than sedan
+// Update price constants
+const STATION_WAGON_PRICE_PER_KM = 3.0;  // €3 per km for station wagon
+const BUS_PRICE_PER_KM = 5.0;            // €5 per km for bus
+const MINIMUM_PRICE = 15.0;              // Minimum price of €15 for any ride
 
 export const determineVehicleAvailability = (
     passengers: number,
@@ -26,21 +27,9 @@ export const determineVehicleAvailability = (
     const totalSpecialItems = Object.values(specialLuggage).reduce((sum, val) => sum + val, 0);
 
     const result = {
-        sedan: true,
         stationWagon: true,
         bus: true
     };
-
-    // Sedan limitations
-    if (
-        passengers > 3 ||
-        totalLarge > 2 ||
-        totalSmall > 3 ||
-        (totalLarge + totalSmall > 2) ||
-        totalSpecialItems > 0
-    ) {
-        result.sedan = false;
-    }
 
     // Station Wagon limitations
     if (
@@ -126,6 +115,11 @@ const findFixedPrice = (
     return null;
 };
 
+// Apply minimum price function
+const applyMinimumPrice = (price: number): number => {
+    return Math.max(price, MINIMUM_PRICE);
+};
+
 export const calculatePrice = (
     source: string,
     destination: string,
@@ -152,10 +146,10 @@ export const calculatePrice = (
     );
     
     if (fixedPrice) {
+        // For fixed routes, we still apply the minimum price
         const result = {
-            sedan: fixedPrice.sedan + (extraDistanceKm * PRICE_PER_KM),
-            stationWagon: fixedPrice.stationWagon + (extraDistanceKm * PRICE_PER_KM * STATION_WAGON_MULTIPLIER),
-            bus: fixedPrice.bus + (extraDistanceKm * PRICE_PER_KM * BUS_MULTIPLIER),
+            stationWagon: applyMinimumPrice(fixedPrice.stationWagon + (extraDistanceKm * STATION_WAGON_PRICE_PER_KM)),
+            bus: applyMinimumPrice(fixedPrice.bus + (extraDistanceKm * BUS_PRICE_PER_KM)),
             isFixedPrice: true
         };
         console.log('💰 Final fixed price:', result);
@@ -164,18 +158,17 @@ export const calculatePrice = (
 
     // Dynamic pricing for non-fixed routes
     const totalDistance = mainDistanceKm + extraDistanceKm;
-    const basePrice = totalDistance * PRICE_PER_KM;
     
     const result = {
-        sedan: basePrice,
-        stationWagon: basePrice * STATION_WAGON_MULTIPLIER,
-        bus: basePrice * BUS_MULTIPLIER,
+        stationWagon: applyMinimumPrice(totalDistance * STATION_WAGON_PRICE_PER_KM),
+        bus: applyMinimumPrice(totalDistance * BUS_PRICE_PER_KM),
         isFixedPrice: false
     };
     
     console.log('💰 Final dynamic price:', { 
         totalDistance,
-        baseRate: PRICE_PER_KM,
+        stationWagonRate: STATION_WAGON_PRICE_PER_KM,
+        busRate: BUS_PRICE_PER_KM,
         result 
     });
     
