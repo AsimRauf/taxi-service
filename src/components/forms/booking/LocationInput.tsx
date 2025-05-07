@@ -69,7 +69,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [hasError] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
   const inputRef = useRef<GooglePlacesInputRef>(null);
@@ -80,6 +80,14 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     ...translations,
     locale: translations.locale || 'en'
   });
+
+  // Add debugging
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('Google API loaded:', !!window.google);
+      console.log('Google Places API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.substring(0, 10) + '...');
+    }
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -102,6 +110,8 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
       } else {
         setIsLoading(false);
         setIsMounted(true);
+        setHasError(true);
+        console.error('Failed to load Google Maps API after multiple retries');
       }
     };
 
@@ -151,8 +161,12 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   };
 
+  
+
   const handleLocationSelect = async (selected: SingleValue<SelectOption>) => {
     if (selected) {
+      console.log('Selected location:', selected);
+      
       const newLocation = selected as unknown as Location;
       
       latestValueRef.current = newLocation;
@@ -196,7 +210,11 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
   return (
     <div className="w-full min-h-[60px] relative" ref={containerRef}>
       {isLoading ? (
-        <div className="h-[60px] border-2 border-[#FFD700] rounded-xl animate-pulse bg-gray-50" />
+        <div className="h-[60px] border-2 border-[#FFD700] rounded-xl animate-pulse bg-gray-50">
+          <div className="h-full flex items-center justify-start px-4 text-gray-400">
+            Loading...
+          </div>
+        </div>
       ) : (
         isMounted && (
           <GooglePlacesAutocomplete
@@ -253,6 +271,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
               },
               formatOptionLabel: (option: SelectOption) => {
                 const { label, value } = option;
+                
                 return (
                   <div>
                     <div>{label}</div>

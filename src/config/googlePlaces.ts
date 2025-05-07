@@ -13,7 +13,9 @@ interface GooglePlacesConfig {
   autocompletionRequest: {
     componentRestrictions: {
       country: string
-    }
+    },
+    // Less restrictive types
+    types: string[]
   }
   selectProps: {
     styles: {
@@ -30,6 +32,8 @@ export const createGooglePlacesConfig = (translations: WebsiteTranslations): Goo
   apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&language=${translations.locale || 'en'}`,
   autocompletionRequest: {
     componentRestrictions: { country: 'nl' },
+    // Use a less restrictive set of types - 'geocode' includes addresses
+    types: ['address']
   },
   selectProps: {
     styles: {

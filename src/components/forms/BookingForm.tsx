@@ -22,13 +22,10 @@ import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { useRouter } from 'next/router';
 import { createTranslationsObject } from '@/utils/translations';
 import { useTranslation } from 'next-i18next';
-import { ExactLocationModal } from '@/components/modals/ExactLocationModal';
 
 interface BookingFormProps {
     defaultDestination?: Location;
 }
-
-
 
 // Add the address parser function
 const parseNetherlandsAddress = (address: string) => {
@@ -147,12 +144,8 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     });
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
     const [isLoading, setIsLoading] = useState(false);
-    const [showExactLocationModal, setShowExactLocationModal] = useState<{
-        isOpen: boolean;
-        location?: Location;
-        type?: 'pickup' | 'stopover' | 'destination';
-        index?: number;
-    }>({ isOpen: false });
+    const [pickupHouseNumberError, setPickupHouseNumberError] = useState<string | null>(null);
+    const [destinationHouseNumberError, setDestinationHouseNumberError] = useState<string | null>(null);
 
     // Update the handleLocationUpdate function
     const handleLocationUpdate = (place: SingleValue<SelectOption>, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
@@ -160,6 +153,13 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             ...prev,
             [type]: undefined
         }));
+
+        // Clear house number errors when location changes
+        if (type === 'pickup') {
+            setPickupHouseNumberError(null);
+        } else if (type === 'destination') {
+            setDestinationHouseNumberError(null);
+        }
 
         if (!place) {
             if (type === 'stopover' && typeof index === 'number') {
@@ -211,21 +211,13 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
         }
     };
 
-    // Add a new function to handle opening the exact location modal
-    const handleOpenExactLocation = (location: Location, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
-        setShowExactLocationModal({
-            isOpen: true,
-            location,
-            type,
-            index
-        });
-    };
-
     const handleCalculate = async () => {
         setIsLoading(true);
         try {
             // Clear all validation errors first
             setValidationErrors({});
+            setPickupHouseNumberError(null);
+            setDestinationHouseNumberError(null);
 
             const { errors } = validateBookingForm(formData, translations);
             
@@ -234,19 +226,13 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
             // Check exact address for pickup
             if (formData.pickup && !validateExactLocation(formData.pickup)) {
-                setValidationErrors(prev => ({
-                    ...prev,
-                    pickup: translations.booking.errors.exactAddressRequired
-                }));
+                setPickupHouseNumberError(translations.booking.errors.exactAddressRequired);
                 exactAddressErrors = true;
             }
 
             // Check exact address for destination
             if (formData.destination && !validateExactLocation(formData.destination)) {
-                setValidationErrors(prev => ({
-                    ...prev,
-                    destination: translations.booking.errors.exactAddressRequired
-                }));
+                setDestinationHouseNumberError(translations.booking.errors.exactAddressRequired);
                 exactAddressErrors = true;
             }
 
@@ -323,6 +309,9 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             pickup: prev.destination,
             destination: prev.pickup
         }));
+        // Clear house number errors when swapping
+        setPickupHouseNumberError(null);
+        setDestinationHouseNumberError(null);
     };
 
     const addStopover = () => {
@@ -354,6 +343,9 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     const handlePickupHouseNumber = (value: string) => {
         if (!formData.pickup) return;
         
+        // Clear error when user starts typing
+        setPickupHouseNumberError(null);
+        
         const newPickup = {
             ...formData.pickup,
             exactAddress: {
@@ -373,6 +365,9 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     // For destination location
     const handleDestinationHouseNumber = (value: string) => {
         if (!formData.destination) return;
+        
+        // Clear error when user starts typing
+        setDestinationHouseNumberError(null);
         
         const newDestination = {
             ...formData.destination,
@@ -408,13 +403,20 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         onClear={() => handleLocationUpdate(null, 'pickup')}
                     />
                     {formData.pickup && !formData.pickup.exactAddress?.businessName && (
-                        <input
-                            type="text"
-                            placeholder={t('booking.houseNumber')}
-                            value={formData.pickup.exactAddress?.houseNumber || ''}
-                            onChange={(e) => handlePickupHouseNumber(e.target.value)}
-                            className="mt-2 w-32 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                        />
+                        <div>
+                            <input
+                                type="text"
+                                placeholder={t('booking.houseNumber')}
+                                value={formData.pickup.exactAddress?.houseNumber || ''}
+                                onChange={(e) => handlePickupHouseNumber(e.target.value)}
+                                className={`mt-2 w-32 p-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary`}
+                            />
+                            {pickupHouseNumberError && (
+                                <span className="text-red-500 text-sm mt-1 block">
+                                    {pickupHouseNumberError}
+                                </span>
+                            )}
+                        </div>
                     )}
                 </div>
                 <div className="flex justify-center pt-7">
@@ -430,21 +432,11 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             </div>
 
             <div className="col-span-3">
-                {formData.pickup && (
+                {formData.pickup && validationErrors.pickup && (
                     <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px] m-2">
-                        <button
-                            type="button"
-                            onClick={() => handleOpenExactLocation(formData.pickup!, 'pickup')}
-                            className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
-                        >
-                            <Plus size={16} />
-                            <span>{translations.booking.addExactLocation}</span>
-                        </button>
-                        {validationErrors.pickup && (
-                            <span className="text-red-500 text-sm mt-1 block">
-                                {validationErrors.pickup}
-                            </span>
-                        )}
+                        <span className="text-red-500 text-sm mt-1 block">
+                            {validationErrors.pickup}
+                        </span>
                     </div>
                 )}
             </div>
@@ -483,21 +475,11 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </div>
 
                     <div className="col-span-3">
-                        {stopover && stopover.mainAddress && (
+                        {validationErrors[`stopover_${index}`] && (
                             <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px] m-2">
-                                <button
-                                    type="button"
-                                    onClick={() => handleOpenExactLocation(stopover, 'stopover', index)}
-                                    className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
-                                >
-                                    <Plus size={16} />
-                                    <span>{translations.booking.addExactLocation}</span>
-                                </button>
-                                {validationErrors[`stopover_${index}`] && (
-                                    <span className="text-red-500 text-sm mt-1 block">
-                                        {validationErrors[`stopover_${index}`]}
-                                    </span>
-                                )}
+                                <span className="text-red-500 text-sm mt-1 block">
+                                    {validationErrors[`stopover_${index}`]}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -523,15 +505,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         translations={translations}
                         onClear={() => handleLocationUpdate(null, 'destination')}
                     />
-                    {formData.destination && !formData.destination.exactAddress?.businessName && (
-                        <input
-                            type="text"
-                            placeholder={t('booking.houseNumber')}
-                            value={formData.destination.exactAddress?.houseNumber || ''}
-                            onChange={(e) => handleDestinationHouseNumber(e.target.value)}
-                            className="mt-2 w-32 p-2 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
-                        />
-                    )}
+                    
                 </div>
                 <div className="flex justify-center pt-7">
                     <button
@@ -544,8 +518,21 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </div>
+            
+            
+            <div className="col-span-3">
+                {validationErrors.destination && (
+                    <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px] m-2">
+                        <span className="text-red-500 text-sm mt-1 block">
+                            {validationErrors.destination}
+                        </span>
+                    </div>
+                )}
+            </div>
         </div>
     );
+
+    
 
     const renderAddStopoverButton = () => (
         <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-center gap-1 sm:gap-2">
@@ -575,23 +562,24 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     {renderStopovers()}
                     {renderAddStopoverButton()}
                     {renderDestination()}
+                    
                 </div>
-                {/* Add this block for the exact location button */}
-                {formData.destination && (
-                    <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
-                        <button
-                            type="button"
-                            onClick={() => handleOpenExactLocation(formData.destination!, 'destination')}
-                            className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
-                        >
-                            <Plus size={16} />
-                            <span>{translations.booking.addExactLocation}</span>
-                        </button>
-                        {validationErrors.destination && (
-                            <span className="text-red-500 text-sm mt-1">{validationErrors.destination}</span>
-                        )}
-                    </div>
-                )}
+                {formData.destination && !formData.destination.exactAddress?.businessName && (
+                        <div>
+                            <input
+                                type="text"
+                                placeholder={t('booking.houseNumber')}
+                                value={formData.destination.exactAddress?.houseNumber || ''}
+                                onChange={(e) => handleDestinationHouseNumber(e.target.value)}
+                                className={`mt-[-10px] ms-[34px] lg:ms-[55px] w-32 p-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary`}
+                            />
+                            {destinationHouseNumberError && (
+                                <span className="text-red-500 text-sm mt-1 block">
+                                    {destinationHouseNumberError}
+                                </span>
+                            )}
+                        </div>
+                    )}
                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
                     <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
@@ -664,32 +652,6 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </form>
-            {showExactLocationModal.isOpen && showExactLocationModal.location && (
-                <ExactLocationModal
-                    isOpen={showExactLocationModal.isOpen}
-                    onClose={() => {
-                        // Clear validation errors for the location type that was being edited
-                        const type = showExactLocationModal.type;
-                        if (type && (type === 'pickup' || type === 'stopover' || type === 'destination')) {
-                            setValidationErrors(prev => ({
-                                ...prev,
-                                [type]: undefined
-                            }));
-                        }
-                        setShowExactLocationModal({ isOpen: false });
-                    }}
-                    location={showExactLocationModal.location}
-                    type={showExactLocationModal.type!}
-                    index={showExactLocationModal.index}
-                    parsedAddress={parseNetherlandsAddress(
-                        showExactLocationModal.location.mainAddress ||
-                        showExactLocationModal.location.value.description
-                    )}
-                    formData={formData}
-                    setFormData={setFormData}
-                    translations={translations}
-                />
-            )}
         </div>
     );
 };
