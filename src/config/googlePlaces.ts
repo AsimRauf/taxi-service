@@ -32,8 +32,9 @@ export const createGooglePlacesConfig = (translations: WebsiteTranslations): Goo
   apiKey: `${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&language=${translations.locale || 'en'}`,
   autocompletionRequest: {
     componentRestrictions: { country: 'nl' },
-    // Use a less restrictive set of types - 'geocode' includes addresses
-    types: ['address']
+    // Use more specific types to filter out broad city-only results
+    types: [     // Apartment, suite, or room within a building
+    ]
   },
   selectProps: {
     styles: {

@@ -83,10 +83,9 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
 
   // Add debugging
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      console.log('Google API loaded:', !!window.google);
-      console.log('Google Places API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.substring(0, 10) + '...');
-    }
+    console.log('Google Places Config:', googlePlacesProps);
+    console.log('API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.substring(0, 10) + '...');
+    console.log('Google API loaded:', typeof window !== 'undefined' && !!window.google);
   }, []);
 
   useEffect(() => {
@@ -161,10 +160,64 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     }
   };
 
-  
+  const isValidAddress = (place: GooglePlaceValue): boolean => {
+    // Allow if it has structured formatting with both main and secondary text
+    if (place.structured_formatting &&
+        place.structured_formatting.main_text &&
+        place.structured_formatting.secondary_text) {
+      
+      const mainText = place.structured_formatting.main_text.toLowerCase();
+      const secondaryText = place.structured_formatting.secondary_text.toLowerCase();
+      
+      // Reject if it's just a city or country name
+      const cityOnlyPattern = /^(amsterdam|rotterdam|den haag|utrecht|eindhoven|groningen|tilburg|almere|breda|nijmegen)$/i;
+      const countryPattern = /^(netherlands|nederland)$/i;
+      
+      // Check if it's just a city name
+      if (cityOnlyPattern.test(mainText) && secondaryText.includes('netherlands')) {
+        return false;
+      }
+      
+      // Check if it's just the country name
+      if (countryPattern.test(mainText)) {
+        return false;
+      }
+      
+      // Allow all other structured results (businesses, addresses, landmarks)
+      return true;
+    }
+
+    // Fallback check for description format
+    if (place.description) {
+      const parts = place.description.split(',').map(p => p.trim());
+      
+      // Must have at least 2 parts (street/place + city)
+      if (parts.length < 2) {
+        return false;
+      }
+
+      // Check if first part is just a city or country name
+      const firstPart = parts[0].toLowerCase();
+      const cityOrCountryPattern = /^(amsterdam|rotterdam|den haag|utrecht|eindhoven|groningen|tilburg|almere|breda|nijmegen|netherlands|nederland)$/i;
+      
+      if (cityOrCountryPattern.test(firstPart)) {
+        return false;
+      }
+
+      return true;
+    }
+
+    return false;
+  };
 
   const handleLocationSelect = async (selected: SingleValue<SelectOption>) => {
-    if (selected) {
+    if (selected && selected.value) {
+      // Validate the selected location
+      if (!isValidAddress(selected.value)) {
+        console.log('Invalid address format:', selected.value);
+        return;
+      }
+
       console.log('Selected location:', selected);
       
       const newLocation = selected as unknown as Location;
@@ -191,6 +244,39 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
       setShowSuggestions(false);
       onClear?.();
     }
+  };
+
+  const filterSuggestions = (input: string) => {
+    // Generic pattern to match "City, Netherlands" or "City, Nederland"
+    const cityPattern = /^([^,]+),\s*(netherlands|nederland)$/i;
+    
+    // Cities we want to filter when they appear as just city names
+    const dutchCities = [
+      'amsterdam', 'rotterdam', 'den haag', 'utrecht', 
+      'eindhoven', 'groningen', 'tilburg', 'almere', 
+      'breda', 'nijmegen', 'haarlem', 'delft', 'leiden', 
+      'dordrecht', 'zaanstad', 'amersfoort', 'maastricht', 
+      'zoetermeer', 'zwolle', 'enschede', 'apeldoorn', 
+      'arnhem', 'den bosch', 'hengelo', 'ede', 'venlo', 
+      'alkmaar', 'emmen', 'hilversum'
+    ];
+
+    const normalizedInput = input.trim().toLowerCase();
+    
+    // Check if it matches the city-country pattern
+    const match = normalizedInput.match(cityPattern);
+    if (match) {
+      const cityName = match[1].trim().toLowerCase();
+      // Check if the city part matches any Dutch city
+      return !dutchCities.some(city => cityName === city);
+    }
+
+    // Also filter out standalone "Netherlands" or "Nederland"
+    if (/^(netherlands|nederland)$/i.test(normalizedInput)) {
+      return false;
+    }
+
+    return true;
   };
 
   if (hasError) {
@@ -282,6 +368,16 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                     )}
                   </div>
                 )
+              },
+              filterOption: (option) => {
+                const value = option.data.value;
+                if (!value.structured_formatting) return false;
+                
+                const mainText = value.structured_formatting.main_text;
+                const secondaryText = value.structured_formatting.secondary_text;
+                const fullAddress = `${mainText}, ${secondaryText}`;
+                
+                return filterSuggestions(fullAddress);
               },
               styles: {
                 ...googlePlacesProps.selectProps.styles,
