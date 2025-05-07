@@ -2,11 +2,12 @@ const { i18n } = require('./next-i18next.config')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  i18n,
+  i18n: {
+    defaultLocale: 'nl',
+    locales: ['nl', 'en'],
+    localeDetection: false
+  },
   reactStrictMode: true,
-}
-
-module.exports = {
   async headers() {
     return [
       {
@@ -18,5 +19,7 @@ module.exports = {
         ],
       },
     ]
-  },
+  }
 }
+
+module.exports = nextConfig
