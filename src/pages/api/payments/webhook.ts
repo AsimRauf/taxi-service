@@ -98,10 +98,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     console.log('✅ Found booking:', booking._id.toString());
 
+    // Check if this status update has already been processed
+    const newStatus = paymentStatusResponse.data?.status || 'unknown';
+    if (booking.payment?.status === 'completed' && newStatus === 'completed') {
+      console.log('⚠️ Payment status already marked as completed, skipping update');
+      return res.status(200).json({ message: 'Payment status already processed' });
+    }
+
     // Update payment info with more robust status handling
     const paymentData = paymentStatusResponse.data || {};
     const oldStatus = booking.payment?.status;
-    const newStatus = paymentData.status;
     
     console.log('💰 Payment status update:', { oldStatus, newStatus });
 
@@ -112,56 +118,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       amount: booking.price,
       paidAt: new Date(),
       paymentMethod: paymentData.payment_details?.type || 'unknown',
-      transactionId: paymentData.transaction_id
+      transactionId: paymentData.transaction_id,
+      lastWebhookAt: new Date() // Track when we last processed a webhook
     };
     
     booking.isTemporary = false;
     booking.paymentPending = paymentData.status !== 'completed';
     
     // Set status based on payment status
-    if (paymentData.status === 'completed') {
+    if (paymentData.status === 'completed' && oldStatus !== 'completed') {
       booking.status = 'confirmed';
       console.log('✅ Payment completed, booking confirmed');
+      
+      // Only send confirmation email when transitioning to completed
+      try {
+        await sendBookingConfirmation({
+          ...booking.toObject(),
+          payment: booking.payment
+        });
+        console.log('✅ Confirmation email sent');
+      } catch (emailError) {
+        console.error('❌ Failed to send confirmation email:', emailError);
+      }
+
+      // Create notification
+      try {
+        await Notification.create({
+          type: 'payment_received',
+          recipientType: 'admin',
+          bookingId: booking._id,
+          userId: booking.userId || 'guest',
+          message: `Payment received for booking #${booking.clientBookingId}`,
+          status: 'info',
+          metadata: {
+            bookingDetails: {
+              clientBookingId: booking.clientBookingId,
+              pickupDateTime: booking.pickupDateTime,
+              vehicle: booking.vehicle,
+              price: booking.price,
+              passengers: booking.passengers,
+              paymentMethod: booking.payment.paymentMethod
+            }
+          }
+        });
+        console.log('✅ Notification created');
+      } catch (notificationError) {
+        console.error('❌ Failed to create notification:', notificationError);
+      }
     }
     
     await booking.save();
     console.log('✅ Booking updated successfully with payment status:', paymentData.status);
-
-    // Create notification
-    try {
-      const notification = await Notification.create({
-        type: 'payment_received',
-        recipientType: 'admin',
-        bookingId: booking._id,
-        userId: booking.userId || 'guest',
-        message: `Payment received for booking #${booking.clientBookingId}`,
-        status: 'info',
-        metadata: {
-          bookingDetails: {
-            clientBookingId: booking.clientBookingId,
-            pickupDateTime: booking.pickupDateTime,
-            vehicle: booking.vehicle,
-            price: booking.price,
-            passengers: booking.passengers,
-            paymentMethod: booking.payment.paymentMethod
-          }
-        }
-      });
-      console.log('✅ Notification created:', notification._id.toString());
-    } catch (notificationError) {
-      console.error('❌ Failed to create notification:', notificationError);
-    }
-
-    // Send confirmation email
-    try {
-      await sendBookingConfirmation({
-        ...booking.toObject(),
-        payment: booking.payment
-      });
-      console.log('✅ Confirmation email sent');
-    } catch (emailError) {
-      console.error('❌ Failed to send confirmation email:', emailError);
-    }
 
     return res.status(200).json({ success: true });
   } catch (error: unknown) {
@@ -170,5 +177,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(`\n${'='.repeat(80)}\n💰 Webhook Request ${requestId} End (Error)\n`);
     return res.status(500).json({ error: 'Webhook processing failed', details: errorMessage });
   }
-
 }
