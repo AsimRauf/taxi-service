@@ -1,53 +1,38 @@
 import mongoose from 'mongoose';
 
+if (!process.env.MONGODB_URI) {
+  console.error('❌ No MongoDB URI found in environment variables');
+  console.error('Current environment variables:', process.env);
+  throw new Error(
+    'Please define the MONGODB_URI environment variable. ' +
+    'Make sure your .env file is in the correct location and contains MONGODB_URI.'
+  );
+}
+
 const MONGODB_URI = process.env.MONGODB_URI;
 
-if (!MONGODB_URI) {
-  throw new Error('Please define the MONGODB_URI environment variable');
-}
+let cachedConnection: typeof mongoose | null = null;
 
-interface GlobalMongoose {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
-}
-
-type GlobalWithMongoose = typeof globalThis & {
-  mongoose?: GlobalMongoose;
-};
-
-// Using proper typing for global object
-const cached: GlobalMongoose = (global as GlobalWithMongoose).mongoose || {
-  conn: null,
-  promise: null,
-};
-
-// Set global mongoose
-if (!(global as GlobalWithMongoose).mongoose) {
-  (global as GlobalWithMongoose).mongoose = cached;
-}
-
-export async function connectToDatabase(): Promise<typeof mongoose> {
-  if (cached.conn) {
-    console.log('Using cached MongoDB connection');
-    return cached.conn;
+export async function connectToDatabase() {
+  if (cachedConnection) {
+    console.log('📊 Using cached database connection');
+    return cachedConnection;
   }
 
-  if (!cached.promise) {
+  console.log('🔄 Connecting to MongoDB...');
+  
+  try {
     const opts = {
       bufferCommands: false,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts);
-  }
-
-  try {
-    cached.conn = await cached.promise;
-    return cached.conn;
+    const connection = await mongoose.connect(MONGODB_URI, opts);
+    console.log('✅ Connected to MongoDB');
+    
+    cachedConnection = connection;
+    return connection;
   } catch (error) {
-    cached.promise = null;
+    console.error('❌ MongoDB connection error:', error);
     throw error;
   }
 }
