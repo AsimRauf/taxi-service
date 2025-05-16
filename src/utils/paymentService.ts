@@ -26,8 +26,11 @@ export async function createPaymentOrder(details: PaymentDetails) {
     
     console.log('Creating payment order with client booking ID:', details.clientBookingId);
     
-    // Use provided webhookUrl or fall back to environment variable
-    const webhookUrl = details.webhookUrl || `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`;
+    // Use webhook.site URL for testing
+    const webhookUrl = process.env.NODE_ENV === 'production' 
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`
+      : 'https://webhook.site/8410b148-3eab-4119-82ab-9de8243be100'; // Replace with your webhook.site URL
+    
     console.log('Setting webhook URL:', webhookUrl);
     
     // Use provided redirectUrl or fall back to environment variable

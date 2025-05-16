@@ -9,7 +9,7 @@ import Link from 'next/link';
 const PaymentSuccessPage = () => {
   const { t } = useTranslation('common');
   const router = useRouter();
-  const { bookingId, transactionid } = router.query;
+  const { bookingId } = router.query;
   const [bookingDetails, setBookingDetails] = useState<{
     clientBookingId: string;
     price: number;
@@ -19,33 +19,56 @@ const PaymentSuccessPage = () => {
   } | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkPaymentStatus = async (bookingId: string) => {
+    try {
+      const response = await fetch(`/api/payments/check-status?bookingId=${bookingId}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+    }
+    return null;
+  };
+
   useEffect(() => {
-    if (bookingId && transactionid) {
+    if (bookingId) {
       console.log("Fetching booking details for:", bookingId);
       
-      // Fetch booking details
-      fetch(`/api/bookings/${bookingId}`)
-        .then(res => res.json())
-        .then(data => {
-          setBookingDetails(data);
-          
-          // If payment is completed, remove from local storage
-          if (data.payment?.status === 'completed') {
-            const savedBookings = localStorage.getItem('allBookings');
-            if (savedBookings) {
-              const bookings = JSON.parse(savedBookings);
-              const updatedBookings = bookings.filter((b: { clientBookingId: string }) => b.clientBookingId !== data.clientBookingId);
-              localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+      // First check payment status
+      checkPaymentStatus(bookingId as string).then(statusData => {
+        if (statusData) {
+          console.log("Payment status check:", statusData);
+        }
+        
+        // Then fetch booking details
+        fetch(`/api/bookings/${bookingId}`)
+          .then(res => res.json())
+          .then(data => {
+            setBookingDetails(data);
+            
+            // If payment is completed, remove from local storage
+            if (data.payment?.status === 'completed') {
+              const savedBookings = localStorage.getItem('allBookings');
+              if (savedBookings) {
+                const bookings = JSON.parse(savedBookings);
+                const updatedBookings = bookings.filter((b: { clientBookingId: string }) => 
+                  b.clientBookingId !== data.clientBookingId
+                );
+                localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
+              }
             }
-          }
-          
-          setLoading(false);
-        })        .catch(err => {
-          console.error('Error fetching booking:', err);
-          setLoading(false);
-        });
+            
+            setLoading(false);
+          })
+          .catch(err => {
+            console.error('Error fetching booking:', err);
+            setLoading(false);
+          });
+      });
     }
-  }, [bookingId, transactionid]);
+  }, [bookingId]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-16 pb-16">

@@ -6,7 +6,7 @@ import { getPaymentStatus } from '@/utils/paymentService';
 import { sendBookingConfirmation } from '@/utils/emailService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Add CORS headers for ngrok
+  // Add CORS headers for all environments
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -21,12 +21,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    console.log('💰 Webhook received at:', new Date().toISOString());
-    console.log('Webhook request body:', req.body);
-    console.log('Webhook request query:', req.query);
+    console.log('💰 Webhook headers:', JSON.stringify(req.headers));
+    console.log('💰 Webhook raw body:', req.body);
+   
     
     // Get order_id from either body or query parameters
-    const order_id = req.body.order_id || req.query.transactionid;
+    const order_id = req.body.order_id || req.query.transactionid || req.body.transaction_id;
     
     if (!order_id) {
       console.error('No order_id or transactionid found in webhook request');
@@ -37,15 +37,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     // Get payment status from payment service
     const paymentStatus = await getPaymentStatus(order_id);
-    console.log('Payment status from service:', paymentStatus);
+    console.log('Payment status from service:', JSON.stringify(paymentStatus.data || {}));
     
     await connectToDatabase();
     
-    // Find booking by clientBookingId
+    // Find booking by clientBookingId or payment orderId
     const booking = await Booking.findOne({ 
       $or: [
         { clientBookingId: order_id },
-        { 'payment.orderId': order_id }
+        { 'payment.orderId': order_id },
+        { 'payment.transactionId': order_id }
       ]
     });
     
@@ -56,29 +57,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     
     console.log('Found booking:', booking._id.toString());
 
-    // Always update the booking status to ensure it's processed
-    console.log('Updating booking status regardless of payment status');
-    
-    // Update payment info
+    // Update payment info with more robust status handling
+    const paymentData = paymentStatus.data || {};
     booking.payment = {
-      status: paymentStatus.data?.status || 'pending',
+      status: paymentData.status === 'completed' ? 'completed' : 'pending',
       orderId: order_id,
       amount: booking.price,
       paidAt: new Date(),
-      paymentMethod: paymentStatus.data?.payment_details?.type || 'unknown',
-      transactionId: paymentStatus.data?.transaction_id
+      paymentMethod: paymentData.payment_details?.type || 'unknown',
+      transactionId: paymentData.transaction_id
     };
     
     booking.isTemporary = false;
-    booking.paymentPending = false;
+    booking.paymentPending = paymentData.status !== 'completed';
     
     // Set status based on payment status
-    if (paymentStatus.status === 'completed') {
-      booking.status = 'pending';
+    if (paymentData.status === 'completed') {
+      booking.status = 'confirmed';
     }
     
     await booking.save();
-    console.log('Booking updated successfully');
+    console.log('Booking updated successfully with payment status:', paymentData.status);
 
     // Create notification
     try {

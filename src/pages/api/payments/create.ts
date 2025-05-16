@@ -4,7 +4,7 @@ import Booking from '@/models/Booking';
 import { createPaymentOrder } from '@/utils/paymentService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Add CORS headers for ngrok
+  // Add CORS headers for all environments
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -26,8 +26,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     // Check for existing temporary booking
     const existingBooking = await Booking.findOne({ 
-      clientBookingId: bookingData.clientBookingId,
-      isTemporary: true,
+      $or: [
+        { clientBookingId: bookingData.clientBookingId },
+        { _id: bookingData.bookingId || bookingData._id }
+      ],
       paymentPending: true
     });
 
@@ -51,10 +53,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       paymentPending: true
     });
 
-    // Use the base URL from environment variable for consistent webhook URLs
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || `http://${req.headers.host}`;
-    const webhookUrl = `${baseUrl}/api/payments/webhook`;
-    const redirectUrl = `${baseUrl}/booking`;    console.log('Using webhook URL:', webhookUrl);
+    // Determine the correct base URL based on environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? process.env.NEXT_PUBLIC_BASE_URL
+      : process.env.WEBHOOK_PUBLIC_URL 
+        ? process.env.WEBHOOK_PUBLIC_URL.replace('/api/payments/webhook', '')
+        : `http://${req.headers.host}`;
+        
+    const webhookUrl = process.env.NODE_ENV === 'production'
+      ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments/webhook`
+      : 'https://webhook.site/8410b148-3eab-4119-82ab-9de8243be100'; // Replace with your webhook.site URL
+    
+    const redirectUrl = `${baseUrl}/booking`;
+    
+    console.log('Using webhook URL:', webhookUrl);
     console.log('Using redirect URL base:', redirectUrl);
 
     const paymentResponse = await createPaymentOrder({
