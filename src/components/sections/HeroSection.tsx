@@ -63,7 +63,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
               {translations.hero.subtitle}
             </p>
             <a 
-              href="tel:0301" 
+              href="tel:0850607086" 
               className="mt-4 inline-block text-xl xs:text-2xl sm:text-3xl md:text-4xl font-bold text-white hover:text-white/90 transition-colors"
             >
               085 06 07 086
