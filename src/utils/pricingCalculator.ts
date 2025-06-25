@@ -3,8 +3,8 @@ import { fixedRoutes } from '@/data/fixedPrice';
 import { findCanonicalName } from '@/data/placeAliases';
 
 // Update price constants
-const STATION_WAGON_PRICE_PER_KM = 3.0;  // €3 per km for station wagon
-const BUS_PRICE_PER_KM = 5.0;            // €5 per km for bus
+const STATION_WAGON_PRICE_PER_KM = 1.50;  // €3 per km for station wagon
+const BUS_PRICE_PER_KM = 1.75;            // €5 per km for bus
 const MINIMUM_PRICE = 15.0;              // Minimum price of €15 for any ride
 
 export const determineVehicleAvailability = (
