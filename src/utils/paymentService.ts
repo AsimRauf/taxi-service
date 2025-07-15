@@ -12,6 +12,7 @@ const validateEnvVariables = () => {
   const missing = requiredVars.filter(varName => !process.env[varName]);
   
   if (missing.length > 0) {
+    console.error('❌ Missing required environment variables:', missing);
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
 };

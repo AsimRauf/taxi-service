@@ -1,21 +1,20 @@
 import { useRouter } from 'next/router'
 import { useTranslation } from 'next-i18next'
 import Link from 'next/link'
-import ReactCountryFlag from "react-country-flag"
 import { Fragment, useState, useEffect } from 'react'
 import { Popover, Transition } from '@headlessui/react'
 import { LogOut, UserCircle, BookOpen, Clock, User } from 'lucide-react'
 import { ChevronDownIcon, Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { useAuth } from '@/contexts/AuthContext'
 import Image from 'next/image'
+import { LanguageToggler } from '@/components/ui/LanguageToggler'
 
 // Update DROPDOWN_OFFSET to remove bookings
 const DROPDOWN_OFFSET = {
-    profile: { x: -10, y: 10 },
-    language: { x: -10, y: 10 }
+    profile: { x: -10, y: 10 }
 };
 
-const getDropdownPosition = (type: 'profile' | 'language') => {
+const getDropdownPosition = (type: 'profile') => {
     return {
         transform: `translate(${DROPDOWN_OFFSET[type].x}px, ${DROPDOWN_OFFSET[type].y}px)`
     };
@@ -34,9 +33,6 @@ export const Navbar = () => {
     const { user, logout } = useAuth()
     const isLoggedIn = !!user
 
-    const changeLanguage = (locale: string) => {
-        router.push(router.pathname, router.asPath, { locale })
-    }
 
     // Add this function inside the Navbar component
     const scrollToSection = (sectionId: string) => {
@@ -73,7 +69,7 @@ export const Navbar = () => {
 
     return (
         <div className="w-[95%] px-1 xs:px-2 sm:px-4 py-1 xs:py-2 sm:py-4 fixed top-0 left-0 right-0 z-50 mx-auto">
-            <nav className="max-w-6xl mx-auto bg-white rounded-full shadow-lg px-1.5 xs:px-2 sm:px-6 py-1.5 xs:py-2 sm:py-3 flex items-center justify-between border border-secondary/20">
+            <nav className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg px-1.5 xs:px-2 sm:px-6 py-1.5 xs:py-2 sm:py-3 flex items-center justify-between border border-secondary/20">
                 {/* Logo - Make it smaller on tiny screens */}
                 <div className="flex-shrink-0 mt-[3px] ml-[2px]">
                     <Link href="/" className="flex items-center">
@@ -127,74 +123,7 @@ export const Navbar = () => {
                 {/* Right Side - Language & Auth */}
                 {/* Update the right side elements with consistent positioning */}
                 <div className="flex items-center gap-1 xs:gap-2 sm:gap-4">
-                    {/* Language Selector */}
-                    <Popover className="relative">
-                        {({ open }) => (
-                            <>
-                                <Popover.Button className="flex items-center space-x-1 bg-primary/10 rounded-full px-1.5 xs:px-2 sm:px-4 py-1 xs:py-1.5 sm:py-2 text-secondary hover:bg-primary/20 transition-all">
-                                    <ReactCountryFlag
-                                        countryCode={router.locale === 'nl' ? 'NL' : 'GB'}
-                                        svg
-                                        style={{
-                                            width: '1em',
-                                            height: '1em',
-                                        }}
-                                    />
-                                    <span className="font-medium text-xs xs:text-sm">
-                                        {router.locale === 'nl' ? 'NL' : 'EN'}
-                                    </span>
-                                    <ChevronDownIcon className="h-3 w-3 xs:h-4 xs:w-4" />
-                                </Popover.Button>
-
-                                <Transition
-                                    show={open}
-                                    as={Fragment}
-                                    enter="transition ease-out duration-200"
-                                    enterFrom="opacity-0 translate-y-1"
-                                    enterTo="opacity-100 translate-y-0"
-                                    leave="transition ease-in duration-150"
-                                    leaveFrom="opacity-100 translate-y-0"
-                                    leaveTo="opacity-0 translate-y-1"
-                                >
-                                    <Popover.Panel
-                                        className="absolute right-0 z-50 mt-3 w-36 transform"
-                                        style={getDropdownPosition('language')}
-                                    >
-                                        <div className="relative bg-white rounded-xl shadow-lg p-1">
-                                            <button
-                                                onClick={() => changeLanguage('nl')}
-                                                className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                                            >
-                                                <ReactCountryFlag
-                                                    countryCode="NL"
-                                                    svg
-                                                    style={{
-                                                        width: '1.2em',
-                                                        height: '1.2em',
-                                                    }}
-                                                />
-                                                <span>Dutch</span>
-                                            </button>
-                                            <button
-                                                onClick={() => changeLanguage('en')}
-                                                className="flex items-center space-x-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-primary/10 rounded-lg"
-                                            >
-                                                <ReactCountryFlag
-                                                    countryCode="GB"
-                                                    svg
-                                                    style={{
-                                                        width: '1.2em',
-                                                        height: '1.2em',
-                                                    }}
-                                                />
-                                                <span>English</span>
-                                            </button>
-                                        </div>
-                                    </Popover.Panel>
-                                </Transition>
-                            </>
-                        )}
-                    </Popover>
+                    <LanguageToggler />
 
                     {/* User Profile Button */}
                     {isLoggedIn ? (
