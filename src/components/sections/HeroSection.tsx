@@ -1,6 +1,6 @@
 import { BookingForm } from '../forms/BookingForm'
 import { WebsiteTranslations } from '@/types/translations'
-import { Check, Phone, Star, Zap, Shield } from 'lucide-react'
+import { Phone, Star, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 interface HeroSectionProps {
