@@ -154,49 +154,49 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
   const titleSecondPart = titleWords.slice(-2).join(' ');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary/95 to-primary/90 pt-20 pb-16 lg:pb-0 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-primary/95 to-primary/90 pt-32 pb-16 lg:pb-0 relative overflow-hidden">
       <AnimatedBackground />
       
       {/* Main content */}
-      <div className="w-[90%] md:max-w-4xl mt-6 lg:mt-10 mx-auto relative z-10">
-        <div className="text-center text-white mb-12">
+      <div className="w-[90%] md:max-w-7xl mt-6 lg:mt-10 mx-auto relative z-10 lg:flex lg:items-center lg:gap-16">
+        <div className="lg:w-1/2 text-center lg:text-left text-white mb-12 lg:mb-0">
           {/* Animated title */}
           <h1 className={`mt-8 text-3xl xs:text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-heading font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4 transition-all duration-1000 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
-            <span className="inline-block md:inline bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent animate-shimmer">
+            <span className="inline-block bg-gradient-to-r from-white via-yellow-100 to-white bg-clip-text text-transparent animate-shimmer">
               {titleFirstPart}
             </span>
-            {/* Only show line break on mobile */}
             <br className="md:hidden" />
-            <span className="inline-block md:inline bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent animate-shimmer">
+            <span className="inline-block bg-gradient-to-r from-yellow-200 via-white to-yellow-200 bg-clip-text text-transparent animate-shimmer">
               {' '}{titleSecondPart}
             </span>
           </h1>
           
           {/* Animated subtitle */}
-          <p className={`text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto px-2 xs:px-4 leading-relaxed transition-all duration-1000 delay-300 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
+          <p className={`text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed transition-all duration-1000 delay-300 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
             {translations.hero.subtitle}
           </p>
           
           {/* Animated phone button */}
-          <div>
+          <div className="mt-8">
             <PhoneButton />
           </div>
         </div>
         
-        {/* Booking form with enhanced styling */}
-        <div className={`relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`} style={{ animationDelay: '600ms' }}>
-          <CarAnimation />
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
-          <div className="relative z-10 p-6 sm:p-8 md:p-10">
-            <BookingForm />
+        <div className="lg:w-1/2">
+          {/* Booking form with enhanced styling */}
+          <div className={`relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`} style={{ animationDelay: '600ms' }}>
+            <CarAnimation />
+            <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
+            <div className="relative z-10 p-6 sm:p-8 md:p-10">
+              <BookingForm />
+            </div>
           </div>
+          
+          {/* Mobile features */}
+          <MobileFeatures translations={translations} />
         </div>
-        
-        {/* Mobile features */}
-        <MobileFeatures translations={translations} />
       </div>
       
-      <HeroFeatures translations={translations} />
       
       {/* Add custom styles */}
       <style jsx>{`
