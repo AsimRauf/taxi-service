@@ -9,8 +9,9 @@ import {
   CreditCard, 
   ShieldCheck, 
   Car,
-  Phone 
+  Phone
 } from 'lucide-react'
+import Head from 'next/head'
 
 const TermsAndConditions: NextPage = () => {
   const { t } = useTranslation('common')
@@ -28,10 +29,15 @@ const TermsAndConditions: NextPage = () => {
   const liabilityItems = getTranslationArray('legal.termsConditions.liability.items')
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+    <>
+      <Head>
+        <title>{t('seo.legal.termsConditions.title')}</title>
+        <meta name="description" content={t('seo.legal.termsConditions.description')} />
+      </Head>
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
@@ -144,6 +150,7 @@ const TermsAndConditions: NextPage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   )
 }
 

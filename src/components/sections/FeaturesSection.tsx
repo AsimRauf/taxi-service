@@ -49,7 +49,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                                 {feature.icon}
                             </div>
                             <div>
-                                <h5 className="text-base md:text-lg font-bold mb-1 md:mb-2">{feature.title}</h5>
+                                <h3 className="text-base md:text-lg font-bold mb-1 md:mb-2">{feature.title}</h3>
                                 <p className="text-gray-600 text-sm md:text-base">{feature.description}</p>
                             </div>
                         </motion.div>

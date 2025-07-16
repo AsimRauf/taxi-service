@@ -537,7 +537,9 @@
     "booking": "Booking...",
     "bookNow": "Book Now",
     "fixedPrice": "Fixed Price",
-    "estimatedPrice": "Estimated Price"
+    "estimatedPrice": "Estimated Price",
+    "bookingDetails": "Booking Details for ride from {{pickup}} to {{destination}}",
+    "bookingDescription": "View your booking details for the ride from {{pickup}} to {{destination}} on {{date}}."
   },
   "navigation": {
     "back": "Back",
@@ -973,5 +975,41 @@
     "retryPayment": "Retry Payment",
     "backToBookings": "Back to Bookings",
     "backToHome": "Back to Home"
+  },
+  "seo": {
+    "home": {
+      "title": "TaxiRitje - Reliable Taxi Service in the Netherlands",
+      "description": "Book a reliable taxi for airport transfers, business trips, and local rides throughout the Netherlands. Fixed prices and professional drivers."
+    },
+    "about": {
+      "title": "About TaxiRitje - Our Mission and Values",
+      "description": "Learn more about TaxiRitje, your trusted partner for safe, comfortable, and on-time taxi services in the Netherlands."
+    },
+    "contact": {
+      "title": "Contact TaxiRitje - 24/7 Customer Support",
+      "description": "Get in touch with TaxiRitje for any questions, booking inquiries, or support. We are available 24/7 to assist you."
+    },
+    "faq": {
+      "title": "FAQ - Frequently Asked Questions about our Taxi Service",
+      "description": "Find answers to common questions about booking a taxi, luggage, payments, and more. Get all the information you need for a smooth journey."
+    },
+    "legal": {
+      "complaints": {
+        "title": "Complaints Procedure - TaxiRitje",
+        "description": "Learn how to file a complaint and how we handle your feedback to improve our taxi services."
+      },
+      "cookiePolicy": {
+        "title": "Cookie Policy - TaxiRitje",
+        "description": "Read our cookie policy to understand how we use cookies to improve your experience on our website."
+      },
+      "privacyPolicy": {
+        "title": "Privacy Policy - TaxiRitje",
+        "description": "Your privacy is important to us. Read our privacy policy to understand how we collect, use, and protect your personal data."
+      },
+      "termsConditions": {
+        "title": "Terms and Conditions - TaxiRitje",
+        "description": "Read our terms and conditions for using our taxi services. Find information on bookings, payments, and liability."
+      }
+    }
   }
 }

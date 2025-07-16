@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
+import { NextSeo } from 'next-seo';
 import { generateBookingId } from '@/utils/generateId';
 import { useEdit } from '@/contexts/EditContext';
 import { Popover, Transition } from '@headlessui/react';
@@ -641,10 +642,15 @@ export const OverviewPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
-      <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-16">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">
+    <>
+      <NextSeo
+        title={t('overview.title')}
+        description={t('overview.noBookings')}
+      />
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-8 sm:pt-16 pb-8 sm:pb-16">
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 mt-16">
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white">
             {t('overview.title')}
           </h1>
         </div>
@@ -687,8 +693,9 @@ export const OverviewPage = () => {
           }
           duration={20000} 
         />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

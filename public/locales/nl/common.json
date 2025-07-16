@@ -503,7 +503,9 @@
     "fixedPrice": "Vaste Prijs",
     "estimatedPrice": "Geschatte Prijs",
     "sedanTaxi": "Sedan Taxi",
-    "stationWagonTaxi": "Stationwagen Taxi"
+    "stationWagonTaxi": "Stationwagen Taxi",
+    "bookingDetails": "Boekingsdetails voor rit van {{pickup}} naar {{destination}}",
+    "bookingDescription": "Bekijk uw boekingsgegevens voor de rit van {{pickup}} naar {{destination}} op {{date}}."
   },
   "navigation": {
     "back": "Terug",
@@ -979,5 +981,41 @@
     "retryPayment": "Betaling Opnieuw Proberen",
     "backToBookings": "Terug naar Boekingen",
     "backToHome": "Terug naar Home"
+  },
+  "seo": {
+    "home": {
+      "title": "TaxiRitje - Betrouwbare Taxiservice in Nederland",
+      "description": "Boek een betrouwbare taxi voor luchthavenvervoer, zakenreizen en lokale ritten door heel Nederland. Vaste prijzen en professionele chauffeurs."
+    },
+    "about": {
+      "title": "Over TaxiRitje - Onze Missie en Waarden",
+      "description": "Lees meer over TaxiRitje, uw vertrouwde partner voor veilige, comfortabele en tijdige taxidiensten in Nederland."
+    },
+    "contact": {
+      "title": "Contact TaxiRitje - 24/7 Klantenservice",
+      "description": "Neem contact op met TaxiRitje voor vragen, boekingen of ondersteuning. Wij zijn 24/7 beschikbaar om u te helpen."
+    },
+    "faq": {
+      "title": "FAQ - Veelgestelde Vragen over onze Taxiservice",
+      "description": "Vind antwoorden op veelgestelde vragen over het boeken van een taxi, bagage, betalingen en meer. Krijg alle informatie die u nodig heeft voor een soepele reis."
+    },
+    "legal": {
+      "complaints": {
+        "title": "Klachtenprocedure - TaxiRitje",
+        "description": "Lees hoe u een klacht kunt indienen en hoe wij uw feedback behandelen om onze taxidiensten te verbeteren."
+      },
+      "cookiePolicy": {
+        "title": "Cookiebeleid - TaxiRitje",
+        "description": "Lees ons cookiebeleid om te begrijpen hoe wij cookies gebruiken om uw ervaring op onze website te verbeteren."
+      },
+      "privacyPolicy": {
+        "title": "Privacybeleid - TaxiRitje",
+        "description": "Uw privacy is belangrijk voor ons. Lees ons privacybeleid om te begrijpen hoe wij uw persoonlijke gegevens verzamelen, gebruiken en beschermen."
+      },
+      "termsConditions": {
+        "title": "Algemene Voorwaarden - TaxiRitje",
+        "description": "Lees onze algemene voorwaarden voor het gebruik van onze taxidiensten. Vind informatie over boekingen, betalingen en aansprakelijkheid."
+      }
+    }
   }
 }

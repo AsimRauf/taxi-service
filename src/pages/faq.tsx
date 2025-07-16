@@ -5,6 +5,7 @@ import { motion } from 'framer-motion'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import type { NextPage } from 'next'
+import Head from 'next/head'
 
 interface FAQItemProps {
   question: string
@@ -134,46 +135,52 @@ const FAQ: NextPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-            {t('faq.title')}
-          </h1>
-          <p className="text-white/80 max-w-2xl mx-auto">
-            Find answers to commonly asked questions about our taxi services
-          </p>
-        </motion.div>
+    <>
+      <Head>
+        <title>{t('seo.faq.title')}</title>
+        <meta name="description" content={t('seo.faq.description')} />
+      </Head>
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+              {t('faq.title')}
+            </h1>
+            <p className="text-white/80 max-w-2xl mx-auto">
+              Find answers to commonly asked questions about our taxi services
+            </p>
+          </motion.div>
 
-        <div className="space-y-4">
-          {faqSections.map((section) => (
-            <FAQSection
-              key={section}
-              sectionKey={section}
-              title={t(`faq.${section}.title`)}
-              items={Object.keys(t(`faq.${section}`, { returnObjects: true }))
-                .filter(key => key !== 'title')
-                .reduce<FAQItems>((acc, key) => {
-                  acc[key] = {
-                    question: t(`faq.${section}.${key}.question`),
-                    answer: t(`faq.${section}.${key}.answer`)
-                  }
-                  return acc
-                }, {})}
-              expandedItems={expandedItems}
-              setExpandedItems={setExpandedItems}
-              activeSection={activeSection}
-              onSectionClick={handleSectionClick}
-            />
-          ))}
+          <div className="space-y-4">
+            {faqSections.map((section) => (
+              <FAQSection
+                key={section}
+                sectionKey={section}
+                title={t(`faq.${section}.title`)}
+                items={Object.keys(t(`faq.${section}`, { returnObjects: true }))
+                  .filter(key => key !== 'title')
+                  .reduce<FAQItems>((acc, key) => {
+                    acc[key] = {
+                      question: t(`faq.${section}.${key}.question`),
+                      answer: t(`faq.${section}.${key}.answer`)
+                    }
+                    return acc
+                  }, {})}
+                expandedItems={expandedItems}
+                setExpandedItems={setExpandedItems}
+                activeSection={activeSection}
+                onSectionClick={handleSectionClick}
+              />
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

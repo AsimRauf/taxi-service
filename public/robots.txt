@@ -1,8 +1,12 @@
+# Allow all crawlers
 User-agent: *
 Allow: /
+
+# Disallow API routes and private pages
 Disallow: /api/
-Disallow: /_next/
-Disallow: /static/
+Disallow: /auth/
+Disallow: /account/
+Disallow: /booking/
 
 # Sitemap
 Sitemap: https://taxiritje.nl/sitemap.xml

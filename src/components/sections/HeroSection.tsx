@@ -1,4 +1,5 @@
 import { BookingForm } from '../forms/BookingForm'
+import CarAnimation from '../ui/CarAnimation'
 import { WebsiteTranslations } from '@/types/translations'
 import { Phone, Star, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -80,17 +81,17 @@ const PhoneButton = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIsAnimating(true)
-      setTimeout(() => setIsAnimating(false), 1000)
-    }, 3000)
+      setTimeout(() => setIsAnimating(false), 1500)
+    }, 4000)
     return () => clearInterval(interval)
   }, [])
 
   return (
     <a 
       href="tel:0850607086" 
-      className={`group relative inline-flex items-center gap-3 mt-6 px-6 py-4 bg-secondary text-white font-bold text-lg xs:text-xl sm:text-2xl rounded-full shadow-2xl hover:shadow-secondary/25 transition-all duration-300 hover:scale-105 ${isAnimating ? 'animate-pulse' : ''}`}
+      className={`group relative inline-flex items-center gap-3 mt-6 px-6 py-4 bg-secondary text-white font-bold text-lg xs:text-xl sm:text-2xl rounded-full shadow-2xl hover:shadow-secondary/25 transition-all duration-300 hover:scale-105`}
     >
-      <Phone className={`w-6 h-6 ${isAnimating ? 'animate-bounce' : ''}`} />
+      <Phone className={`w-6 h-6 ${isAnimating ? 'animate-ringing' : ''}`} />
       <span>085 06 07 086</span>
       <div className="absolute inset-0 rounded-full bg-secondary/50 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
     </a>
@@ -177,15 +178,16 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
           </p>
           
           {/* Animated phone button */}
-          <div className={`transition-all duration-1000 delay-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
+          <div>
             <PhoneButton />
           </div>
         </div>
         
         {/* Booking form with enhanced styling */}
-        <div className={`bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 md:p-10 border border-white/20 hover:shadow-3xl transition-all duration-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`} style={{ animationDelay: '600ms' }}>
+        <div className={`relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`} style={{ animationDelay: '600ms' }}>
+          <CarAnimation />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
-          <div className="relative z-10">
+          <div className="relative z-10 p-6 sm:p-8 md:p-10">
             <BookingForm />
           </div>
         </div>
@@ -244,6 +246,17 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
         
         .shadow-3xl {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+        }
+        @keyframes ringing {
+          0% { transform: rotate(0); }
+          25% { transform: rotate(-8deg); }
+          50% { transform: rotate(8deg); }
+          75% { transform: rotate(-8deg); }
+          100% { transform: rotate(0); }
+        }
+
+        .animate-ringing {
+          animation: ringing 1.5s ease-in-out;
         }
       `}</style>
     </div>

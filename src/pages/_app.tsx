@@ -25,15 +25,52 @@ const seoConfig = {
       alt: 'TaxiRitje - Professionele Taxiservice Nederland'
     }]
   },
-  additionalLinkTags: [{
-    rel: 'alternate',
-    hrefLang: 'nl',
-    href: 'https://taxiritje.nl'
-  }],
   twitter: {
     cardType: 'summary_large_image',
     handle: '@taxiritje',
     site: '@taxiritje'
+  },
+  additionalMetaTags: [{
+    name: 'keywords',
+    content: 'taxi, taxiritje, taxi service, airport taxi, business taxi, rotterdam taxi, amsterdam taxi, eindhoven taxi'
+  }],
+  additionalLinkTags: [
+    {
+      rel: 'alternate',
+      hrefLang: 'nl',
+      href: 'https://taxiritje.nl'
+    },
+    {
+      rel: 'icon',
+      href: '/favicon.ico',
+    }, 
+    {
+      rel: 'apple-touch-icon',
+      href: '/images/Logo.png',
+      sizes: '180x180'
+    }
+],
+  structuredData: {
+    "@context": "https://schema.org",
+    "@type": "TaxiService",
+    "name": "TaxiRitje",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Nederland"
+    },
+    "description": "Professionele taxiservice in heel Nederland",
+    "availableLanguage": ["Nederlands", "Engels"],
+    "priceRange": "€€",
+    "address": {
+      "@type": "PostalAddress",
+      "addressCountry": "NL",
+      "streetAddress": "Dwerggras 30",
+      "postalCode": "3068PC",
+      "addressLocality": "Rotterdam"
+    },
+    "url": "https://taxiritje.nl",
+    "telephone": "010-843 77 62",
+    "email": "info@taxiritje.nl"
   }
 }
 

@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { motion } from 'framer-motion'
 import { Shield, Lock, Eye, Book, Server, Phone } from 'lucide-react'
+import Head from 'next/head'
 
 const PrivacyPolicy: NextPage = () => {
   const { t } = useTranslation('common')
@@ -23,10 +24,15 @@ const PrivacyPolicy: NextPage = () => {
   const yourRightsItems = getTranslationArray('legal.privacyPolicy.yourRights.items')
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+    <>
+      <Head>
+        <title>{t('seo.legal.privacyPolicy.title')}</title>
+        <meta name="description" content={t('seo.legal.privacyPolicy.description')} />
+      </Head>
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
@@ -135,6 +141,7 @@ const PrivacyPolicy: NextPage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   )
 }
 

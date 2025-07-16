@@ -2,6 +2,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { useTranslation } from 'next-i18next'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations'
 import { motion } from 'framer-motion'
+import Head from 'next/head'
 
 const CookiePolicy: NextPage = () => {
   const { t } = useTranslation('common')
@@ -11,10 +12,15 @@ const CookiePolicy: NextPage = () => {
   const cookieTypesList = Array.isArray(cookieTypes) ? cookieTypes : []
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-      <div className="max-w-4xl mx-auto px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
+    <>
+      <Head>
+        <title>{t('seo.legal.cookiePolicy.title')}</title>
+        <meta name="description" content={t('seo.legal.cookiePolicy.description')} />
+      </Head>
+      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl p-8 shadow-lg"
         >
@@ -57,6 +63,7 @@ const CookiePolicy: NextPage = () => {
         </motion.div>
       </div>
     </div>
+    </>
   )
 }
 
