@@ -31,49 +31,6 @@ const AnimatedBackground = () => (
   </div>
 )
 
-const HeroFeatures = ({ translations }: { translations: WebsiteTranslations }) => {
-  const features = [
-    {
-      icon: Shield,
-      text: translations.hero.features.freeCancellation,
-      color: 'bg-secondary/20'
-    },
-    {
-      icon: Star,
-      text: translations.hero.features.privateTaxi,
-      color: 'bg-secondary/20'
-    },
-    {
-      icon: Zap,
-      text: translations.hero.features.freeBaggage,
-      color: 'bg-secondary/20'
-    }
-  ]
-
-  return (
-    <div className="hidden md:block bg-gradient-to-r from-primary/90 via-primary/80 to-primary/90 backdrop-blur-sm border-t border-white/10 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
-      <div className="w-[90%] md:max-w-4xl mx-auto py-8 relative z-10">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
-          {features.map((feature, index) => (
-            <div 
-              key={index}
-              className="flex items-center gap-4 group hover:scale-105 transition-all duration-300 cursor-pointer"
-              style={{ animationDelay: `${index * 200}ms` }}
-            >
-              <div className={`rounded-full ${feature.color} p-2 shadow-lg group-hover:shadow-xl transition-all duration-300`}>
-                <feature.icon className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-sm font-medium text-white group-hover:text-secondary transition-colors duration-300">
-                {feature.text}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
 
 const PhoneButton = () => {
   const [isAnimating, setIsAnimating] = useState(false)
@@ -154,7 +111,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
   const titleSecondPart = titleWords.slice(-2).join(' ');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary/95 to-primary/90 pt-32 pb-16 lg:pb-0 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-primary/95 to-primary/90 pt-32 pb-10 lg:pb-0 relative overflow-hidden">
       <AnimatedBackground />
       
       {/* Main content */}
