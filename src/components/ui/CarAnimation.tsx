@@ -145,7 +145,7 @@ const CarAnimation = () => {
   }, [pathD]);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none">
+    <div ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none z-20">
       <svg
         width="100%"
         height="100%"
