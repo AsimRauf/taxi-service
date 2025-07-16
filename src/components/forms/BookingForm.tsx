@@ -699,6 +699,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
                 <div className="flex justify-end mt-6">
                     <button
+                        id="calculate-button"
                         type="button"
                         onClick={handleCalculate}
                         disabled={isLoading}

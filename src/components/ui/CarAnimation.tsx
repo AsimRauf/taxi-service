@@ -14,11 +14,56 @@ const CarAnimation = () => {
   useLayoutEffect(() => {
     const updatePath = () => {
       if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        if (width > 0 && height > 0) {
-          const r = 24; // Corresponds to rounded-3xl
-          const newPathD = `M ${r},0 L ${width - r},0 A ${r},${r} 0 0 1 ${width},${r} L ${width},${height - r} A ${r},${r} 0 0 1 ${width - r},${height} L ${r},${height} A ${r},${r} 0 0 1 0,${height - r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 Z`;
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const { width, height } = containerRect;
+        const calculateButton = document.getElementById('calculate-button');
+
+        if (width > 0 && height > 0 && calculateButton) {
+          const buttonRect = calculateButton.getBoundingClientRect();
+          
+          const buttonX = buttonRect.left - containerRect.left;
+          const buttonY = buttonRect.top - containerRect.top;
+          const buttonW = buttonRect.width;
+          const buttonH = buttonRect.height;
+
+          const r = 24; // Corresponds to rounded-3xl of the form container
+
+          const p = {
+            bottomLeft: { x: buttonX, y: buttonY + buttonH },
+            bottomRight: { x: buttonX + buttonW, y: buttonY + buttonH },
+            topRight: { x: buttonX + buttonW, y: buttonY },
+            topLeft: { x: buttonX, y: buttonY },
+          };
+
+          const detourStartX = buttonX + buttonW / 2;
+
+          const newPathD = `
+            M ${r},0
+            L ${width - r},0
+            A ${r},${r} 0 0 1 ${width},${r}
+            L ${width},${height - r}
+            A ${r},${r} 0 0 1 ${width - r},${height}
+            L ${detourStartX}, ${height}
+            L ${detourStartX}, ${p.bottomLeft.y}
+            L ${p.bottomLeft.x}, ${p.bottomLeft.y}
+            L ${p.topLeft.x}, ${p.topLeft.y}
+            L ${p.topRight.x}, ${p.topRight.y}
+            L ${p.bottomRight.x}, ${p.bottomRight.y}
+            L ${detourStartX}, ${p.bottomRight.y}
+            L ${detourStartX}, ${height}
+            L ${r},${height}
+            A ${r},${r} 0 0 1 0,${height - r}
+            L 0,${r}
+            A ${r},${r} 0 0 1 ${r},0 Z
+          `.replace(/\s+/g, ' ').trim();
+          
           setPathD(newPathD);
+
+        } else if (width > 0 && height > 0) {
+          // Fallback to original path if button not found
+          const r = 24;
+          const fallbackPathD = `M ${r},0 L ${width - r},0 A ${r},${r} 0 0 1 ${width},${r} L ${width},${height - r} A ${r},${r} 0 0 1 ${width - r},${height} L ${r},${height} A ${r},${r} 0 0 1 0,${height - r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 Z`;
+          setPathD(fallbackPathD);
         }
       }
     };
@@ -31,10 +76,21 @@ const CarAnimation = () => {
       resizeObserver.observe(container);
     }
 
+    const observer = new MutationObserver(() => {
+        if (document.getElementById('calculate-button')) {
+            updatePath();
+            observer.disconnect();
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+
     return () => {
       if (container) {
         resizeObserver.unobserve(container);
       }
+      observer.disconnect();
     };
   }, []);
 
@@ -43,7 +99,6 @@ const CarAnimation = () => {
     const path = pathRef.current;
 
     if (car && path && pathD) {
-      // Kill previous timeline if it exists
       if (timelineRef.current) {
         timelineRef.current.kill();
       }
@@ -52,7 +107,7 @@ const CarAnimation = () => {
       timelineRef.current = tl;
 
       tl.to(car, {
-        duration: 10,
+        duration: 15,
         ease: 'none',
         motionPath: {
           path: path,
@@ -62,17 +117,15 @@ const CarAnimation = () => {
         },
       });
 
-      // Enhanced wheel rotation - much faster for realistic movement
       const wheels = gsap.utils.toArray('.wheel', car);
       gsap.to(wheels, {
         rotation: 360,
-        duration: 0.2, // Much faster rotation for realistic wheel movement
+        duration: 0.2,
         repeat: -1,
         ease: 'none',
         transformOrigin: '50% 50%',
       });
 
-      // Wheel spokes for more realistic effect
       const spokes = gsap.utils.toArray('.wheel-spokes', car);
       gsap.to(spokes, {
         rotation: -360,
@@ -92,7 +145,7 @@ const CarAnimation = () => {
   }, [pathD]);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 w-full h-full">
+    <div ref={containerRef} className="absolute inset-0 w-full h-full pointer-events-none">
       <svg
         width="100%"
         height="100%"
