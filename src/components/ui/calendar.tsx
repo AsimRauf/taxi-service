@@ -53,7 +53,7 @@ function Calendar({
     props.monthsClassName
   )
   const _monthCaptionClassName = cn(
-    "relative flex h-7 items-center justify-center",
+    "relative flex h-7 items-center justify-between",
     props.monthCaptionClassName
   )
   const _dropdownsClassName = cn(
@@ -100,7 +100,7 @@ function Calendar({
     props.rangeMiddleClassName
   )
   const _selectedClassName = cn(
-    "[&>button]:bg-primary [&>button]:text-primary-foreground [&>button]:hover:bg-primary [&>button]:hover:text-primary-foreground",
+    "[&>button]:bg-primary [&>button]:text-white [&>button]:hover:bg-primary [&>button]:hover:text-white",
     props.selectedClassName
   )
   const _todayClassName = cn(
@@ -187,7 +187,7 @@ function Calendar({
         hidden: _hiddenClassName,
         outside: _outsideClassName,
         today: _todayClassName,
-        nav: "hidden",
+        nav: "flex items-center",
         ...classNames,
       }}
       components={{
