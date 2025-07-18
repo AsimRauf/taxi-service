@@ -94,7 +94,8 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                                 </SelectContent>
                             </Select>
                             <Button
-                                className="w-full mt-3 bg-primary text-white"
+                                variant="default"
+                                className="w-full mt-3 text-white"
                                 onClick={() => setIsOpen(false)}
                                 disabled={!selectedDate || time === undefined}
                             >

@@ -416,7 +416,8 @@
       "name": "Station Wagon Taxi",
       "features": {
         "passengers": "Up to 4 passengers",
-        "luggage": "Up to 3 large suitcases",
+        "luggage": "Up to 4 large suitcases",
+        "handBaggage": "Up to 4 hand baggage",
         "freeTransport": "Free luggage transport",
         "doorService": "Door-to-door service",
         "fixedPrice": "Fixed price guarantee",
@@ -428,6 +429,7 @@
       "features": {
         "passengers": "Up to 8 passengers",
         "luggage": "Up to 8 large suitcases",
+        "handBaggage": "Up to 8 hand baggage",
         "freeTransport": "Free luggage transport",
         "doorService": "Door-to-door service",
         "fixedPrice": "Fixed price guarantee",

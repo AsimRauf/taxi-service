@@ -28,6 +28,7 @@ const useVehicleOptions = () => {
             features: [
                 t('offers.stationWagonTaxi.features.passengers'),
                 t('offers.stationWagonTaxi.features.luggage'),
+                t('offers.stationWagonTaxi.features.handBaggage'),
                 t('offers.stationWagonTaxi.features.freeTransport'),
                 t('offers.stationWagonTaxi.features.doorService'),
                 t('offers.stationWagonTaxi.features.fixedPrice'),
@@ -40,6 +41,7 @@ const useVehicleOptions = () => {
             features: [
                 t('offers.busTaxi.features.passengers'),
                 t('offers.busTaxi.features.luggage'),
+                t('offers.busTaxi.features.handBaggage'),
                 t('offers.busTaxi.features.freeTransport'),
                 t('offers.busTaxi.features.doorService'),
                 t('offers.busTaxi.features.fixedPrice'),
@@ -187,14 +189,6 @@ const PriceInfo = ({ isFixedPrice, bookingData }: { isFixedPrice: boolean, booki
                     </li>
                 ))}
             </ul>
-            <div className="mt-3 text-xs sm:text-sm text-gray-600">
-                <p className="font-medium">Pricing Information:</p>
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                    <li>Station Wagon: €3 per kilometer</li>
-                    <li>Bus: €5 per kilometer</li>
-                    <li>Minimum fare: €15</li>
-                </ul>
-            </div>
             {bookingData?.isReturn && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-700">

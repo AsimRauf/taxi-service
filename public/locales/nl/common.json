@@ -380,7 +380,8 @@
       "name": "Stationwagen Taxi",
       "features": {
         "passengers": "Tot 4 passagiers",
-        "luggage": "Tot 3 grote koffers",
+        "luggage": "Tot 4 grote koffers",
+        "handBaggage": "Tot 4 stuks handbagage",
         "freeTransport": "Gratis bagagevervoer",
         "doorService": "Deur-tot-deur service",
         "fixedPrice": "Vaste prijs garantie",
@@ -392,6 +393,7 @@
       "features": {
         "passengers": "Tot 8 passagiers",
         "luggage": "Tot 8 grote koffers",
+        "handBaggage": "Tot 8 stuks handbagage",
         "freeTransport": "Gratis bagagevervoer",
         "doorService": "Deur-tot-deur service",
         "fixedPrice": "Vaste prijs garantie",

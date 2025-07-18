@@ -331,7 +331,8 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 isReturn: formData.isReturn,
                 price: 0,
                 bookingType: formData.bookingType, // Include bookingType in booking data
-                isFixedPrice: false
+                isFixedPrice: false,
+                createdAt: Date.now()
             };
 
             localStorage.setItem('bookingData', JSON.stringify(bookingData));

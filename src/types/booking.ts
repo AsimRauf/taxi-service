@@ -83,6 +83,7 @@ export interface BookingData {
     companyName: string;
     businessAddress: Location;
   };
+  createdAt: number;
 }
 
 export interface Booking {

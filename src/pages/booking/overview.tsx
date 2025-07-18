@@ -597,7 +597,12 @@ export const OverviewPage = () => {
   useEffect(() => {
     const savedBookings = localStorage.getItem('allBookings');
     if (savedBookings) {
-      setBookings(JSON.parse(savedBookings));
+      const bookings = JSON.parse(savedBookings);
+      const now = Date.now();
+      const twoDays = 2 * 24 * 60 * 60 * 1000;
+      const recentBookings = bookings.filter((booking: BookingData) => now - booking.createdAt < twoDays);
+      setBookings(recentBookings);
+      localStorage.setItem('allBookings', JSON.stringify(recentBookings));
     }
   }, []);
 

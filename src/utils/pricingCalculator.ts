@@ -34,9 +34,9 @@ export const determineVehicleAvailability = (
     // Station Wagon limitations
     if (
         passengers > 4 ||
-        totalLarge > 3 ||
+        totalLarge > 4 ||
         totalSmall > 4 ||
-        (totalLarge + totalSmall > 3) ||
+        (totalLarge + totalSmall > 4) ||
         totalSpecialItems > 1
     ) {
         result.stationWagon = false;

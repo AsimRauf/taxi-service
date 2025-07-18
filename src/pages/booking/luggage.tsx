@@ -212,19 +212,23 @@ export const LuggagePage = () => {
             return;
         }
 
-        const otherType = type === 'large' ? 'small' : 'large';
-        const currentOtherValue = luggageData.regularLuggage[otherType];
+        const { large, small } = luggageData.regularLuggage;
+        const stationWagonCapacity = 8;
 
-        if (value + currentOtherValue <= 11 &&
-            ((type === 'large' && value <= 8) ||
-                (type === 'small' && value <= 11))) {
-            setLuggageData(prev => ({
-                ...prev,
-                regularLuggage: {
-                    ...prev.regularLuggage,
-                    [type]: value
-                }
-            }));
+        if (type === 'large') {
+            if (value + small <= stationWagonCapacity && value <= stationWagonCapacity) {
+                setLuggageData(prev => ({
+                    ...prev,
+                    regularLuggage: { ...prev.regularLuggage, large: value }
+                }));
+            }
+        } else if (type === 'small') {
+            if (large + value <= stationWagonCapacity && value <= stationWagonCapacity) {
+                setLuggageData(prev => ({
+                    ...prev,
+                    regularLuggage: { ...prev.regularLuggage, small: value }
+                }));
+            }
         }
     };
 
