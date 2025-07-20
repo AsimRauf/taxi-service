@@ -14,6 +14,7 @@ module.exports = {
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
         heading: ['Poppins', 'sans-serif'],
+        script: ['"Dancing Script"', 'cursive'],
       },
       screens: {
         'xs': '400px',
