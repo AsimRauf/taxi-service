@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
+import { Home, MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
 import { SingleValue } from 'react-select';
 type SelectOption = {
     label: string;
@@ -452,14 +452,17 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         onClear={() => handleLocationUpdate(null, 'pickup')}
                     />
                     {formData.pickup && !formData.pickup.exactAddress?.businessName && (
-                        <div>
-                            <input
-                                type="text"
-                                placeholder={t('booking.houseNumber')}
-                                value={formData.pickup.exactAddress?.houseNumber || ''}
-                                onChange={(e) => handlePickupHouseNumber(e.target.value)}
-                                className={`mt-2 w-32 p-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
-                            />
+                        <div className="mt-2">
+                            <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                            <div className="relative">
+                                <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                <input
+                                    type="text"
+                                    value={formData.pickup.exactAddress?.houseNumber || ''}
+                                    onChange={(e) => handlePickupHouseNumber(e.target.value)}
+                                    className={`w-40 pl-10 pr-3 py-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                                />
+                            </div>
                             {pickupHouseNumberError && (
                                 <span className="text-red-500 text-sm mt-1 block">
                                     {pickupHouseNumberError}
@@ -512,14 +515,17 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                                 onClear={() => handleLocationUpdate(null, 'stopover', index)}
                             />
                             {stopover && !stopover.exactAddress?.businessName && (
-                                <div>
-                                    <input
-                                        type="text"
-                                        placeholder={t('booking.houseNumber')}
-                                        value={stopover.exactAddress?.houseNumber || ''}
-                                        onChange={(e) => handleStopoverHouseNumber(e.target.value, index)}
-                                        className={`mt-2 w-32 p-2 border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
-                                    />
+                                <div className="mt-2">
+                                    <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                                    <div className="relative">
+                                        <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                                        <input
+                                            type="text"
+                                            value={stopover.exactAddress?.houseNumber || ''}
+                                            onChange={(e) => handleStopoverHouseNumber(e.target.value, index)}
+                                            className={`w-40 pl-10 pr-3 py-2 border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                                        />
+                                    </div>
                                     {stopoverHouseNumberErrors[index] && (
                                         <span className="text-red-500 text-sm mt-1 block">
                                             {stopoverHouseNumberErrors[index]}
@@ -636,14 +642,17 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
                 </div>
                 {formData.destination && !formData.destination.exactAddress?.businessName && (
-                    <div>
-                        <input
-                            type="text"
-                            placeholder={t('booking.houseNumber')}
-                            value={formData.destination.exactAddress?.houseNumber || ''}
-                            onChange={(e) => handleDestinationHouseNumber(e.target.value)}
-                            className={`mt-[-10px] ms-[34px] lg:ms-[55px] w-32 p-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
-                        />
+                    <div className="mt-[-10px] ms-[34px] lg:ms-[55px]">
+                        <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                        <div className="relative">
+                            <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                            <input
+                                type="text"
+                                value={formData.destination.exactAddress?.houseNumber || ''}
+                                onChange={(e) => handleDestinationHouseNumber(e.target.value)}
+                                className={`w-40 pl-10 pr-3 py-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                            />
+                        </div>
                         {destinationHouseNumberError && (
                             <span className="text-red-500 text-sm mt-1 block">
                                 {destinationHouseNumberError}
