@@ -7,13 +7,7 @@ const nextConfig = {
   // Add this to ensure proper locale detection
   trailingSlash: false,
   async redirects() {
-    return [
-      {
-        source: '/en',
-        destination: '/en/',
-        permanent: true,
-      },
-    ]
+    return []
   },
   async headers() {
     return [
