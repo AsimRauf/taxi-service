@@ -285,7 +285,8 @@ export const createTranslationsObject = (t: TFunction, locale: string): WebsiteT
     heading: t('features.heading'),
     description1: t('features.description1'),
     description2: t('features.description2'),
-    imageAlt: t('features.imageAlt')
+    imageAlt: t('features.imageAlt'),
+    learnMore: t('features.learnMore')
   },
   services: {
     title: t('services.title'),

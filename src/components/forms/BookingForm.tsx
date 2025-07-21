@@ -442,7 +442,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </div>
                 </div>
                 <div className="w-full space-y-1">
-                    <span className="block text-sm font-medium text-gray-600">{translations.booking.from}</span>
+                    <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.from}</span>
                     <LocationInput
                         value={formData.pickup}
                         onChange={(place) => handleLocationUpdate(place, 'pickup')}
@@ -457,7 +457,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                                 placeholder={t('booking.houseNumber')}
                                 value={formData.pickup.exactAddress?.houseNumber || ''}
                                 onChange={(e) => handlePickupHouseNumber(e.target.value)}
-                                className={`mt-2 w-32 p-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary`}
+                                className={`mt-2 w-32 p-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                             />
                             {pickupHouseNumberError && (
                                 <span className="text-red-500 text-sm mt-1 block">
@@ -502,7 +502,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                             </div>
                         </div>
                         <div className="w-full space-y-1">
-                            <span className="block text-sm font-medium text-gray-600">{translations.booking.via}</span>
+                            <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.via}</span>
                             <LocationInput
                                 value={stopover}
                                 onChange={(place) => handleLocationUpdate(place, 'stopover', index)}
@@ -517,7 +517,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                                         placeholder={t('booking.houseNumber')}
                                         value={stopover.exactAddress?.houseNumber || ''}
                                         onChange={(e) => handleStopoverHouseNumber(e.target.value, index)}
-                                        className={`mt-2 w-32 p-2 border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary`}
+                                        className={`mt-2 w-32 p-2 border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                                     />
                                     {stopoverHouseNumberErrors[index] && (
                                         <span className="text-red-500 text-sm mt-1 block">
@@ -561,7 +561,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </div>
                 </div>
                 <div className="w-full space-y-1">
-                    <span className="block text-sm font-medium text-gray-600">{translations.booking.to}</span>
+                    <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.to}</span>
                     <LocationInput
                         value={formData.destination}
                         onChange={(place) => handleLocationUpdate(place, 'destination')}
@@ -611,7 +611,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 className="w-full flex items-center gap-2 text-sm text-secondary hover:text-primary-dark text-left bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors h-[60px]"
             >
                 <Plus size={16} />
-                <span className="font-medium">{translations.hero.addStopover}</span>
+                <span className="font-sans font-medium">{translations.hero.addStopover}</span>
             </button>
             <div></div>
         </div>
@@ -619,6 +619,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
     return (
         <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
+            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-center mb-6 text-gray-800">{translations.hero.formTitle}</h2>
             <form className="space-y-6">
                 <div className="space-y-4 sm:space-y-6 relative">
                     <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80 z-0" />
@@ -635,7 +636,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                             placeholder={t('booking.houseNumber')}
                             value={formData.destination.exactAddress?.houseNumber || ''}
                             onChange={(e) => handleDestinationHouseNumber(e.target.value)}
-                            className={`mt-[-10px] ms-[34px] lg:ms-[55px] w-32 p-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary`}
+                            className={`mt-[-10px] ms-[34px] lg:ms-[55px] w-32 p-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                         />
                         {destinationHouseNumberError && (
                             <span className="text-red-500 text-sm mt-1 block">
@@ -646,7 +647,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
-                    <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
+                    <div className="space-y-4 sm:space-y-6 bg-primary/5 p-4 sm:p-6 rounded-2xl border border-primary/10">
                         <LuggageCheckbox
                             checked={formData.hasLuggage}
                             onChange={(checked) => setFormData(prev => ({ ...prev, hasLuggage: checked }))}
@@ -660,7 +661,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         {validationErrors.travelers && <span className="text-red-500 text-sm">{validationErrors.travelers}</span>}
                     </div>
 
-                    <div className="space-y-4 sm:space-y-6 bg-gray-50/80 p-4 sm:p-6 rounded-2xl">
+                    <div className="space-y-4 sm:space-y-6 bg-primary/5 p-4 sm:p-6 rounded-2xl border border-primary/10">
                         <DateSelector
                             label={translations.hero.pickupDateTime}
                             value={formData.pickupDate || null}
@@ -681,7 +682,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                                         isReturn: e.target.checked
                                     }))}
                                 />
-                                <label htmlFor="return" className="text-sm font-medium text-gray-700 cursor-pointer">
+                                <label htmlFor="return" className="text-sm font-sans font-medium text-gray-700 cursor-pointer">
                                     {translations.hero.returnTrip}
                                 </label>
                             </div>
@@ -704,7 +705,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         type="button"
                         onClick={handleCalculate}
                         disabled={isLoading}
-                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full hover:bg-primary/90 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full font-bold text-lg hover:bg-primary/90 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                         {isLoading ? (
                             <div className="flex items-center gap-2">

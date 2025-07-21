@@ -6,8 +6,11 @@ export const LanguageToggler = () => {
     const router = useRouter();
     const { i18n } = useTranslation('common');
 
-    const changeLanguage = (locale: string) => {
-        router.push(router.pathname, router.asPath, { locale });
+    const changeLanguage = async (locale: string) => {
+        // Change language without reload
+        await i18n.changeLanguage(locale)
+        // Update the URL
+        router.push(router.asPath, router.asPath, { locale, shallow: true })
     };
 
     return (

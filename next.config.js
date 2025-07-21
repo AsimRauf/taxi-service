@@ -2,12 +2,19 @@ const { i18n } = require('./next-i18next.config')
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  i18n: {
-    defaultLocale: 'nl',
-    locales: ['nl', 'en'],
-    localeDetection: false
-  },
+  i18n,
   reactStrictMode: true,
+  // Add this to ensure proper locale detection
+  trailingSlash: false,
+  async redirects() {
+    return [
+      {
+        source: '/en',
+        destination: '/en/',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       {

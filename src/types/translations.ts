@@ -285,6 +285,7 @@ export interface WebsiteTranslations {
     description1: string;
     description2: string;
     imageAlt: string;
+    learnMore: string;
   };
   services: {
     title: string;

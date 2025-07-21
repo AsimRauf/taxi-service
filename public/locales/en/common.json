@@ -55,20 +55,21 @@
   "features": {
     "prices": {
       "title": "Competitive Prices",
-      "description": "Best value for money with transparent pricing and no hidden fees"
+      "description": "Transparent pricing with no hidden fees."
     },
     "coverage": {
       "title": "Anywhere in NL",
-      "description": "Travel to and from any location in the Netherlands, and airports"
+      "description": "Nationwide coverage, including all major airports."
     },
     "reliability": {
       "title": "24/7 Reliability",
-      "description": "Professional drivers and punctual service around the clock"
+      "description": "24/7 punctual service with professional drivers."
     },
     "heading": "Book a Taxi Anywhere in the Netherlands",
-    "description1": "Taxiritje makes it easy to book a taxi to any location in the Netherlands and major airports. We work with certified taxi companies to ensure reliable and high-quality service.",
-    "description2": "Book online for airport transfers, business trips, healthcare visits, festivals, or day trips. Choose from standard, luxury, electric, or minibus transport. No extra luggage fees, and you can modify or cancel your ride for free up to three hours before departure.",
-    "imageAlt": "Taxi Service Vehicle"
+    "description1": "Book taxis to any location in the Netherlands and major airports with our certified partners.",
+    "description2": "Online booking for airport transfers, business trips, and day trips. Various transport options available.",
+    "imageAlt": "Taxi Service Vehicle",
+    "learnMore": "Learn More"
   },
   "services": {
     "title": "Our Services",

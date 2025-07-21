@@ -8,8 +8,11 @@ interface HeroSectionProps {
   translations: WebsiteTranslations
 }
 
-const WaveBackground = () => (
-  <div className="absolute bottom-0 left-0 w-full h-auto">
+const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
+  <div
+    className={`absolute left-0 w-full h-auto ${position === 'top' ? 'top-0' : 'bottom-0'}`}
+    style={position === 'top' ? { transform: 'scaleY(-1) scaleX(-1)' } : {}}
+  >
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
       <defs>
         <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -105,12 +108,14 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
   // Split title into parts for responsive layout
   const titleWords = translations.hero.title.split(' ');
   const book = titleWords[0];
-  const yourRideWith = titleWords.slice(1, 4).join(' ');
-  const confidence = titleWords[4];
+  const middlePart = titleWords.slice(1, -2).join(' ');
+  const lastPartPreposition = titleWords[titleWords.length - 2];
+  const lastPartMain = titleWords[titleWords.length - 1];
 
   return (
     <div className="min-h-screen bg-primary pt-32 pb-10 lg:pb-0 relative overflow-hidden">
-      <WaveBackground />
+      <WaveBackground position="top" />
+      <WaveBackground position="bottom" />
       
       {/* Main content */}
       <div className="w-[90%] md:max-w-7xl mt-6 lg:mt-10 mx-auto relative z-10 lg:flex lg:items-center lg:gap-16">
@@ -121,10 +126,13 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
               {book}
             </span>
             <span className="font-sans">
-              {' '}{yourRideWith}{' '}
+              {' '}{middlePart}{' '}
             </span>
-            <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl">
-              {confidence}
+            <span className="block">
+              <span className="font-sans">{lastPartPreposition} </span>
+              <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl">
+                {lastPartMain}
+              </span>
             </span>
           </h1>
           

@@ -7,6 +7,7 @@ import { FeaturesSection } from '@/components/sections/FeaturesSection'
 import { ServicesSection } from '@/components/sections/ServicesSection'
 import { Footer } from '@/components/Footer'
 import { createTranslationsObject } from '@/utils/translations'
+import { useEffect, useState } from 'react'
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => {
   return {
@@ -40,8 +41,13 @@ const structuredData = {
 }
 
 export default function Home() {
-  const { t } = useTranslation('common')
-  const translations = createTranslationsObject(t, 'nl')
+  const { t, i18n } = useTranslation('common')
+  const [translations, setTranslations] = useState(() => createTranslationsObject(t, i18n.language))
+  
+  // Update translations when language changes
+  useEffect(() => {
+    setTranslations(createTranslationsObject(t, i18n.language))
+  }, [i18n.language, t])
 
   return (
     <>

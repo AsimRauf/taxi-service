@@ -43,20 +43,21 @@
   },
   "features": {
     "heading": "Waarom voor ons kiezen?",
-    "description1": "Wij bieden betrouwbare taxidiensten met professionele chauffeurs die u veilig naar uw bestemming brengen.",
-    "description2": "Met onze moderne vloot en geavanceerde boekingssysteem zorgen we voor een comfortabele reis.",
+    "description1": "Boek eenvoudig een taxi naar elke locatie in Nederland en grote luchthavens met onze gecertificeerde partners.",
+    "description2": "Online boeken voor luchthaventransfers, zakenreizen en dagtochten. Diverse vervoersopties beschikbaar.",
     "imageAlt": "Taxi Service Features",
+    "learnMore": "Meer Leren",
     "prices": {
       "title": "Transparante Prijzen",
-      "description": "Vaste tarieven zonder verborgen kosten. U weet vooraf precies wat u betaalt."
+      "description": "Transparante prijzen zonder verborgen kosten."
     },
     "coverage": {
       "title": "Landelijke Dekking",
-      "description": "Wij rijden door heel Nederland en naar belangrijke bestemmingen in België en Duitsland."
+      "description": "Landelijke dekking, inclusief alle grote luchthavens."
     },
     "reliability": {
       "title": "Betrouwbare Service",
-      "description": "24/7 beschikbaar met stipte ophaaltijden en professionele chauffeurs."
+      "description": "24/7 stipte service met professionele chauffeurs."
     }
   },
   "services": {
