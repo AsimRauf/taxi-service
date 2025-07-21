@@ -69,7 +69,10 @@
     "description1": "Book taxis to any location in the Netherlands and major airports with our certified partners.",
     "description2": "Online booking for airport transfers, business trips, and day trips. Various transport options available.",
     "imageAlt": "Taxi Service Vehicle",
-    "learnMore": "Learn More"
+    "learnMore": "Learn More",
+    "whyChooseUs": "Why Choose Us",
+    "premiumFeatures": "Premium Features",
+    "experienceDifference": "Experience the difference with our exceptional taxi service"
   },
   "services": {
     "title": "Our Services",

@@ -3,64 +3,61 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ChevronDown, Car, Plane, Heart, Briefcase, MapPin, Music } from 'lucide-react'
-import { WebsiteTranslations } from '@/types/translations'
+import { useTranslation } from 'next-i18next'
 
-interface ServicesSectionProps {
-  translations: WebsiteTranslations
-}
-
-export const ServicesSection = ({ translations }: ServicesSectionProps) => {
+export const ServicesSection = () => {
+    const { t } = useTranslation('common')
     const [activeTab, setActiveTab] = useState<string | null>(null)
   
     const services = [
       {
-        title: translations.services.local.title,
+        title: t('services.local.title'),
         image: '/images/local-taxi.jpg',
         icon: <Car className="w-6 h-6" />,
-        description: translations.services.local.description,
+        description: t('services.local.description'),
         expandContent: null
       },
       {
-        title: translations.services.airport.title,
+        title: t('services.airport.title'),
         image: '/images/airport-taxi.jpg',
         icon: <Plane className="w-6 h-6" />,
-        description: translations.services.airport.description,
+        description: t('services.airport.description'),
         expandContent: [
-          { name: translations.services.airport.airports.amsterdam, link: '/booking/ams-airport' },
-          { name: translations.services.airport.airports.rotterdam, link: '/booking/rotterdam-hague-airport' },
-          { name: translations.services.airport.airports.eindhoven, link: '/booking/eindhoven-airport' }
+          { name: t('services.airport.airports.amsterdam'), link: '/booking/ams-airport' },
+          { name: t('services.airport.airports.rotterdam'), link: '/booking/rotterdam-hague-airport' },
+          { name: t('services.airport.airports.eindhoven'), link: '/booking/eindhoven-airport' }
         ]
       },
       {
-        title: translations.services.care.title,
+        title: t('services.care.title'),
         image: '/images/care-taxi.webp',
         icon: <Heart className="w-6 h-6" />,
-        description: translations.services.care.description,
+        description: t('services.care.description'),
         expandContent: null
       },
       {
-        title: translations.services.business.title,
+        title: t('services.business.title'),
         image: '/images/business-taxi.jpg',
         icon: <Briefcase className="w-6 h-6" />,
-        description: translations.services.business.description,
+        description: t('services.business.description'),
         expandContent: null
       },
       {
-        title: translations.services.popular.title,
+        title: t('services.popular.title'),
         image: '/images/popular-taxi.jpg',
         icon: <MapPin className="w-6 h-6" />,
-        description: translations.services.popular.description,
+        description: t('services.popular.description'),
         expandContent: [
-          { name: translations.services.popular.locations.walibi, link: '/booking/walibi' },
-          { name: translations.services.popular.locations.efteling, link: '/booking/efteling' },
-          { name: translations.services.popular.locations.gelredome, link: '/booking/gelredome' }
+          { name: t('services.popular.locations.walibi'), link: '/booking/walibi' },
+          { name: t('services.popular.locations.efteling'), link: '/booking/efteling' },
+          { name: t('services.popular.locations.gelredome'), link: '/booking/gelredome' }
         ]
       },
       {
-        title: translations.services.event.title,
+        title: t('services.event.title'),
         image: '/images/event-taxi.webp',
         icon: <Music className="w-6 h-6" />,
-        description: translations.services.event.description,
+        description: t('services.event.description'),
         expandContent: null
       }
     ]
@@ -74,8 +71,8 @@ export const ServicesSection = ({ translations }: ServicesSectionProps) => {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">{translations.services.title}</h2>
-            <p className="text-white/80 max-w-2xl mx-auto">{translations.services.subtitle}</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">{t('services.title')}</h2>
+            <p className="text-white/80 max-w-2xl mx-auto">{t('services.subtitle')}</p>
           </motion.div>
   
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -111,7 +108,7 @@ export const ServicesSection = ({ translations }: ServicesSectionProps) => {
                         onClick={() => setActiveTab(activeTab === service.title ? null : service.title)}
                         className="flex items-center gap-2 text-primary font-semibold hover:text-primary/80 transition-colors"
                       >
-                        {translations.services.airport.viewOptions}
+                        {t('services.airport.viewOptions')}
                         <ChevronDown className={`w-5 h-5 transition-transform ${activeTab === service.title ? 'rotate-180' : ''}`} />
                       </button>
                       {activeTab === service.title && (

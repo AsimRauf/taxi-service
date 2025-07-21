@@ -1,12 +1,8 @@
 import { Euro, MapPin, Clock } from 'lucide-react'
 import Image from 'next/image'
-import { WebsiteTranslations } from '@/types/translations'
 import { motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
-
-interface FeaturesSectionProps {
-    translations: WebsiteTranslations
-}
+import { useTranslation } from 'next-i18next'
 
 const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
   <div
@@ -42,7 +38,8 @@ const FloatingElement = ({ delay = 0, children }: { delay?: number; children: Re
   </motion.div>
 )
 
-export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
+export const FeaturesSection = () => {
+    const { t } = useTranslation('common')
     const [isLoaded, setIsLoaded] = useState(false)
 
     useEffect(() => {
@@ -52,18 +49,18 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
     const features = [
         {
             icon: <Euro className="w-8 h-8 md:w-10 md:h-10 text-primary" />,
-            title: translations.features.prices.title,
-            description: translations.features.prices.description,
+            title: t('features.prices.title'),
+            description: t('features.prices.description'),
         },
         {
             icon: <MapPin className="w-8 h-8 md:w-10 md:h-10 text-primary" />,
-            title: translations.features.coverage.title,
-            description: translations.features.coverage.description,
+            title: t('features.coverage.title'),
+            description: t('features.coverage.description'),
         },
         {
             icon: <Clock className="w-8 h-8 md:w-10 md:h-10 text-primary" />,
-            title: translations.features.reliability.title,
-            description: translations.features.reliability.description,
+            title: t('features.reliability.title'),
+            description: t('features.reliability.description'),
         }
     ]
 
@@ -91,14 +88,14 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                             className="inline-block mb-4"
                         >
                             <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-semibold tracking-wide uppercase">
-                                Why Choose Us
+                                {t('features.whyChooseUs')}
                             </span>
                         </motion.div>
                         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-primary">
-                            Premium Features
+                            {t('features.premiumFeatures')}
                         </h2>
                         <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            Experience the difference with our exceptional taxi service
+                            {t('features.experienceDifference')}
                         </p>
                     </div>
                 </FloatingElement>
@@ -145,7 +142,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                             <div className="relative h-[350px] md:h-[420px] rounded-2xl overflow-hidden shadow-xl">
                                 <Image
                                     src="/images/taxi-service.jpg"
-                                    alt={translations.features.imageAlt}
+                                    alt={t('features.imageAlt')}
                                     fill
                                     priority
                                     sizes="(max-width: 768px) 95vw, 50vw"
@@ -167,7 +164,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                                     className="h-1 bg-gradient-to-r from-primary to-indigo-500 rounded-full mb-4"
                                 ></motion.div>
                                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-gray-800 leading-tight">
-                                    {translations.features.heading}
+                                    {t('features.heading')}
                                 </h2>
                             </div>
                             
@@ -180,7 +177,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                                     className="relative pl-6"
                                 >
                                     <span className="absolute left-0 top-2 w-2 h-2 bg-primary rounded-full"></span>
-                                    {translations.features.description1}
+                                    {t('features.description1')}
                                 </motion.p>
                                 <motion.p
                                     initial={{ opacity: 0, x: -20 }}
@@ -190,7 +187,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                                     className="relative pl-6"
                                 >
                                     <span className="absolute left-0 top-2 w-2 h-2 bg-indigo-500 rounded-full"></span>
-                                    {translations.features.description2}
+                                    {t('features.description2')}
                                 </motion.p>
                             </div>
                             
@@ -202,7 +199,7 @@ export const FeaturesSection = ({ translations }: FeaturesSectionProps) => {
                                 className="pt-2"
                             >
                                 <button className="group relative px-7 py-3 bg-primary text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
-                                    <span className="relative z-10">{translations.features.learnMore}</span>
+                                    <span className="relative z-10">{t('features.learnMore')}</span>
                                 </button>
                             </motion.div>
                         </div>

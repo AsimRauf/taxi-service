@@ -1,12 +1,8 @@
 import { BookingForm } from '../forms/BookingForm';
 import CarAnimation from '../ui/CarAnimation';
-import { WebsiteTranslations } from '@/types/translations';
 import { Phone, Star, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
-
-interface HeroSectionProps {
-  translations: WebsiteTranslations
-}
+import { useTranslation } from 'next-i18next'
 
 const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
   <div
@@ -54,21 +50,22 @@ const PhoneButton = () => {
   )
 }
 
-const MobileFeatures = ({ translations }: { translations: WebsiteTranslations }) => {
+const MobileFeatures = () => {
+  const { t } = useTranslation('common');
   const features = [
     {
       icon: Shield,
-      text: translations.hero.features.freeCancellation,
+      text: t('hero.features.freeCancellation'),
       color: 'bg-secondary/20'
     },
     {
       icon: Star,
-      text: translations.hero.features.privateTaxi,
+      text: t('hero.features.privateTaxi'),
       color: 'bg-secondary/20'
     },
     {
       icon: Zap,
-      text: translations.hero.features.freeBaggage,
+      text: t('hero.features.freeBaggage'),
       color: 'bg-secondary/20'
     }
   ]
@@ -97,7 +94,8 @@ const MobileFeatures = ({ translations }: { translations: WebsiteTranslations })
   )
 }
 
-export const HeroSection = ({ translations }: HeroSectionProps) => {
+export const HeroSection = () => {
+  const { t } = useTranslation('common');
   const [isLoaded, setIsLoaded] = useState(false)
 
   useEffect(() => {
@@ -106,7 +104,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
 
   // Split title into parts for responsive layout
   // Split title into parts for responsive layout
-  const titleWords = translations.hero.title.split(' ');
+  const titleWords = t('hero.title').split(' ');
   const book = titleWords[0];
   const middlePart = titleWords.slice(1, -2).join(' ');
   const lastPartPreposition = titleWords[titleWords.length - 2];
@@ -138,7 +136,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
           
           {/* Animated subtitle */}
           <p className={`text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed transition-all duration-1000 delay-300 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
-            {translations.hero.subtitle}
+            {t('hero.subtitle')}
           </p>
           
           {/* Animated phone button */}
@@ -158,7 +156,7 @@ export const HeroSection = ({ translations }: HeroSectionProps) => {
           </div>
           
           {/* Mobile features */}
-          <MobileFeatures translations={translations} />
+          <MobileFeatures />
         </div>
       </div>
       
