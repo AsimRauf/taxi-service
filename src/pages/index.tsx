@@ -39,7 +39,7 @@ const structuredData = {
 }
 
 export default function Home() {
-  const { t, i18n } = useTranslation('common')
+  const { t } = useTranslation('common')
 
   return (
     <>

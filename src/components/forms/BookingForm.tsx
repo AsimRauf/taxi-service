@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import { MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
 import { SingleValue } from 'react-select';
 type SelectOption = {
@@ -618,7 +619,12 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     );
 
     return (
-        <div className="w-full max-w-2xl mx-auto px-2 sm:px-4">
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
+            className="w-full max-w-2xl mx-auto px-2 sm:px-4"
+        >
             <h2 className="text-2xl sm:text-3xl font-heading font-bold text-center mb-6 text-gray-800">{translations.hero.formTitle}</h2>
             <form className="space-y-6">
                 <div className="space-y-4 sm:space-y-6 relative">
@@ -718,6 +724,6 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </button>
                 </div>
             </form>
-        </div>
+        </motion.div>
     );
 };

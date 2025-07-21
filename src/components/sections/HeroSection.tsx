@@ -94,13 +94,10 @@ const MobileFeatures = () => {
   )
 }
 
+import { motion } from 'framer-motion';
+
 export const HeroSection = () => {
   const { t } = useTranslation('common');
-  const [isLoaded, setIsLoaded] = useState(false)
-
-  useEffect(() => {
-    setIsLoaded(true)
-  }, [])
 
   // Split title into parts for responsive layout
   // Split title into parts for responsive layout
@@ -119,7 +116,12 @@ export const HeroSection = () => {
       <div className="w-[90%] md:max-w-7xl mt-6 lg:mt-10 mx-auto relative z-10 lg:flex lg:items-center lg:gap-16">
         <div className="lg:w-1/2 text-center lg:text-left text-white mb-12 lg:mb-0">
           {/* Animated title */}
-          <h1 className={`mt-8 text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4 transition-all duration-1000 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
+            className="mt-8 text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4"
+          >
             <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl">
               {book}
             </span>
@@ -132,12 +134,17 @@ export const HeroSection = () => {
                 {lastPartMain}
               </span>
             </span>
-          </h1>
+          </motion.h1>
           
           {/* Animated subtitle */}
-          <p className={`text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed transition-all duration-1000 delay-300 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`}>
+          <motion.p
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
+            className="text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed"
+          >
             {t('hero.subtitle')}
-          </p>
+          </motion.p>
           
           {/* Animated phone button */}
           <div className="mt-8">
@@ -147,7 +154,9 @@ export const HeroSection = () => {
         
         <div className="lg:w-1/2">
           {/* Booking form with enhanced styling */}
-          <div className={`relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 ${isLoaded ? 'animate-fade-in-up opacity-100' : 'opacity-0 translate-y-10'}`} style={{ animationDelay: '600ms' }}>
+          <div
+            className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500"
+          >
             <CarAnimation />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
             <div className="relative z-10 p-6 sm:p-8 md:p-10">

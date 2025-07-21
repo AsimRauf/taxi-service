@@ -1,7 +1,7 @@
 import { Euro, MapPin, Clock } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
-import { useState, useEffect } from 'react'
+import { } from 'react'
 import { useTranslation } from 'next-i18next'
 
 const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
@@ -40,11 +40,6 @@ const FloatingElement = ({ delay = 0, children }: { delay?: number; children: Re
 
 export const FeaturesSection = () => {
     const { t } = useTranslation('common')
-    const [isLoaded, setIsLoaded] = useState(false)
-
-    useEffect(() => {
-        setIsLoaded(true)
-    }, [])
 
     const features = [
         {
@@ -78,55 +73,67 @@ export const FeaturesSection = () => {
 
             <div className="w-[95%] md:w-[90%] max-w-7xl mx-auto relative z-10">
                 {/* Enhanced section header */}
-                <FloatingElement>
-                    <div className="text-center mb-12 md:mb-16">
-                        <motion.div
-                            initial={{ scale: 0.8, opacity: 0 }}
-                            whileInView={{ scale: 1, opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6 }}
-                            className="inline-block mb-4"
-                        >
-                            <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-semibold tracking-wide uppercase">
-                                {t('features.whyChooseUs')}
-                            </span>
-                        </motion.div>
-                        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-primary">
-                            {t('features.premiumFeatures')}
-                        </h2>
-                        <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                            {t('features.experienceDifference')}
-                        </p>
-                    </div>
-                </FloatingElement>
+                <div className="text-center mb-12 md:mb-16">
+                    <motion.div
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        whileInView={{ scale: 1, opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="inline-block mb-4"
+                    >
+                        <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-xs font-semibold tracking-wide uppercase">
+                            {t('features.whyChooseUs')}
+                        </span>
+                    </motion.div>
+                    <motion.h2
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.2 }}
+                        className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-primary"
+                    >
+                        {t('features.premiumFeatures')}
+                    </motion.h2>
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed"
+                    >
+                        {t('features.experienceDifference')}
+                    </motion.p>
+                </div>
 
                 {/* Enhanced feature cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16 md:mb-20">
                     {features.map((feature, index) => (
-                        <FloatingElement key={index} delay={index * 0.2}>
-                            <motion.div
-                                whileHover={{ y: -8, scale: 1.02 }}
-                                transition={{ duration: 0.3 }}
-                                className="group relative bg-white/80 backdrop-blur-lg p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-xl border border-white/20 overflow-hidden flex items-center gap-4 md:gap-6"
-                            >
-                                {/* Icon with plain background */}
-                                <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-xl bg-primary/10 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105 shrink-0">
-                                    {feature.icon}
-                                </div>
-                                
-                                <div className="flex-grow">
-                                    <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-800 group-hover:text-primary transition-colors duration-300">
-                                        {feature.title}
-                                    </h3>
-                                    <p className="text-gray-500 text-sm md:text-base leading-relaxed">
-                                        {feature.description}
-                                    </p>
-                                </div>
-                                
-                                {/* Decorative element */}
-                                <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
-                            </motion.div>
-                        </FloatingElement>
+                        <motion.div
+                            key={index}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.8, delay: index * 0.2 }}
+                            whileHover={{ y: -8, scale: 1.02 }}
+                            className="group relative bg-white/80 backdrop-blur-lg p-6 md:p-8 rounded-2xl shadow-lg hover:shadow-xl border border-white/20 overflow-hidden flex items-center gap-4 md:gap-6"
+                        >
+                            {/* Icon with plain background */}
+                            <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-xl bg-primary/10 flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105 shrink-0">
+                                {feature.icon}
+                            </div>
+                            
+                            <div className="flex-grow">
+                                <h3 className="text-lg md:text-xl font-bold mb-2 text-gray-800 group-hover:text-primary transition-colors duration-300">
+                                    {feature.title}
+                                </h3>
+                                <p className="text-gray-500 text-sm md:text-base leading-relaxed">
+                                    {feature.description}
+                                </p>
+                            </div>
+                            
+                            {/* Decorative element */}
+                            <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                        </motion.div>
                     ))}
                 </div>
 
