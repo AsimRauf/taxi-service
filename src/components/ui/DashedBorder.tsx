@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import { gsap } from 'gsap';
 
 interface DashedBorderProps {
     children: React.ReactNode;
@@ -7,6 +8,7 @@ interface DashedBorderProps {
 
 export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className }) => {
     const containerRef = useRef<HTMLDivElement>(null);
+    const gateAnimationRef = useRef<gsap.core.Timeline | null>(null);
     const [gatePosition, setGatePosition] = useState<{
         bottomGate: { x: number; y: number } | null;
     }>({
@@ -15,8 +17,10 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
     
     const [gateState, setGateState] = useState<{
         bottomGateOpen: boolean;
+        gateOpenProgress: number; // 0 = closed, 1 = fully open
     }>({
-        bottomGateOpen: false
+        bottomGateOpen: false,
+        gateOpenProgress: 0
     });
 
     useLayoutEffect(() => {
@@ -84,17 +88,72 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
 
     useEffect(() => {
         const handleBottomGate = (event: CustomEvent) => {
-            console.log('DashedBorder received bottom gate event:', event.detail.opening);
-            setGateState(prev => ({
-                ...prev,
-                bottomGateOpen: event.detail.opening
-            }));
+            console.log('🚪 DashedBorder received gate event:', event.detail.opening ? 'OPENING' : 'CLOSING');
+            
+            // Kill any existing animation
+            if (gateAnimationRef.current) {
+                gateAnimationRef.current.kill();
+            }
+
+            // Create smooth gate animation using a temporary object
+            const animationObject = { progress: gateState.gateOpenProgress };
+            const tl = gsap.timeline();
+            gateAnimationRef.current = tl;
+
+            if (event.detail.opening) {
+                // Opening animation: smooth and realistic gate opening
+                tl.to(animationObject, {
+                    duration: 0.5,
+                    progress: 1,
+                    ease: "back.out(1.2)",
+                    onUpdate: () => {
+                        setGateState(prev => ({
+                            ...prev,
+                            bottomGateOpen: animationObject.progress > 0.1,
+                            gateOpenProgress: animationObject.progress
+                        }));
+                    },
+                    onComplete: () => {
+                        setGateState(prev => ({
+                            ...prev,
+                            bottomGateOpen: true,
+                            gateOpenProgress: 1
+                        }));
+                        console.log('✅ Gate fully opened');
+                    }
+                });
+            } else {
+                // Closing animation: smooth gate closing
+                tl.to(animationObject, {
+                    duration: 0.5,
+                    progress: 0,
+                    ease: "power2.in",
+                    onUpdate: () => {
+                        setGateState(prev => ({
+                            ...prev,
+                            bottomGateOpen: animationObject.progress > 0.1,
+                            gateOpenProgress: animationObject.progress
+                        }));
+                    },
+                    onComplete: () => {
+                        setGateState(prev => ({
+                            ...prev,
+                            bottomGateOpen: false,
+                            gateOpenProgress: 0
+                        }));
+                        console.log('❌ Gate fully closed');
+                    }
+                });
+            }
         };
 
         window.addEventListener('carReachingBottomGate', handleBottomGate as EventListener);
 
         return () => {
             window.removeEventListener('carReachingBottomGate', handleBottomGate as EventListener);
+            if (gateAnimationRef.current) {
+                gateAnimationRef.current.kill();
+            }
         };
     }, []);
 
@@ -106,13 +165,13 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
         const height = rect.height || 100;
         const rx = 8;
         const ry = 8;
-        const gateWidth = 50; // Gap between vertical lines
-        const gateDepth = 20; // How far the vertical lines extend inward
+        const maxGateWidth = 60; // Maximum gap between vertical lines when fully open
+        const maxGateDepth = 25; // Maximum depth when fully open
 
         const { bottomGate } = gatePosition;
-        const { bottomGateOpen } = gateState;
+        const { gateOpenProgress } = gateState;
 
-        // Create path segments for the border with bottom gate only
+        // Create path segments for the border with animated bottom gate
         const createBorderPath = () => {
             let pathSegments = [];
 
@@ -122,10 +181,15 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
             // Right border - always full
             pathSegments.push(`M ${width - 1} ${rx} L ${width - 1} ${height - rx}`);
 
-            // Bottom border - with gate when open
-            if (bottomGate && bottomGateOpen) {
-                const gateLeft = bottomGate.x - gateWidth / 2;
-                const gateRight = bottomGate.x + gateWidth / 2;
+            // Bottom border - with animated gate
+            if (bottomGate && gateOpenProgress > 0) {
+                // Animate gate width and depth based on progress with easing
+                const easedProgress = gateOpenProgress; // Already eased by GSAP
+                const currentGateWidth = maxGateWidth * easedProgress;
+                const currentGateDepth = maxGateDepth * easedProgress;
+                
+                const gateLeft = bottomGate.x - currentGateWidth / 2;
+                const gateRight = bottomGate.x + currentGateWidth / 2;
                 
                 // Left part of bottom border
                 if (gateLeft > rx) {
@@ -137,9 +201,12 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
                     pathSegments.push(`M ${gateRight} ${height - 1} L ${width - rx} ${height - 1}`);
                 }
                 
-                // Bottom gate vertical lines (perpendicular to border)
-                pathSegments.push(`M ${gateLeft} ${height - 1} L ${gateLeft} ${height - gateDepth - 1}`);
-                pathSegments.push(`M ${gateRight} ${height - 1} L ${gateRight} ${height - gateDepth - 1}`);
+                // Animated gate vertical lines (perpendicular to border)
+                // These lines grow downward as the gate opens
+                if (currentGateDepth > 1) {
+                    pathSegments.push(`M ${gateLeft} ${height - 1} L ${gateLeft} ${height - currentGateDepth - 1}`);
+                    pathSegments.push(`M ${gateRight} ${height - 1} L ${gateRight} ${height - currentGateDepth - 1}`);
+                }
             } else {
                 // Full bottom border when gate is closed
                 pathSegments.push(`M ${rx} ${height - 1} L ${width - rx} ${height - 1}`);
@@ -164,6 +231,9 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
                 stroke="url(#border-gradient)"
                 strokeWidth="2"
                 strokeDasharray="8 4"
+                style={{
+                    transition: 'none' // Let GSAP handle all animations
+                }}
             />
         );
     };
