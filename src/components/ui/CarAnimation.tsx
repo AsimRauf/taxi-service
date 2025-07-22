@@ -10,6 +10,14 @@ const CarAnimation = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [pathD, setPathD] = useState('');
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  
+  // Track gate states to prevent multiple triggers
+  const gateStateRef = useRef({
+    firstGateOpened: false,
+    firstGateClosed: false,
+    secondGateOpened: false,
+    secondGateClosed: false
+  });
 
   useLayoutEffect(() => {
     let resizeObserver: ResizeObserver | null = null;
@@ -120,8 +128,74 @@ const CarAnimation = () => {
         timelineRef.current.kill();
       }
 
-      const tl = gsap.timeline({ repeat: -1 });
+      const tl = gsap.timeline({ 
+        repeat: -1,
+        onRepeat: () => {
+          // Reset gate states on each loop
+          gateStateRef.current = {
+            firstGateOpened: false,
+            firstGateClosed: false,
+            secondGateOpened: false,
+            secondGateClosed: false
+          };
+        }
+      });
       timelineRef.current = tl;
+
+      // Calculate gate trigger points for first opening only
+      const calculateGatePoints = () => {
+        if (!containerRef.current) return { firstGateOpen: 0 };
+        
+        const containerRect = containerRef.current.getBoundingClientRect();
+        const { width, height } = containerRect;
+        const calculateButton = document.getElementById('calculate-button');
+        
+        if (!calculateButton) return { firstGateOpen: 0 };
+        
+        const outset = 4;
+        const r = 24 + outset;
+        
+        // Calculate path segments
+        const topBorderLength = width - 2 * r;
+        const rightBorderLength = height - 2 * r;
+        
+        // Find where on bottom border the detour happens (button center X position)
+        const buttonRect = calculateButton.getBoundingClientRect();
+        const buttonX = buttonRect.left - containerRect.left;
+        const buttonW = buttonRect.width;
+        const detourX = buttonX + buttonW / 2; // center of button
+        
+        // Distance along bottom border to reach detour point
+        const bottomBorderToDetour = detourX - r; // from left corner to detour point
+        
+        // Button detour: up to button + around button + back down
+        const buttonY = buttonRect.top - containerRect.top;
+        const buttonH = buttonRect.height;
+        const distanceToButton = (height + outset) - buttonY;
+        const buttonCircumference = 2 * Math.PI * (buttonH / 4);
+        const buttonDetourLength = 2 * distanceToButton + buttonCircumference;
+        
+        // Remaining bottom border after returning from button
+        const remainingBottomBorder = (width - 2 * r) - bottomBorderToDetour;
+        const leftBorderLength = height - 2 * r;
+        
+        // Total path length
+        const totalPathLength = topBorderLength + rightBorderLength + bottomBorderToDetour + 
+                               buttonDetourLength + remainingBottomBorder + leftBorderLength;
+        
+        // Calculate 2 seconds earlier offset (2 seconds out of 15 second total animation)
+        const twoSecondsEarlier = (2 / 15) * totalPathLength;
+        
+        // First gate opening: 2 seconds before car reaches bottom border detour point
+        const firstGateOpen = (topBorderLength + rightBorderLength + bottomBorderToDetour - twoSecondsEarlier) / totalPathLength;
+        
+        return { firstGateOpen };
+      };
+
+      const { firstGateOpen } = calculateGatePoints();
+      
+      // Add debug logging
+      console.log('Gate timing points (position-based tracking):', { firstGateOpen });
 
       tl.to(car, {
         duration: 15,
@@ -132,6 +206,83 @@ const CarAnimation = () => {
           alignOrigin: [0.5, 0.5],
           autoRotate: true,
         },
+        onUpdate: function() {
+          const progress = this.progress();
+          
+          // Get car's current position
+          const carElement = carRef.current;
+          if (!carElement || !containerRef.current) return;
+          
+          const carRect = carElement.getBoundingClientRect();
+          const containerRect = containerRef.current.getBoundingClientRect();
+          const calculateButton = document.getElementById('calculate-button');
+          
+          if (!calculateButton) return;
+          
+          const buttonRect = calculateButton.getBoundingClientRect();
+          
+          // Calculate car position relative to container
+          const carX = carRect.left - containerRect.left + carRect.width / 2;
+          const carY = carRect.top - containerRect.top + carRect.height / 2;
+          
+          // Calculate button position and boundaries
+          const buttonCenterX = buttonRect.left - containerRect.left + buttonRect.width / 2;
+          const buttonCenterY = buttonRect.top - containerRect.top + buttonRect.height / 2;
+          const buttonTop = buttonRect.top - containerRect.top;
+          const buttonBottom = buttonRect.bottom - containerRect.top;
+          
+          // Calculate bottom border Y position
+          const bottomBorderY = containerRect.height;
+          
+          // Debug current progress and position
+          if (Math.floor(progress * 1000) % 100 === 0) {
+            console.log('Car progress:', progress.toFixed(3), 'Car pos:', { x: Math.round(carX), y: Math.round(carY) }, 'Button center:', { x: Math.round(buttonCenterX), y: Math.round(buttonCenterY) });
+          }
+          
+          // FIRST gate opening - 2 seconds before car reaches bottom border (timeline-based)
+          if (progress >= firstGateOpen && progress <= firstGateOpen + 0.01 && !gateStateRef.current.firstGateOpened) {
+            console.log('🚪 Opening bottom gate (2s before reaching border) at progress:', progress.toFixed(3));
+            gateStateRef.current.firstGateOpened = true;
+            window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
+              detail: { opening: true } 
+            }));
+          }
+          
+          // FIRST gate closing - car reaches calculate button area (position-based)
+          if (!gateStateRef.current.firstGateClosed && gateStateRef.current.firstGateOpened) {
+            if (Math.abs(carX - buttonCenterX) < 40 && carY <= buttonBottom + 30 && carY >= buttonTop - 30) {
+              console.log('🚪❌ Closing bottom gate (car reached button) at progress:', progress.toFixed(3), 'Car at button position');
+              gateStateRef.current.firstGateClosed = true;
+              window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
+                detail: { opening: false } 
+              }));
+            }
+          }
+          
+          // SECOND gate opening - car completed button circle, ready to descend (position-based)
+          if (!gateStateRef.current.secondGateOpened && gateStateRef.current.firstGateClosed) {
+            // Check if car is near button center and has completed most of the circle (progress > 0.6)
+            if (Math.abs(carX - buttonCenterX) < 40 && Math.abs(carY - buttonCenterY) < 40 && progress > 0.6) {
+              console.log('🚪 Opening bottom gate (car ready to descend) at progress:', progress.toFixed(3));
+              gateStateRef.current.secondGateOpened = true;
+              window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
+                detail: { opening: true } 
+              }));
+            }
+          }
+          
+          // SECOND gate closing - car back on bottom border (position-based)
+          if (!gateStateRef.current.secondGateClosed && gateStateRef.current.secondGateOpened) {
+            // Check if car is back near the bottom border
+            if (Math.abs(carX - buttonCenterX) < 60 && carY >= bottomBorderY - 60) {
+              console.log('🚪❌ Closing bottom gate (car back on border) at progress:', progress.toFixed(3), 'Car back at border');
+              gateStateRef.current.secondGateClosed = true;
+              window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
+                detail: { opening: false } 
+              }));
+            }
+          }
+        }
       });
 
       const wheels = gsap.utils.toArray('.wheel', car);
