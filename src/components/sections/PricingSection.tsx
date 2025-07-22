@@ -46,7 +46,7 @@ const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
   </div>
 )
 
-const PriceCard = ({ priceData, index }: { priceData: PriceData; index: number }) => {
+const PriceCard = ({ priceData }: { priceData: PriceData }) => {
   const { t } = useTranslation('common')
   const [selectedVehicle, setSelectedVehicle] = useState<'stationWagon' | 'bus'>('stationWagon')
 
@@ -295,11 +295,10 @@ export const PricingSection = () => {
                   currentPage * cardsPerPage,
                   (currentPage + 1) * cardsPerPage
                 )
-                .map((price, index) => (
+                .map((price) => (
                   <PriceCard
                     key={`${price.from}-${price.to}`}
                     priceData={price}
-                    index={index}
                   />
                 ))}
             </motion.div>

@@ -3,6 +3,7 @@ import CarAnimation from '../ui/CarAnimation';
 import { Phone, Star, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
+import Image from 'next/image'
 
 const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
   <div
@@ -110,16 +111,12 @@ export const HeroSection = () => {
   const topPlane = {
     top: '-5rem',
     right: '-5rem',
-    width: '10rem',
-    height: '10rem',
     transform: 'rotate(-12deg)',
   };
 
   const bottomPlane = {
     bottom: '-1rem',
     left: '-4.5rem',
-    width: '10rem',
-    height: '10rem',
     transform: 'rotate(12deg)',
   };
 
@@ -169,8 +166,8 @@ export const HeroSection = () => {
         </div>
         
         <div className="lg:w-1/2 relative">
-          <img src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={topPlane} />
-          <img src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={bottomPlane} />
+          <Image src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={topPlane} width={160} height={160} />
+          <Image src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={bottomPlane} width={160} height={160} />
           {/* Booking form with enhanced styling */}
           <div
             className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 z-10"
