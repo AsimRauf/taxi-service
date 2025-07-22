@@ -122,7 +122,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="mt-8 text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4"
           >
-            <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl">
+            <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl text-taxi-yellow">
               {book}
             </span>
             <span className="font-sans">
@@ -130,7 +130,7 @@ export const HeroSection = () => {
             </span>
             <span className="block">
               <span className="font-sans">{lastPartPreposition} </span>
-              <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl">
+              <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl text-taxi-yellow">
                 {lastPartMain}
               </span>
             </span>

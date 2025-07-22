@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         primary: '#00A3EE',
         secondary: '#0077BE',
+        'taxi-yellow': '#FFD700',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],
