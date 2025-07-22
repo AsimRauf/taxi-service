@@ -384,8 +384,12 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                 control: (provided, state) => ({
                   ...provided,
                   cursor: 'text',
-                  minHeight: '60px',
-                  maxHeight: '60px',
+                  minHeight: '50px',
+                  maxHeight: '50px',
+                  '@media (min-width: 400px)': {
+                    minHeight: '60px',
+                    maxHeight: '60px',
+                  },
                   width: '100% !important',
                   minWidth: '100% !important',
                   flex: '1 1 auto !important',
@@ -414,7 +418,10 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   cursor: 'text',
                   caretColor: '#0077BE',
                   color: '#333333',
-                  fontSize: '1rem',
+                  fontSize: '0.875rem',
+                  '@media (min-width: 400px)': {
+                    fontSize: '1rem',
+                  },
                   fontWeight: '500',
                   overflow: 'auto',
                   scrollbarWidth: 'none',
@@ -447,7 +454,10 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                 singleValue: (provided) => ({
                   ...provided,
                   color: '#333333',
-                  fontSize: '1rem',
+                  fontSize: '0.875rem',
+                  '@media (min-width: 400px)': {
+                    fontSize: '1rem',
+                  },
                   fontWeight: '500',
                   overflow: 'auto',
                   textOverflow: 'ellipsis',
@@ -463,7 +473,10 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                 placeholder: (provided) => ({
                   ...provided,
                   color: 'rgb(156 163 175)',
-                  fontSize: '1rem',
+                  fontSize: '0.875rem',
+                  '@media (min-width: 400px)': {
+                    fontSize: '1rem',
+                  },
                 }),
                 menu: (provided) => ({
                   ...provided,

@@ -451,7 +451,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </div>
                 </div>
                 <div className="w-full space-y-1">
-                    <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.from}</span>
+                    <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600">{translations.booking.from}</span>
                     <LocationInput
                         value={formData.pickup}
                         onChange={(place) => handleLocationUpdate(place, 'pickup')}
@@ -461,14 +461,14 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     />
                     {formData.pickup && !formData.pickup.exactAddress?.businessName && (
                         <div className="mt-2">
-                            <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                            <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
                             <div className="relative">
                                 <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                 <input
                                     type="text"
                                     value={formData.pickup.exactAddress?.houseNumber || ''}
                                     onChange={(e) => handlePickupHouseNumber(e.target.value)}
-                                    className={`w-40 pl-10 pr-3 py-2 border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                                    className={`w-32 xs:w-40 pl-8 xs:pl-10 pr-2 xs:pr-3 py-1 xs:py-2 text-sm border ${pickupHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                                 />
                             </div>
                             {pickupHouseNumberError && (
@@ -514,7 +514,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                             </div>
                         </div>
                         <div className="w-full space-y-1">
-                            <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.via}</span>
+                            <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600">{translations.booking.via}</span>
                             <LocationInput
                                 value={stopover}
                                 onChange={(place) => handleLocationUpdate(place, 'stopover', index)}
@@ -524,14 +524,14 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                             />
                             {stopover && !stopover.exactAddress?.businessName && (
                                 <div className="mt-2">
-                                    <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                                    <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
                                     <div className="relative">
                                         <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                                         <input
                                             type="text"
                                             value={stopover.exactAddress?.houseNumber || ''}
                                             onChange={(e) => handleStopoverHouseNumber(e.target.value, index)}
-                                            className={`w-40 pl-10 pr-3 py-2 border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                                            className={`w-32 xs:w-40 pl-8 xs:pl-10 pr-2 xs:pr-3 py-1 xs:py-2 text-sm border ${stopoverHouseNumberErrors[index] ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                                         />
                                     </div>
                                     {stopoverHouseNumberErrors[index] && (
@@ -576,7 +576,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                     </div>
                 </div>
                 <div className="w-full space-y-1">
-                    <span className="block text-sm font-sans font-medium text-gray-600">{translations.booking.to}</span>
+                    <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600">{translations.booking.to}</span>
                     <LocationInput
                         value={formData.destination}
                         onChange={(place) => handleLocationUpdate(place, 'destination')}
@@ -623,7 +623,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             <button
                 type="button"
                 onClick={addStopover}
-                className="w-full flex items-center gap-2 text-sm text-secondary hover:text-primary-dark text-left bg-gray-50 p-3 rounded-lg hover:bg-gray-100 transition-colors h-[60px]"
+                className="w-full flex items-center gap-2 text-xs xs:text-sm text-secondary hover:text-primary-dark text-left bg-gray-50 p-2 xs:p-3 rounded-lg hover:bg-gray-100 transition-colors h-[50px] xs:h-[60px]"
             >
                 <Plus size={16} />
                 <span className="font-sans font-medium">{translations.hero.addStopover}</span>
@@ -660,14 +660,14 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 </div>
                 {formData.destination && !formData.destination.exactAddress?.businessName && (
                     <div className="mt-[-10px] ms-[34px] lg:ms-[55px]">
-                        <span className="block text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
+                        <span className="block text-xs xs:text-sm font-sans font-medium text-gray-600 mb-1">{t('booking.houseNumber')}</span>
                         <div className="relative">
                             <Home className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
                             <input
                                 type="text"
                                 value={formData.destination.exactAddress?.houseNumber || ''}
                                 onChange={(e) => handleDestinationHouseNumber(e.target.value)}
-                                className={`w-40 pl-10 pr-3 py-2 border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
+                                className={`w-32 xs:w-40 pl-8 xs:pl-10 pr-2 xs:pr-3 py-1 xs:py-2 text-sm border ${destinationHouseNumberError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-primary focus:border-primary font-sans transition-shadow duration-300 focus:shadow-md`}
                             />
                         </div>
                         {destinationHouseNumberError && (
@@ -749,7 +749,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         type="button"
                         onClick={handleCalculate}
                         disabled={isLoading}
-                        className="w-full sm:w-auto bg-primary text-white px-6 sm:px-8 py-3 rounded-full font-bold text-lg hover:bg-primary/90 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        className="w-full sm:w-auto bg-primary text-white px-4 xs:px-6 sm:px-8 py-2 xs:py-3 rounded-full font-bold text-base xs:text-lg hover:bg-primary/90 transition-all duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-primary/50"
                     >
                         {isLoading ? (
                             <div className="flex items-center gap-2">
