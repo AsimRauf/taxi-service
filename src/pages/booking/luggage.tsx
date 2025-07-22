@@ -67,25 +67,25 @@ const RegularLuggageSelector = ({ type, value, onChange, max, title, subtitle }:
     title: string;
     subtitle: string;
 }) => (
-    <div className="flex flex-col items-center p-6 bg-white rounded-xl shadow-sm">
+    <div className="flex flex-col items-center p-6 bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg border border-primary/20 rounded-xl shadow-sm">
         <LuggageIcon type={type} />
-        <h3 className="mt-4 font-medium text-gray-900">{title}</h3>
-        <p className="text-sm text-gray-500 text-center mt-2">{subtitle}</p>
+        <h3 className="mt-4 font-medium text-black">{title}</h3>
+        <p className="text-sm text-black/70 text-center mt-2">{subtitle}</p>
         <div className="flex items-center space-x-4 mt-4">
             <button
                 onClick={() => value > 0 && onChange(value - 1)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                 disabled={value === 0}
             >
-                <Minus size={20} className={value === 0 ? "text-gray-300" : "text-gray-600"} />
+                <Minus size={20} className={value === 0 ? "text-gray-400" : "text-black"} />
             </button>
-            <span className="w-8 text-center font-medium">{value}</span>
+            <span className="w-8 text-center font-medium text-black">{value}</span>
             <button
                 onClick={() => value < max && onChange(value + 1)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                 disabled={value === max}
             >
-                <Plus size={20} className={value === max ? "text-gray-300" : "text-gray-600"} />
+                <Plus size={20} className={value === max ? "text-gray-400" : "text-black"} />
             </button>
         </div>
     </div>
@@ -98,17 +98,17 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
 }) => {
     const { t } = useTranslation();
     return (
-        <div className="bg-gray-50 p-4 rounded-lg transition-all hover:shadow-md">
+        <div className="bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg border border-primary/20 p-4 rounded-lg transition-all hover:shadow-md">
             <div className="space-y-3">
                 <div className="flex items-start gap-3">
                     <div className="shrink-0 w-8">
                         <SpecialLuggageIcon type={type} />
                     </div>
                     <div className="flex-1 min-w-0">
-                        <span className="font-medium text-gray-900 block text-sm">
+                        <span className="font-medium text-black block text-sm">
                             {t(`luggage.special.${type}.title`)}
                         </span>
-                        <p className="text-xs text-gray-500 mt-1 truncate">
+                        <p className="text-xs text-black/70 mt-1 truncate">
                             {t(`luggage.special.${type}.description`)}
                         </p>
                     </div>
@@ -116,18 +116,18 @@ const SpecialLuggageItem = ({ type, value, onChange }: {
                 <div className="flex justify-end items-center space-x-3">
                     <button
                         onClick={() => value > 0 && onChange(value - 1)}
-                        className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                        className="p-1 rounded-full hover:bg-primary/10 transition-colors"
                         disabled={value === 0}
                     >
-                        <Minus size={16} className={value === 0 ? "text-gray-300" : "text-gray-600"} />
+                        <Minus size={16} className={value === 0 ? "text-gray-400" : "text-black"} />
                     </button>
-                    <span className="w-8 text-center font-medium">{value}</span>
+                    <span className="w-8 text-center font-medium text-black">{value}</span>
                     <button
                         onClick={() => value < 3 && onChange(value + 1)}
-                        className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                        className="p-1 rounded-full hover:bg-primary/10 transition-colors"
                         disabled={value === 3}
                     >
-                        <Plus size={16} className={value === 3 ? "text-gray-300" : "text-gray-600"} />
+                        <Plus size={16} className={value === 3 ? "text-gray-400" : "text-black"} />
                     </button>
                 </div>
             </div>

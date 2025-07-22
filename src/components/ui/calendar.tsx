@@ -68,7 +68,7 @@ function Calendar({
     props.weekdayClassName
   )
   const _captionLabelClassName = cn(
-    "truncate text-sm font-medium text-white",
+    "truncate text-sm font-medium text-black",
     props.captionLabelClassName
   )
   const _monthGridClassName = cn("mx-auto mt-4", props.monthGridClassName)
@@ -100,7 +100,7 @@ function Calendar({
     props.rangeMiddleClassName
   )
   const _selectedClassName = cn(
-    "[&>button]:bg-primary [&>button]:text-black [&>button]:hover:bg-primary [&>button]:hover:text-black",
+    "[&>button]:bg-primary [&>button]:text-white [&>button]:hover:bg-primary [&>button]:hover:text-white",
     props.selectedClassName
   )
   const _todayClassName = cn(
@@ -138,16 +138,17 @@ function Calendar({
             handleChange(value)
           }}
         >
-          <SelectTrigger className="outline-none focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20 text-white">
+          <SelectTrigger className="outline-none focus:ring-0 focus:ring-offset-0 bg-transparent border-primary/20 text-black">
             <SelectValue>{selected?.label}</SelectValue>
           </SelectTrigger>
-          <SelectContent position="popper" align="center" className="bg-primary/20 backdrop-blur-md border-white/20 text-white">
+          <SelectContent position="popper" align="center" className="bg-primary/10 backdrop-blur-md border-primary/20 text-black">
             <ScrollArea className="h-80">
               {options?.map(({ value, label, disabled }, id) => (
                 <SelectItem
                   key={`${value}-${id}`}
                   value={value?.toString()}
                   disabled={disabled}
+                  className="data-[highlighted]:bg-primary/20 data-[highlighted]:text-black"
                 >
                   {label}
                 </SelectItem>
@@ -196,20 +197,20 @@ function Calendar({
           <button
             {...props}
             className={cn(
-              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-primary/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             )}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m15 18-6-6 6-6"/></svg>
           </button>
         ),
         IconRight: ({ ...props }) => (
           <button
             {...props}
             className={cn(
-              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-primary/10 hover:text-black focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             )}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         ),
         ...customComponents,

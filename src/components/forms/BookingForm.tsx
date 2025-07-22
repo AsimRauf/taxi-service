@@ -679,7 +679,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
-                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 to-secondary/5 p-4 shadow-lg backdrop-blur-md sm:p-6 flex flex-col justify-center">
+                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-6 flex flex-col justify-center">
                         <LuggageCheckbox
                             checked={formData.hasLuggage}
                             onChange={(checked) => setFormData(prev => ({ ...prev, hasLuggage: checked }))}
@@ -693,7 +693,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         {validationErrors.travelers && <span className="text-red-500 text-sm">{validationErrors.travelers}</span>}
                     </div>
 
-                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 to-secondary/5 p-4 shadow-lg backdrop-blur-md sm:p-6">
+                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-6">
                         <DateSelector
                             label={translations.hero.pickupDateTime}
                             value={formData.pickupDate || null}

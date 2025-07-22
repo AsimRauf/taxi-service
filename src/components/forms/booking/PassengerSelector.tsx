@@ -26,28 +26,28 @@ export const PassengerSelector: FC<PassengerSelectorProps> = ({
 
   return (
     <div className="flex flex-col items-center md:items-start">
-      <label className="block text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
+      <label className="block text-sm font-medium text-black mb-1 text-center md:text-left">
         {label}
       </label>
-      <div className="flex items-center space-x-3 justify-center md:justify-start">
+      <div className="flex items-center space-x-3 justify-center md:justify-start bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg border border-primary/20 rounded-full p-1">
         <button
           type="button"
           onClick={decrement}
-          className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+          className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center hover:bg-primary/10 transition-colors"
           disabled={value <= min}
         >
-          <Minus size={16} className={value <= min ? 'text-gray-400' : 'text-gray-600'} />
+          <Minus size={16} className={value <= min ? 'text-gray-400' : 'text-black'} />
         </button>
-        <span className="text-lg font-semibold w-6 text-center">
+        <span className="text-lg font-medium w-6 text-center text-black">
           {value}
         </span>
         <button
           type="button"
           onClick={increment}
-          className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"
+          className="w-8 h-8 rounded-full bg-transparent flex items-center justify-center hover:bg-primary/10 transition-colors"
           disabled={value >= max}
         >
-          <Plus size={16} className={value >= max ? 'text-gray-400' : 'text-gray-600'} />
+          <Plus size={16} className={value >= max ? 'text-gray-400' : 'text-black'} />
         </button>
       </div>
     </div>

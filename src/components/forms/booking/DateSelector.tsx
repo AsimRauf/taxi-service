@@ -63,8 +63,8 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                     <Button
                         variant="outline"
                         className={cn(
-                            "w-full h-[60px] font-normal justify-start text-left border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md text-black",
-                            !value && "text-black/70"
+                            "w-full h-[60px] font-normal justify-start text-left bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg border border-primary/20 rounded-xl text-black",
+                            !value && "text-gray-500"
                         )}
                     >
                         {value ? (
@@ -75,7 +75,7 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 rounded-2xl border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md" align="start">
+                <PopoverContent className="w-auto p-0 rounded-2xl border border-primary/20 bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg shadow-lg" align="start">
                     <div className="flex flex-col sm:flex-row">
                         <Calendar
                             mode="single"
@@ -83,23 +83,23 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                             onSelect={handleDateSelect}
                             initialFocus
                             disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                            className="bg-transparent"
+                            className="bg-transparent text-black"
                         />
-                        <div className="p-3 border-t border-white/20 sm:border-t-0 sm:border-l sm:border-white/20">
-                            <p className="text-sm font-medium text-center mb-2">Select Time</p>
+                        <div className="p-3 border-t border-primary/20 sm:border-t-0 sm:border-l sm:border-primary/20">
+                            <p className="text-sm font-medium text-center mb-2 text-black">Select Time</p>
                             <Select value={time} onValueChange={handleTimeChange}>
-                                <SelectTrigger className="w-[120px]">
+                                <SelectTrigger className="w-[120px] bg-primary/10 border-primary/20 text-black">
                                     <SelectValue placeholder="Time" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-primary/20 backdrop-blur-md border-white/20">
+                                <SelectContent className="bg-primary/10 backdrop-blur-md border-primary/20 text-black">
                                     <ScrollArea className="h-[200px]">
-                                        {times.map(t => <SelectItem key={t} value={t} className="data-[highlighted]:text-white">{t}</SelectItem>)}
+                                        {times.map(t => <SelectItem key={t} value={t} className="data-[highlighted]:bg-primary/20 data-[highlighted]:text-black">{t}</SelectItem>)}
                                     </ScrollArea>
                                 </SelectContent>
                             </Select>
                             <Button
                                 variant="default"
-                                className="w-full mt-3 text-white"
+                                className="w-full mt-3 bg-primary/20 hover:bg-primary/30 text-black"
                                 onClick={() => setIsOpen(false)}
                                 disabled={!selectedDate || time === undefined}
                             >
