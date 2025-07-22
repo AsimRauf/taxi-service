@@ -124,7 +124,7 @@ const CarAnimation = () => {
         motionPath: {
           path: path,
           align: path,
-          alignOrigin: [0.5, 0.4],
+          alignOrigin: [0.5, 0.5],
           autoRotate: true,
         },
       });
