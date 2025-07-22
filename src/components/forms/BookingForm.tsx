@@ -23,6 +23,7 @@ import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { useRouter } from 'next/router';
 import { createTranslationsObject } from '@/utils/translations';
 import { useTranslation } from 'next-i18next';
+import { DashedBorder } from '../ui/DashedBorder';
 
 interface BookingFormProps {
     defaultDestination?: Location;
@@ -625,12 +626,14 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
     );
 
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
-            className="w-full max-w-2xl mx-auto px-2 sm:px-4 p-8 border-2 border-dashed border-blue-500/20 rounded-lg"
+        <DashedBorder
+            className="w-full max-w-2xl mx-auto px-2 sm:px-4 p-8 rounded-lg"
         >
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
+            >
             <div className="text-center mb-6">
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold tracking-wide uppercase">
                     <Car size={16} />
@@ -739,5 +742,6 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 </div>
             </form>
         </motion.div>
+    </DashedBorder>
     );
 };
