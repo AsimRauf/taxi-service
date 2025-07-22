@@ -107,6 +107,22 @@ export const HeroSection = () => {
   const lastPartPreposition = titleWords[titleWords.length - 2];
   const lastPartMain = titleWords[titleWords.length - 1];
 
+  const topPlane = {
+    top: '-5rem',
+    right: '-5rem',
+    width: '10rem',
+    height: '10rem',
+    transform: 'rotate(-12deg)',
+  };
+
+  const bottomPlane = {
+    bottom: '-1rem',
+    left: '-4.5rem',
+    width: '10rem',
+    height: '10rem',
+    transform: 'rotate(12deg)',
+  };
+
   return (
     <div className="min-h-screen bg-primary pt-32 pb-10 lg:pb-0 relative overflow-hidden">
       <WaveBackground position="top" />
@@ -152,10 +168,12 @@ export const HeroSection = () => {
           </div>
         </div>
         
-        <div className="lg:w-1/2">
+        <div className="lg:w-1/2 relative">
+          <img src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={topPlane} />
+          <img src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={bottomPlane} />
           {/* Booking form with enhanced styling */}
           <div
-            className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500"
+            className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 z-10"
           >
             <CarAnimation />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
