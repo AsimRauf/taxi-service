@@ -37,12 +37,6 @@ export default async function handler(
 
     const data = await response.json() as GooglePlacesResponse;
 
-    // Log the response for debugging
-    console.log('Google Places API Response:', {
-      status: data.status,
-      predictionsCount: data.predictions?.length,
-      firstPrediction: data.predictions?.[0]
-    });
 
     if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
       console.error('Google Places API error:', data.error_message);
@@ -59,8 +53,6 @@ export default async function handler(
       place_id: prediction.place_id
     })) || [];
 
-    // Log the transformed predictions
-    console.log('Transformed predictions:', predictions);
 
     res.status(200).json({ predictions });
   } catch (error) {

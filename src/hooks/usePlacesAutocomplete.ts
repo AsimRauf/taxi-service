@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { WebsiteTranslations } from '../types/translations';
 
 interface PlacePrediction {
@@ -13,46 +13,52 @@ interface PlacePrediction {
 export const usePlacesAutocomplete = (translations: WebsiteTranslations) => {
   const [suggestions, setSuggestions] = useState<PlacePrediction[]>([]);
   const [loading, setLoading] = useState(false);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchSuggestions = async (input: string) => {
+  const fetchSuggestions = (input: string) => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current);
+    }
+
     if (!input) {
       setSuggestions([]);
+      setLoading(false);
       return;
     }
 
     setLoading(true);
-    try {
-      console.log('Fetching suggestions for input:', input); // Debug log
+    debounceTimeout.current = setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/places/autocomplete?input=${encodeURIComponent(input)}&language=${translations.locale}`
+        );
+        const data = await response.json();
 
-      const response = await fetch(
-        `/api/places/autocomplete?input=${encodeURIComponent(input)}&language=${translations.locale}`
-      );
-      const data = await response.json();
-
-      console.log('API Response:', data); // Debug log
-
-      if (data.predictions) {
-        console.log('Setting suggestions:', data.predictions); // Debug log
-        setSuggestions(data.predictions);
-      } else {
-        console.log('No predictions in response'); // Debug log
+        if (data.predictions) {
+          setSuggestions(data.predictions);
+        } else {
+          setSuggestions([]);
+        }
+      } catch (error) {
+        console.error('Error fetching suggestions:', error);
         setSuggestions([]);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching suggestions:', error);
-      setSuggestions([]);
-    } finally {
-      setLoading(false);
-    }
+    }, 300);
   };
 
-  // Debug log current state
-  console.log('Current suggestions:', suggestions);
-  console.log('Loading state:', loading);
+  useEffect(() => {
+    return () => {
+      if (debounceTimeout.current) {
+        clearTimeout(debounceTimeout.current);
+      }
+    };
+  }, []);
 
-  return { 
-    suggestions, 
-    loading, 
-    fetchSuggestions 
+  return {
+    suggestions,
+    loading,
+    fetchSuggestions
   };
 };

@@ -81,12 +81,6 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
     locale: translations.locale || 'en'
   });
 
-  // Add debugging
-  useEffect(() => {
-    console.log('Google Places Config:', googlePlacesProps);
-    console.log('API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.substring(0, 10) + '...');
-    console.log('Google API loaded:', typeof window !== 'undefined' && !!window.google);
-  }, [googlePlacesProps]);
 
   useEffect(() => {
     let mounted = true;

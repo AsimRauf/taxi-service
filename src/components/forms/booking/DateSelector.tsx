@@ -2,7 +2,7 @@
 
 import { format } from "date-fns"
 import { CalendarIcon } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
@@ -25,24 +25,25 @@ interface DateSelectorProps {
 
 export const DateSelector = ({ onChange, value, placeholder = "Select date and time" }: DateSelectorProps) => {
     const [isOpen, setIsOpen] = useState(false)
-    const [selectedDate, setSelectedDate] = useState<Date | undefined>(value || undefined);
-    const [time, setTime] = useState<string | undefined>(value ? format(value, "HH:mm") : undefined);
-
-    useEffect(() => {
-        if (selectedDate && time) {
-            const [hour, minute] = time.split(':');
-            const newDate = new Date(selectedDate);
-            newDate.setHours(parseInt(hour, 10), parseInt(minute, 10));
-            onChange(newDate);
-        } else {
-            onChange(null);
-        }
-    }, [selectedDate, time, onChange]);
 
     const handleDateSelect = (date: Date | undefined) => {
-        setSelectedDate(date);
-        if (date && !time) {
-            setTime("13:00"); // Default time when a date is picked for the first time
+        if (!date) {
+            onChange(null);
+            return;
+        }
+        const currentTime = value ? format(value, "HH:mm") : "13:00";
+        const [hour, minute] = currentTime.split(':');
+        const newDate = new Date(date);
+        newDate.setHours(parseInt(hour, 10), parseInt(minute, 10));
+        onChange(newDate);
+    }
+
+    const handleTimeChange = (time: string) => {
+        if (value) {
+            const [hour, minute] = time.split(':');
+            const newDate = new Date(value);
+            newDate.setHours(parseInt(hour, 10), parseInt(minute, 10));
+            onChange(newDate);
         }
     }
 
@@ -51,6 +52,9 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
         const minute = ((i % 4) * 15).toString().padStart(2, "0");
         return `${hour}:${minute}`;
     });
+
+    const selectedDate = value || undefined;
+    const time = value ? format(value, "HH:mm") : undefined;
 
     return (
         <div className="w-full">
@@ -83,7 +87,7 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                         />
                         <div className="p-3 border-t sm:border-t-0 sm:border-l">
                             <p className="text-sm font-medium text-center mb-2">Select Time</p>
-                            <Select value={time} onValueChange={setTime}>
+                            <Select value={time} onValueChange={handleTimeChange}>
                                 <SelectTrigger className="w-[120px]">
                                     <SelectValue placeholder="Time" />
                                 </SelectTrigger>
