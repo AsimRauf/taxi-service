@@ -64,11 +64,11 @@ function Calendar({
   const _footerClassName = cn("pt-3 text-sm", props.footerClassName)
   const _weekdaysClassName = cn("flex", props.weekdaysClassName)
   const _weekdayClassName = cn(
-    "w-9 text-sm font-normal text-muted-foreground",
+    "w-9 text-sm font-normal text-black",
     props.weekdayClassName
   )
   const _captionLabelClassName = cn(
-    "truncate text-sm font-medium",
+    "truncate text-sm font-medium text-white",
     props.captionLabelClassName
   )
   const _monthGridClassName = cn("mx-auto mt-4", props.monthGridClassName)
@@ -100,19 +100,19 @@ function Calendar({
     props.rangeMiddleClassName
   )
   const _selectedClassName = cn(
-    "[&>button]:bg-primary [&>button]:text-white [&>button]:hover:bg-primary [&>button]:hover:text-white",
+    "[&>button]:bg-primary [&>button]:text-black [&>button]:hover:bg-primary [&>button]:hover:text-black",
     props.selectedClassName
   )
   const _todayClassName = cn(
-    "[&>button]:bg-accent [&>button]:text-accent-foreground",
+    "[&>button]:bg-white/20 [&>button]:text-white",
     props.todayClassName
   )
   const _outsideClassName = cn(
-    "text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+    "text-black/50 opacity-50",
     props.outsideClassName
   )
   const _disabledClassName = cn(
-    "text-muted-foreground opacity-50",
+    "text-black/50 opacity-50",
     props.disabledClassName
   )
   const _hiddenClassName = cn("invisible flex-1", props.hiddenClassName)
@@ -138,10 +138,10 @@ function Calendar({
             handleChange(value)
           }}
         >
-          <SelectTrigger className="outline-none focus:ring-0 focus:ring-offset-0">
+          <SelectTrigger className="outline-none focus:ring-0 focus:ring-offset-0 bg-transparent border-white/20 text-white">
             <SelectValue>{selected?.label}</SelectValue>
           </SelectTrigger>
-          <SelectContent position="popper" align="center">
+          <SelectContent position="popper" align="center" className="bg-primary/20 backdrop-blur-md border-white/20 text-white">
             <ScrollArea className="h-80">
               {options?.map(({ value, label, disabled }, id) => (
                 <SelectItem
@@ -196,20 +196,20 @@ function Calendar({
           <button
             {...props}
             className={cn(
-              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             )}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m15 18-6-6 6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m15 18-6-6 6-6"/></svg>
           </button>
         ),
         IconRight: ({ ...props }) => (
           <button
             {...props}
             className={cn(
-              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+              "inline-flex items-center justify-center rounded-md p-1 text-sm font-medium ring-offset-background transition-colors hover:bg-white/20 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
             )}
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="m9 18 6-6-6-6"/></svg>
           </button>
         ),
         ...customComponents,

@@ -133,6 +133,13 @@ const validateExactLocation = (location: Location) => {
 };
 
 export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
+    const Screw = ({ className }: { className?: string }) => (
+        <div className={`absolute w-3.5 h-3.5 bg-primary/20 rounded-full flex items-center justify-center shadow-sm ${className}`}>
+            <div className="w-1.5 h-1.5 bg-primary/40 rounded-full" />
+            <div className="absolute w-px h-2 bg-primary/50 transform rotate-45" />
+            <div className="absolute w-px h-2 bg-primary/50 transform -rotate-45" />
+        </div>
+    );
     const { t } = useTranslation();
     const router = useRouter();
     const translations = createTranslationsObject(t, router.locale || 'en');
@@ -627,8 +634,10 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
 
     return (
         <DashedBorder
-            className="w-full max-w-2xl mx-auto px-2 sm:px-4 p-8 rounded-lg"
+            className="w-full max-w-2xl mx-auto px-2 sm:px-4 p-8 rounded-lg relative"
         >
+            <Screw className="top-4 left-4" />
+            <Screw className="top-4 right-4" />
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -670,7 +679,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8 mt-6">
-                    <div className="space-y-4 sm:space-y-6 bg-primary/5 p-4 sm:p-6 rounded-2xl border border-primary/10">
+                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 to-secondary/5 p-4 shadow-lg backdrop-blur-md sm:p-6 flex flex-col justify-center">
                         <LuggageCheckbox
                             checked={formData.hasLuggage}
                             onChange={(checked) => setFormData(prev => ({ ...prev, hasLuggage: checked }))}
@@ -684,7 +693,7 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         {validationErrors.travelers && <span className="text-red-500 text-sm">{validationErrors.travelers}</span>}
                     </div>
 
-                    <div className="space-y-4 sm:space-y-6 bg-primary/5 p-4 sm:p-6 rounded-2xl border border-primary/10">
+                    <div className="space-y-4 sm:space-y-6 rounded-2xl border border-white/10 bg-gradient-to-br from-primary/5 to-secondary/5 p-4 shadow-lg backdrop-blur-md sm:p-6">
                         <DateSelector
                             label={translations.hero.pickupDateTime}
                             value={formData.pickupDate || null}
@@ -694,19 +703,31 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
                         {validationErrors.pickupDate && <span className="text-red-500 text-sm">{validationErrors.pickupDate}</span>}
 
                         <div className="space-y-3">
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center">
                                 <input
                                     type="checkbox"
                                     id="return"
-                                    className="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded cursor-pointer"
+                                    className="peer hidden"
                                     checked={formData.isReturn}
                                     onChange={(e) => setFormData(prev => ({
                                         ...prev,
                                         isReturn: e.target.checked
                                     }))}
                                 />
-                                <label htmlFor="return" className="text-sm font-sans font-medium text-gray-700 cursor-pointer">
-                                    {translations.hero.returnTrip}
+                                <label
+                                    htmlFor="return"
+                                    className="flex items-center cursor-pointer"
+                                >
+                                    <span className="w-5 h-5 inline-block mr-2 rounded-md border-2 border-primary/50 peer-checked:bg-primary peer-checked:border-primary transition-all duration-300 flex-shrink-0 relative">
+                                        {formData.isReturn && (
+                                            <svg className="w-full h-full text-black absolute inset-0" viewBox="0 0 24 24">
+                                                <path fill="currentColor" d="M9.55 18.2l-5.7-5.7 1.41-1.41 4.29 4.29 9.19-9.19 1.41 1.41z" />
+                                            </svg>
+                                        )}
+                                    </span>
+                                    <span className="text-sm font-medium text-black">
+                                        {translations.hero.returnTrip}
+                                    </span>
                                 </label>
                             </div>
 

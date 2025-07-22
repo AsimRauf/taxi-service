@@ -1090,8 +1090,8 @@ export const TravelInfoPage = () => {
             </p>
           </div>
 
-          <div className="flex items-start justify-between bg-gray-50 rounded-lg p-4 mb-6">
-            <div className="space-y-1">
+          <div className="flex flex-col md:flex-row items-center justify-between rounded-lg p-4 mb-6 text-center md:text-left border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md">
+            <div className="space-y-1 mb-4 md:mb-0">
               <h3 className="text-base sm:text-lg font-medium text-gray-900">
                 {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).name}
               </h3>

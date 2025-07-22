@@ -63,8 +63,8 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                     <Button
                         variant="outline"
                         className={cn(
-                            "w-full h-[60px] font-normal justify-start text-left",
-                            !value && "text-muted-foreground"
+                            "w-full h-[60px] font-normal justify-start text-left border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md text-black",
+                            !value && "text-black/70"
                         )}
                     >
                         {value ? (
@@ -75,7 +75,7 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
+                <PopoverContent className="w-auto p-0 rounded-2xl border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md" align="start">
                     <div className="flex flex-col sm:flex-row">
                         <Calendar
                             mode="single"
@@ -83,15 +83,15 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                             onSelect={handleDateSelect}
                             initialFocus
                             disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                            className="rounded-md border shadow"
+                            className="bg-transparent"
                         />
-                        <div className="p-3 border-t sm:border-t-0 sm:border-l">
+                        <div className="p-3 border-t border-white/20 sm:border-t-0 sm:border-l sm:border-white/20">
                             <p className="text-sm font-medium text-center mb-2">Select Time</p>
                             <Select value={time} onValueChange={handleTimeChange}>
                                 <SelectTrigger className="w-[120px]">
                                     <SelectValue placeholder="Time" />
                                 </SelectTrigger>
-                                <SelectContent className="bg-white">
+                                <SelectContent className="bg-primary/20 backdrop-blur-md border-white/20">
                                     <ScrollArea className="h-[200px]">
                                         {times.map(t => <SelectItem key={t} value={t} className="data-[highlighted]:text-white">{t}</SelectItem>)}
                                     </ScrollArea>

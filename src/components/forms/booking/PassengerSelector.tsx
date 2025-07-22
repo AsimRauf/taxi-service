@@ -25,11 +25,11 @@ export const PassengerSelector: FC<PassengerSelectorProps> = ({
   }
 
   return (
-    <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+    <div className="flex flex-col items-center md:items-start">
+      <label className="block text-sm font-medium text-gray-700 mb-1 text-center md:text-left">
         {label}
       </label>
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-3 justify-center md:justify-start">
         <button
           type="button"
           onClick={decrement}
