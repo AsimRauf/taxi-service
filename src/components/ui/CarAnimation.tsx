@@ -24,12 +24,13 @@ const CarAnimation = () => {
           const buttonX = buttonRect.left - containerRect.left;
           const buttonY = buttonRect.top - containerRect.top;
           const buttonW = buttonRect.width;
+          const verticalOffset = width < 640 ? 5 : 0;
           const buttonH = buttonRect.height;
 
           const outset = 4; // Outset the path by 4px
           const inset = 8; // Inset the path by 8px
           const insetButtonX = buttonX + inset;
-          const insetButtonY = buttonY + inset;
+          const insetButtonY = buttonY + inset + verticalOffset;
           const insetButtonW = buttonW - (inset * 2);
           const insetButtonH = buttonH - (inset * 2);
 
