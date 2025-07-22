@@ -170,8 +170,6 @@ const CarAnimation = () => {
           // Calculate button position and boundaries
           const buttonCenterX = buttonRect.left - containerRect.left + buttonRect.width / 2;
           const buttonCenterY = buttonRect.top - containerRect.top + buttonRect.height / 2;
-          const buttonTop = buttonRect.top - containerRect.top;
-          const buttonBottom = buttonRect.bottom - containerRect.top;
           
           // Calculate bottom border Y position
           const bottomBorderY = containerRect.height;
