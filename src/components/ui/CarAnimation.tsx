@@ -191,7 +191,7 @@ const CarAnimation = () => {
             gateStateRef.current.lastActionTime = currentTime;
             
             window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
-              detail: { opening: true } 
+              detail: { opening: true, direction: "inward" } 
             }));
             
             // Keep gate open for 1 second, then close
@@ -219,7 +219,7 @@ const CarAnimation = () => {
             gateStateRef.current.lastActionTime = currentTime;
             
             window.dispatchEvent(new CustomEvent('carReachingBottomGate', { 
-              detail: { opening: true } 
+              detail: { opening: true, direction: "inward" } 
             }));
             
             // Keep gate open for 1 second, then close
