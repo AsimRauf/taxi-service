@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Home, MapPin, Plus, Minus, ArrowUpDown } from 'lucide-react';
+import { Home, MapPin, Plus, Minus, ArrowUpDown, Car } from 'lucide-react';
 import { SingleValue } from 'react-select';
 type SelectOption = {
     label: string;
@@ -631,7 +631,12 @@ export const BookingForm = ({ defaultDestination }: BookingFormProps) => {
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.6 }}
             className="w-full max-w-2xl mx-auto px-2 sm:px-4"
         >
-            <h2 className="text-2xl sm:text-3xl font-heading font-bold text-center mb-6 text-gray-800">{translations.hero.formTitle}</h2>
+            <div className="text-center mb-6">
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold tracking-wide uppercase">
+                    <Car size={16} />
+                    {translations.hero.formTitle}
+                </div>
+            </div>
             <form className="space-y-6">
                 <div className="space-y-4 sm:space-y-6 relative">
                     <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-primary/80 to-green-500/80 z-0" />

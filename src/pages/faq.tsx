@@ -6,6 +6,7 @@ import { ChevronDownIcon } from '@heroicons/react/24/outline'
 import { useState } from 'react'
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
 
 interface FAQItemProps {
   question: string
@@ -15,24 +16,30 @@ interface FAQItemProps {
 }
 
 const FAQItem = ({ question, answer, isOpen, onToggle }: FAQItemProps) => (
-  <div className="border-b border-gray-200/50 last:border-0">
-    <button
-      onClick={onToggle}
-      className="w-full py-4 px-6 flex justify-between items-center text-left hover:bg-primary/5 transition-colors rounded-lg"
-    >
-      <span className="font-medium text-gray-900 text-sm sm:text-base">{question}</span>
-      <ChevronDownIcon
-        className={`w-5 h-5 text-primary transition-transform ${
-          isOpen ? 'transform rotate-180' : ''
-        }`}
-      />
-    </button>
-    {isOpen && (
-      <div className="px-6 pb-4">
-        <p className="text-gray-600 text-sm sm:text-base leading-relaxed">{answer}</p>
-      </div>
-    )}
-  </div>
+    <div className="border-b border-white/20 last:border-0">
+        <button
+            onClick={onToggle}
+            className="w-full py-4 px-6 flex justify-between items-center text-left hover:bg-white/10 transition-colors rounded-lg"
+        >
+            <span className="font-medium text-white text-sm sm:text-base">{question}</span>
+            <ChevronDownIcon
+                className={`w-5 h-5 text-white transition-transform ${
+                    isOpen ? 'transform rotate-180' : ''
+                }`}
+            />
+        </button>
+        {isOpen && (
+            <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="px-6 pb-4"
+            >
+                <p className="text-white/80 text-sm sm:text-base leading-relaxed">{answer}</p>
+            </motion.div>
+        )}
+    </div>
 )
 
 interface FAQSectionProps {
@@ -45,10 +52,10 @@ interface FAQSectionProps {
   onSectionClick: (section: string) => void
 }
 
-const FAQSection: React.FC<FAQSectionProps> = ({ 
-  title, 
-  items, 
-  expandedItems, 
+const FAQSection: React.FC<FAQSectionProps> = ({
+  title,
+  items,
+  expandedItems,
   setExpandedItems,
   sectionKey,
   activeSection,
@@ -57,7 +64,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({
   const isActive = activeSection === sectionKey
   
   return (
-    <motion.div 
+    <motion.div
       className="mb-4"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -67,9 +74,9 @@ const FAQSection: React.FC<FAQSectionProps> = ({
       <button
         onClick={() => onSectionClick(sectionKey)}
         className={`w-full text-left px-6 py-4 rounded-xl transition-all duration-300 ${
-          isActive 
-            ? 'bg-primary text-white shadow-lg shadow-primary/20' 
-            : 'bg-white text-gray-900 hover:bg-primary/5'
+          isActive
+            ? 'bg-white/20 text-white shadow-lg'
+            : 'bg-white/10 text-white hover:bg-white/15'
         }`}
       >
         <h2 className="text-lg font-semibold flex items-center justify-between">
@@ -79,12 +86,12 @@ const FAQSection: React.FC<FAQSectionProps> = ({
       </button>
 
       {isActive && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: 'auto' }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
-          className="mt-2 bg-white rounded-xl shadow-sm overflow-hidden"
+          className="mt-2 bg-white/10 backdrop-blur-sm rounded-xl shadow-sm overflow-hidden border border-white/20"
         >
           {Object.entries(items).map(([key, item]) => (
             <FAQItem
@@ -114,7 +121,7 @@ const FAQSection: React.FC<FAQSectionProps> = ({
 const FAQ: NextPage = () => {
   const { t } = useTranslation('common')
   const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set())
-  const [activeSection, setActiveSection] = useState<string | null>(null)
+  const [activeSection, setActiveSection] = useState<string | null>('booking')
 
   const faqSections = [
     'booking',
@@ -140,19 +147,20 @@ const FAQ: NextPage = () => {
         <title>{t('seo.faq.title')}</title>
         <meta name="description" content={t('seo.faq.description')} />
       </Head>
-      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-white min-h-screen pt-32 pb-16 overflow-hidden">
+        <AnimatedBackground />
+        <div className="max-w-4xl mx-auto px-4 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
               {t('faq.title')}
             </h1>
-            <p className="text-white/80 max-w-2xl mx-auto">
-              Find answers to commonly asked questions about our taxi services
+            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
+              Find answers to commonly asked questions about our taxi services.
             </p>
           </motion.div>
 

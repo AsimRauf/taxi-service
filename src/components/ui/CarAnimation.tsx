@@ -27,6 +27,7 @@ const CarAnimation = () => {
           const buttonH = buttonRect.height;
 
           const r = 24; // Corresponds to rounded-3xl of the form container
+          const br = buttonH / 2; // Button radius for rounded-full
 
           const p = {
             bottomLeft: { x: buttonX, y: buttonY + buttonH },
@@ -44,12 +45,16 @@ const CarAnimation = () => {
             L ${width},${height - r}
             A ${r},${r} 0 0 1 ${width - r},${height}
             L ${detourStartX}, ${height}
-            L ${detourStartX}, ${p.bottomLeft.y}
-            L ${p.bottomLeft.x}, ${p.bottomLeft.y}
-            L ${p.topLeft.x}, ${p.topLeft.y}
-            L ${p.topRight.x}, ${p.topRight.y}
-            L ${p.bottomRight.x}, ${p.bottomRight.y}
             L ${detourStartX}, ${p.bottomRight.y}
+            L ${p.bottomRight.x - br}, ${p.bottomRight.y}
+            A ${br},${br} 0 0 0 ${p.bottomRight.x}, ${p.bottomRight.y - br}
+            L ${p.topRight.x}, ${p.topRight.y + br}
+            A ${br},${br} 0 0 0 ${p.topRight.x - br}, ${p.topRight.y}
+            L ${p.topLeft.x + br}, ${p.topLeft.y}
+            A ${br},${br} 0 0 0 ${p.topLeft.x}, ${p.topLeft.y + br}
+            L ${p.bottomLeft.x}, ${p.bottomLeft.y - br}
+            A ${br},${br} 0 0 0 ${p.bottomLeft.x + br}, ${p.bottomLeft.y}
+            L ${detourStartX}, ${p.bottomLeft.y}
             L ${detourStartX}, ${height}
             L ${r},${height}
             A ${r},${r} 0 0 1 0,${height - r}

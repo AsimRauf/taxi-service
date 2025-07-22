@@ -16,6 +16,7 @@ import {
     CreditCard,
     SmilePlus
 } from 'lucide-react'
+import { AnimatedBackground } from '@/components/ui/AnimatedBackground'
 
 const AboutPage: NextPage = () => {
     const { t } = useTranslation('common')
@@ -82,8 +83,9 @@ const AboutPage: NextPage = () => {
                 <title>{t('seo.about.title')}</title>
                 <meta name="description" content={t('seo.about.description')} />
             </Head>
-            <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-                <div className="max-w-6xl mx-auto px-4">
+            <div className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-white min-h-screen pt-32 pb-16 overflow-hidden">
+                <AnimatedBackground />
+                <div className="max-w-6xl mx-auto px-4 relative z-10">
                     {/* Hero Section */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -91,10 +93,10 @@ const AboutPage: NextPage = () => {
                         transition={{ duration: 0.5 }}
                         className="text-center mb-16"
                     >
-                        <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
                             {t('about.title')}
                         </h1>
-                        <p className="text-white/80 max-w-2xl mx-auto text-lg">
+                        <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
                             {t('about.subtitle')}
                         </p>
                     </motion.div>
@@ -105,12 +107,12 @@ const AboutPage: NextPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="bg-white rounded-2xl p-8 mb-12"
+                        className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-white/20"
                     >
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-2xl font-semibold text-white mb-4">
                             {t('about.welcome.title')}
                         </h2>
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-white/80 leading-relaxed">
                             {t('about.welcome.description')}
                         </p>
                     </motion.div>
@@ -121,12 +123,12 @@ const AboutPage: NextPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
-                        className="bg-white rounded-2xl p-8 mb-12"
+                        className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 mb-12 border border-white/20"
                     >
-                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                        <h2 className="text-2xl font-semibold text-white mb-4">
                             {t('about.mission.title')}
                         </h2>
-                        <p className="text-gray-600 leading-relaxed">
+                        <p className="text-white/80 leading-relaxed">
                             {t('about.mission.description')}
                         </p>
                     </motion.div>
@@ -139,7 +141,7 @@ const AboutPage: NextPage = () => {
                         transition={{ duration: 0.5 }}
                         className="mb-12"
                     >
-                        <h2 className="text-2xl font-semibold text-white mb-8 text-center">
+                        <h2 className="text-3xl font-bold text-white mb-8 text-center">
                             {t('about.whyChooseUs')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -150,17 +152,17 @@ const AboutPage: NextPage = () => {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+                                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 group"
                                 >
-                                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                                        <div className="text-primary">
+                                    <div className="bg-white/20 w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors">
+                                        <div className="text-white">
                                             {feature.icon}
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                    <h3 className="text-lg font-semibold text-white mb-2">
                                         {feature.title}
                                     </h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-white/80">
                                         {feature.description}
                                     </p>
                                 </motion.div>
@@ -175,7 +177,7 @@ const AboutPage: NextPage = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5 }}
                     >
-                        <h2 className="text-2xl font-semibold text-white mb-8 text-center">
+                        <h2 className="text-3xl font-bold text-white mb-8 text-center">
                             {t('about.ourValues')}
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -186,17 +188,17 @@ const AboutPage: NextPage = () => {
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
                                     transition={{ duration: 0.5, delay: index * 0.1 }}
-                                    className="bg-white rounded-xl p-6 hover:shadow-lg transition-shadow"
+                                    className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 group"
                                 >
-                                    <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                                        <div className="text-primary">
+                                    <div className="bg-white/20 w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors">
+                                        <div className="text-white">
                                             {value.icon}
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                                    <h3 className="text-lg font-semibold text-white mb-2">
                                         {value.title}
                                     </h3>
-                                    <p className="text-gray-600">
+                                    <p className="text-white/80">
                                         {value.description}
                                     </p>
                                 </motion.div>
