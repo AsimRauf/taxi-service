@@ -12,8 +12,16 @@ const CarAnimation = () => {
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
   useLayoutEffect(() => {
+    let resizeObserver: ResizeObserver | null = null;
+    let mutationObserver: MutationObserver | null = null;
+    let animationFrameId: number | null = null;
+
     const updatePath = () => {
-      if (containerRef.current) {
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+      animationFrameId = requestAnimationFrame(() => {
+        if (!containerRef.current) return;
+
         const containerRect = containerRef.current.getBoundingClientRect();
         const { width, height } = containerRect;
         const calculateButton = document.getElementById('calculate-button');
@@ -26,16 +34,15 @@ const CarAnimation = () => {
           const buttonW = buttonRect.width;
           const buttonH = buttonRect.height;
 
-          const outset = 4; // Outset the path by 4px
-          const inset = 8; // Inset the path by 8px
+          const outset = 4;
+          const inset = 8;
           const insetButtonX = buttonX + inset;
-          const verticalOffset = width < 640 ? 4 : 0;
-          const insetButtonY = buttonY + inset + verticalOffset;
+          const insetButtonY = buttonY + inset;
           const insetButtonW = buttonW - (inset * 2);
           const insetButtonH = buttonH - (inset * 2);
 
-          const r = 24 + outset; // Corresponds to rounded-3xl of the form container
-          const br = insetButtonH / 2; // Button radius for rounded-full based on inset
+          const r = 24 + outset;
+          const br = insetButtonH / 2;
 
           const p = {
             bottomLeft: { x: insetButtonX, y: insetButtonY + insetButtonH },
@@ -48,10 +55,8 @@ const CarAnimation = () => {
 
           const newPathD = `
             M ${r},-${outset}
-            L ${width - r},-${outset}
-            A ${r},${r} 0 0 1 ${width + outset},${r}
-            L ${width + outset},${height - r}
-            A ${r},${r} 0 0 1 ${width - r},${height + outset}
+            L ${width - r},-${outset} A ${r},${r} 0 0 1 ${width + outset},${r}
+            L ${width + outset},${height - r} A ${r},${r} 0 0 1 ${width - r},${height + outset}
             L ${detourStartX}, ${height + outset}
             L ${detourStartX}, ${p.bottomRight.y}
             L ${p.bottomRight.x - br}, ${p.bottomRight.y}
@@ -71,39 +76,38 @@ const CarAnimation = () => {
           `.replace(/\s+/g, ' ').trim();
           
           setPathD(newPathD);
-
         } else if (width > 0 && height > 0) {
-          // Fallback to original path if button not found
           const r = 24;
           const fallbackPathD = `M ${r},0 L ${width - r},0 A ${r},${r} 0 0 1 ${width},${r} L ${width},${height - r} A ${r},${r} 0 0 1 ${width - r},${height} L ${r},${height} A ${r},${r} 0 0 1 0,${height - r} L 0,${r} A ${r},${r} 0 0 1 ${r},0 Z`;
           setPathD(fallbackPathD);
         }
-      }
+      });
     };
 
-    updatePath();
-
-    const resizeObserver = new ResizeObserver(updatePath);
     const container = containerRef.current;
-    if (container) {
-      resizeObserver.observe(container);
-    }
+    if (!container) return;
 
-    const observer = new MutationObserver(() => {
-        if (document.getElementById('calculate-button')) {
-            updatePath();
-            observer.disconnect();
-        }
+    resizeObserver = new ResizeObserver(updatePath);
+    resizeObserver.observe(container);
+
+    mutationObserver = new MutationObserver(() => {
+      if (document.getElementById('calculate-button')) {
+        updatePath();
+      }
     });
 
-    observer.observe(document.body, { childList: true, subtree: true });
+    mutationObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+    });
 
+    // Initial check
+    updatePath();
 
     return () => {
-      if (container) {
-        resizeObserver.unobserve(container);
-      }
-      observer.disconnect();
+      if (resizeObserver) resizeObserver.disconnect();
+      if (mutationObserver) mutationObserver.disconnect();
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
@@ -125,7 +129,7 @@ const CarAnimation = () => {
         motionPath: {
           path: path,
           align: path,
-          alignOrigin: [0.5, 0.6],
+          alignOrigin: [0.5, 0.5],
           autoRotate: true,
         },
       });
