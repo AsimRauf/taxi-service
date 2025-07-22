@@ -88,7 +88,7 @@ const PriceCard = ({ priceData }: { priceData: PriceData }) => {
               onClick={() => setSelectedVehicle('stationWagon')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
                 selectedVehicle === 'stationWagon'
-                  ? 'bg-primary/20 text-primary shadow-md border border-primary/20'
+                  ? 'bg-primary/20 text-white shadow-md border border-primary/20'
                   : 'text-gray-600 hover:text-primary'
               }`}
             >
@@ -99,7 +99,7 @@ const PriceCard = ({ priceData }: { priceData: PriceData }) => {
               onClick={() => setSelectedVehicle('bus')}
               className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-300 ${
                 selectedVehicle === 'bus'
-                  ? 'bg-primary/20 text-primary shadow-md border border-primary/20'
+                  ? 'bg-primary/20 text-white shadow-md border border-primary/20'
                   : 'text-gray-600 hover:text-primary'
               }`}
             >
