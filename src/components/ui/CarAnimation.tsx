@@ -26,17 +26,23 @@ const CarAnimation = () => {
           const buttonW = buttonRect.width;
           const buttonH = buttonRect.height;
 
+          const inset = 8; // Inset the path by 8px
+          const insetButtonX = buttonX + inset;
+          const insetButtonY = buttonY + inset;
+          const insetButtonW = buttonW - (inset * 2);
+          const insetButtonH = buttonH - (inset * 2);
+
           const r = 24; // Corresponds to rounded-3xl of the form container
-          const br = buttonH / 2; // Button radius for rounded-full
+          const br = insetButtonH / 2; // Button radius for rounded-full based on inset
 
           const p = {
-            bottomLeft: { x: buttonX, y: buttonY + buttonH },
-            bottomRight: { x: buttonX + buttonW, y: buttonY + buttonH },
-            topRight: { x: buttonX + buttonW, y: buttonY },
-            topLeft: { x: buttonX, y: buttonY },
+            bottomLeft: { x: insetButtonX, y: insetButtonY + insetButtonH },
+            bottomRight: { x: insetButtonX + insetButtonW, y: insetButtonY + insetButtonH },
+            topRight: { x: insetButtonX + insetButtonW, y: insetButtonY },
+            topLeft: { x: insetButtonX, y: insetButtonY },
           };
 
-          const detourStartX = buttonX + buttonW / 2;
+          const detourStartX = insetButtonX + insetButtonW / 2;
 
           const newPathD = `
             M ${r},0
@@ -117,7 +123,7 @@ const CarAnimation = () => {
         motionPath: {
           path: path,
           align: path,
-          alignOrigin: [0.5, 1],
+          alignOrigin: [0.5, 0.5],
           autoRotate: true,
         },
       });
