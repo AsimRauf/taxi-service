@@ -173,7 +173,7 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
 
         // Create path segments for the border with animated bottom gate
         const createBorderPath = () => {
-            let pathSegments = [];
+            const pathSegments = [];
 
             // Top border - always full (no gate)
             pathSegments.push(`M ${rx} 1 L ${width - rx} 1`);
