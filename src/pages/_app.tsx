@@ -40,15 +40,6 @@ const seoConfig = {
       hrefLang: 'nl',
       href: 'https://taxiritje.nl'
     },
-    {
-      rel: 'icon',
-      href: '/favicon.ico',
-    }, 
-    {
-      rel: 'apple-touch-icon',
-      href: '/images/Logo.png',
-      sizes: '180x180'
-    }
 ],
   structuredData: {
     "@context": "https://schema.org",
