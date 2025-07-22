@@ -44,7 +44,7 @@ const DotPattern = ({ top, left, right, bottom, uniqueId }: {
   uniqueId: string 
 }) => (
   <div
-    className="absolute z-0 opacity-60"
+    className="absolute z-0 opacity-60 pointer-events-none" // Added pointer-events-none
     style={{ top, left, right, bottom, width: '300px', height: '300px' }}
   >
     <svg width="100%" height="100%">
@@ -73,10 +73,10 @@ const DotPattern = ({ top, left, right, bottom, uniqueId }: {
 
 const FloatingShapes = () => (
   <>
-    <div className="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-float-slow"></div>
-    <div className="absolute top-40 right-20 w-32 h-32 bg-white/3 rounded-full blur-2xl animate-float-medium"></div>
-    <div className="absolute bottom-32 left-1/4 w-16 h-16 bg-white/4 rounded-full blur-lg animate-float-fast"></div>
-    <div className="absolute bottom-20 right-1/3 w-24 h-24 bg-white/3 rounded-full blur-xl animate-float-slow"></div>
+    <div className="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-float-slow pointer-events-none"></div>
+    <div className="absolute top-40 right-20 w-32 h-32 bg-white/3 rounded-full blur-2xl animate-float-medium pointer-events-none"></div>
+    <div className="absolute bottom-32 left-1/4 w-16 h-16 bg-white/4 rounded-full blur-lg animate-float-fast pointer-events-none"></div>
+    <div className="absolute bottom-20 right-1/3 w-24 h-24 bg-white/3 rounded-full blur-xl animate-float-slow pointer-events-none"></div>
   </>
 )
 
@@ -163,6 +163,7 @@ export const ServicesSection = () => {
     <section 
       id="services" 
       className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-white py-16 md:py-24 overflow-hidden"
+      style={{ contain: 'layout' }} // Optimize layout containment
     >
       {/* Background Elements */}
       <WaveBackground position="top" />
@@ -176,8 +177,8 @@ export const ServicesSection = () => {
       <DotPattern top="30%" right="10%" uniqueId="middle-right" />
       
       {/* Gradient Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 z-0"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent z-0"></div>
+      <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent z-0 pointer-events-none"></div>
       
       <div className="w-[95%] md:w-[90%] max-w-7xl mx-auto relative z-10">
         <motion.div
@@ -222,6 +223,7 @@ export const ServicesSection = () => {
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+          style={{ contain: 'layout' }} // Prevent layout shifts in grid
         >
           {services.map((service, index) => (
             <ServiceCard 
@@ -233,21 +235,33 @@ export const ServicesSection = () => {
         </motion.div>
       </div>
 
-      {/* Custom Styles */}
+      {/* Optimized Custom Styles */}
       <style jsx>{`
         @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(180deg); }
+          0%, 100% { 
+            transform: translateY(0px) rotate(0deg); 
+          }
+          50% { 
+            transform: translateY(-20px) rotate(180deg); 
+          }
         }
         
         @keyframes float-medium {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-15px) rotate(90deg); }
+          0%, 100% { 
+            transform: translateY(0px) rotate(0deg); 
+          }
+          50% { 
+            transform: translateY(-15px) rotate(90deg); 
+          }
         }
         
         @keyframes float-fast {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-10px) rotate(270deg); }
+          0%, 100% { 
+            transform: translateY(0px) rotate(0deg); 
+          }
+          50% { 
+            transform: translateY(-10px) rotate(270deg); 
+          }
         }
         
         @keyframes wave-services-animation {
@@ -258,24 +272,35 @@ export const ServicesSection = () => {
 
         .animate-float-slow {
           animation: float-slow 8s ease-in-out infinite;
+          will-change: transform;
         }
         
         .animate-float-medium {
           animation: float-medium 6s ease-in-out infinite;
+          will-change: transform;
         }
         
         .animate-float-fast {
           animation: float-fast 4s ease-in-out infinite;
+          will-change: transform;
         }
 
         .wave-services-1-top,
         .wave-services-1-bottom {
           animation: wave-services-animation 12s infinite ease-in-out;
+          will-change: transform;
         }
 
         .wave-services-2-top,
         .wave-services-2-bottom {
           animation: wave-services-animation 16s infinite ease-in-out reverse;
+          will-change: transform;
+        }
+
+        /* Optimize performance for expanding cards */
+        .group {
+          transform: translateZ(0);
+          backface-visibility: hidden;
         }
       `}</style>
     </section>

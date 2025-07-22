@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'next-i18next';
 
@@ -30,6 +30,7 @@ export const ServiceCard = ({ service, index }: ServiceCardProps) => {
       viewport={{ once: true }}
       transition={{ duration: 0.7, delay: index * 0.15 }}
       className="group bg-white/10 backdrop-blur-xl rounded-2xl shadow-lg hover:shadow-2xl border border-white/20 transition-all duration-400 flex flex-col overflow-hidden"
+      layout={false} // Prevent layout animations that cause background shifts
     >
       <div className="relative h-48 overflow-hidden">
         <Image
@@ -55,32 +56,76 @@ export const ServiceCard = ({ service, index }: ServiceCardProps) => {
           <div className="mt-6">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center justify-between w-full text-white font-semibold hover:text-white/80 transition-colors text-left py-2"
+              className="flex items-center justify-between w-full text-white font-semibold hover:text-white/80 transition-colors text-left py-2 focus:outline-none focus:ring-2 focus:ring-white/20 rounded-lg"
+              aria-expanded={isExpanded}
+              aria-controls={`expand-content-${index}`}
             >
               <span>{t('services.airport.viewOptions')}</span>
-              <ChevronDown className={`w-5 h-5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
-            </button>
-            {isExpanded && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mt-3 space-y-2 overflow-hidden"
+              <motion.div
+                animate={{ rotate: isExpanded ? 180 : 0 }}
+                transition={{ duration: 0.2, ease: "easeInOut" }}
               >
-                {service.expandContent.map((item, i) => (
-                  <Link
-                    key={i}
-                    href={item.link}
-                    className="block p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group/link"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span>{item.name}</span>
-                      <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all duration-300" />
-                    </div>
-                  </Link>
-                ))}
+                <ChevronDown className="w-5 h-5" />
               </motion.div>
-            )}
+            </button>
+            
+            {/* Use a fixed container to prevent layout shifts */}
+            <div className="overflow-hidden">
+              <AnimatePresence mode="wait">
+                {isExpanded && (
+                  <motion.div
+                    id={`expand-content-${index}`}
+                    initial={{ opacity: 0, height: 0, marginTop: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      height: "auto", 
+                      marginTop: 12,
+                      transition: {
+                        height: { duration: 0.3, ease: "easeOut" },
+                        opacity: { duration: 0.2, delay: 0.1 },
+                        marginTop: { duration: 0.3, ease: "easeOut" }
+                      }
+                    }}
+                    exit={{ 
+                      opacity: 0, 
+                      height: 0, 
+                      marginTop: 0,
+                      transition: {
+                        opacity: { duration: 0.15 },
+                        height: { duration: 0.25, delay: 0.05, ease: "easeIn" },
+                        marginTop: { duration: 0.25, delay: 0.05, ease: "easeIn" }
+                      }
+                    }}
+                    className="space-y-2"
+                  >
+                    {service.expandContent.map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ 
+                          opacity: 1, 
+                          x: 0,
+                          transition: { delay: i * 0.05 + 0.1 }
+                        }}
+                        exit={{ opacity: 0, x: -10 }}
+                      >
+                        <Link
+                          href={item.link}
+                          className="block p-3 bg-white/10 rounded-lg hover:bg-white/20 transition-all duration-300 group/link transform hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-white/90 group-hover/link:text-white transition-colors">
+                              {item.name}
+                            </span>
+                            <ArrowRight className="w-5 h-5 text-white/60 opacity-0 -translate-x-2 group-hover/link:opacity-100 group-hover/link:translate-x-0 group-hover/link:text-white transition-all duration-300" />
+                          </div>
+                        </Link>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         )}
       </div>

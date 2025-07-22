@@ -12,8 +12,17 @@ import {
   Clock, 
   Send,
   CheckCircle,
-  FileText
+  FileText,
+  MessageCircle,
+  Headphones,
 } from 'lucide-react'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 interface FormData {
   bookingNumber?: string;
@@ -23,6 +32,69 @@ interface FormData {
   subject: string;
   message: string;
 }
+
+// Background Components
+const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
+  <div
+    className={`absolute left-0 w-full h-auto z-0 ${position === 'top' ? 'top-0' : 'bottom-0'}`}
+    style={position === 'top' ? { transform: 'scaleY(-1)' } : {}}
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
+      <defs>
+        <linearGradient id={`wave-gradient-contact-${position}`} x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style={{ stopColor: 'rgba(255, 255, 255, 0.1)' }} />
+          <stop offset="100%" style={{ stopColor: 'rgba(255, 255, 255, 0.05)' }} />
+        </linearGradient>
+      </defs>
+      <path 
+        className={`wave-contact-${position}`} 
+        fill={`url(#wave-gradient-contact-${position})`} 
+        fillOpacity="1" 
+        d="M0,160L48,181.3C96,203,192,245,288,256C384,267,480,245,576,208C672,171,768,117,864,117.3C960,117,1056,171,1152,192C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
+      />
+    </svg>
+  </div>
+)
+
+const FloatingShapes = () => (
+  <>
+    <div className="absolute top-20 left-10 w-20 h-20 bg-white/5 rounded-full blur-xl animate-float-slow"></div>
+    <div className="absolute top-40 right-20 w-32 h-32 bg-white/3 rounded-full blur-2xl animate-float-medium"></div>
+    <div className="absolute bottom-32 left-1/4 w-16 h-16 bg-white/4 rounded-full blur-lg animate-float-fast"></div>
+    <div className="absolute bottom-20 right-1/3 w-24 h-24 bg-white/3 rounded-full blur-xl animate-float-slow"></div>
+  </>
+)
+
+const DotPattern = ({ top, left, right, bottom, uniqueId }: { 
+  top?: string, 
+  left?: string, 
+  right?: string, 
+  bottom?: string, 
+  uniqueId: string 
+}) => (
+  <div
+    className="absolute z-0 opacity-40"
+    style={{ top, left, right, bottom, width: '200px', height: '200px' }}
+  >
+    <svg width="100%" height="100%">
+      <defs>
+        <pattern id={`dot-pattern-contact-${uniqueId}`} width="20" height="20" patternUnits="userSpaceOnUse">
+          <circle cx="2" cy="2" r="1.5" fill="rgba(255, 255, 255, 0.3)" />
+        </pattern>
+        <radialGradient id={`gradient-mask-contact-${uniqueId}`}>
+          <stop offset="0%" stopColor="white" />
+          <stop offset="100%" stopColor="transparent" />
+        </radialGradient>
+      </defs>
+      <rect 
+        width="100%" 
+        height="100%" 
+        fill={`url(#dot-pattern-contact-${uniqueId})`} 
+        mask={`url(#gradient-mask-contact-${uniqueId})`} 
+      />
+    </svg>
+  </div>
+)
 
 const Contact: NextPage = () => {
   const { t } = useTranslation('common')
@@ -71,12 +143,55 @@ const Contact: NextPage = () => {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }))
   }
+
+  const handleSubjectChange = (value: string) => {
+    setFormData(prev => ({ ...prev, subject: value }));
+  };
+
+  const contactInfo = [
+    {
+      icon: <Phone className="w-6 h-6" />,
+      title: t('contact.phone'),
+      content: "010-843 77 62",
+      description: t('contact.phoneDescription')
+    },
+    {
+      icon: <Mail className="w-6 h-6" />,
+      title: t('contact.email'),
+      content: "info@taxiritje.nl",
+      description: t('contact.emailDescription')
+    },
+    {
+      icon: <MapPin className="w-6 h-6" />,
+      title: t('contact.address'),
+      content: "Dwerggras 30, 3068PC Rotterdam",
+      description: t('contact.addressDescription')
+    },
+    {
+      icon: <FileText className="w-6 h-6" />,
+      title: t('contact.companyInfo'),
+      content: "BTW: NL814157932B01 | KVK: 24369978",
+      description: t('contact.companyDescription')
+    },
+    {
+      icon: <Clock className="w-6 h-6" />,
+      title: t('contact.hours'),
+      content: t('contact.available247'),
+      description: t('contact.hoursDescription')
+    },
+    {
+      icon: <Headphones className="w-6 h-6" />,
+      title: t('contact.support'),
+      content: t('contact.customerSupport'),
+      description: t('contact.supportDescription')
+    }
+  ]
 
   return (
     <>
@@ -84,136 +199,120 @@ const Contact: NextPage = () => {
         <title>{t('seo.contact.title')}</title>
         <meta name="description" content={t('seo.contact.description')} />
       </Head>
-      <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-32 pb-16">
-        <div className="max-w-7xl mx-auto px-4">
+      
+      <div className="relative bg-gradient-to-br from-primary via-primary/95 to-primary/90 text-white min-h-screen pt-32 pb-16 overflow-hidden">
+        {/* Background Elements */}
+        <WaveBackground position="top" />
+        <WaveBackground position="bottom" />
+        <FloatingShapes />
+        <DotPattern top="10%" right="5%" uniqueId="top-right" />
+        <DotPattern bottom="15%" left="8%" uniqueId="bottom-left" />
+        <DotPattern top="50%" right="10%" uniqueId="middle-right" />
+        
+        {/* Gradient Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-transparent to-primary/20 z-0"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          {/* Header */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16"
           >
-            <h1 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+            <motion.span 
+              className="inline-block px-6 py-3 bg-white/15 backdrop-blur-sm text-white rounded-full text-sm font-semibold tracking-wide uppercase border border-white/20 shadow-lg mb-6"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 300 }}
+            >
+              <MessageCircle className="w-4 h-4 inline mr-2" />
+              {t('contact.getInTouch')}
+            </motion.span>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent">
               {t('contact.title')}
             </h1>
-            <p className="text-white/80 max-w-2xl mx-auto">
+            <p className="text-xl text-white/90 max-w-3xl mx-auto leading-relaxed">
               {t('contact.subtitle')}
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            {/* Contact Information */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-6"
-            >
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">
-                  {t('contact.getInTouch')}
-                </h2>
-                
-                <div className="space-y-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <Phone className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{t('contact.phone')}</h3>
-                      <p className="text-gray-600">010-843 77 62</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <Mail className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{t('contact.email')}</h3>
-                      <p className="text-gray-600">info@taxiritje.nl</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <MapPin className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{t('contact.address')}</h3>
-                      <p className="text-gray-600">Dwerggras 30</p>
-                      <p className="text-gray-600">3068PC Rotterdam</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <FileText className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{t('contact.companyInfo')}</h3>
-                      <p className="text-gray-600">BTW: NL814157932B01</p>
-                      <p className="text-gray-600">KVK: 24369978</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start space-x-4">
-                    <div className="bg-primary/10 p-3 rounded-lg">
-                      <Clock className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-gray-900">{t('contact.hours')}</h3>
-                      <p className="text-gray-600">{t('contact.available247')}</p>
-                    </div>
+          {/* Contact Info Grid */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16"
+          >
+            {contactInfo.map((info, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                whileHover={{ y: -5, scale: 1.02 }}
+                className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-300 group"
+              >
+                <div className="bg-white/20 w-14 h-14 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/30 transition-colors">
+                  <div className="text-white">
+                    {info.icon}
                   </div>
                 </div>
-              </div>
-            </motion.div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {info.title}
+                </h3>
+                <p className="text-white/90 font-medium mb-1">
+                  {info.content}
+                </p>
+                <p className="text-white/70 text-sm">
+                  {info.description}
+                </p>
+              </motion.div>
+            ))}
+          </motion.div>
 
-            {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+          {/* Contact Form */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="max-w-4xl mx-auto"
+          >
+            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/20 shadow-2xl">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white mb-4">
                   {t('contact.sendMessage')}
                 </h2>
+                <p className="text-white/80">
+                  {t('contact.formDescription')}
+                </p>
+              </div>
 
-                {submitted ? (
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-center py-8"
-                  >
-                    <div className="flex justify-center mb-4">
-                      <CheckCircle className="w-16 h-16 text-green-500" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                      {t('contact.thankYou')}
-                    </h3>
-                    <p className="text-gray-600">
-                      {t('contact.responseMessage')}
-                    </p>
-                  </motion.div>
-                ) : (
-                  <form onSubmit={handleSubmit} className="space-y-6">
-                    <div>
-                      <label htmlFor="bookingNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('contact.bookingNumber')}
-                      </label>
-                      <input
-                        type="text"
-                        id="bookingNumber"
-                        name="bookingNumber"
-                        value={formData.bookingNumber}
-                        onChange={handleChange}
-                        placeholder={t('contact.bookingNumberPlaceholder')}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1">
+              {submitted ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12"
+                >
+                  <div className="bg-green-500/20 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-green-400" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-4">
+                    {t('contact.thankYou')}
+                  </h3>
+                  <p className="text-white/80 text-lg">
+                    {t('contact.responseMessage')}
+                  </p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.1 }}
+                    >
+                      <label htmlFor="fullName" className="block text-white font-medium mb-2">
                         {t('contact.fullName')}
                       </label>
                       <input
@@ -223,13 +322,18 @@ const Contact: NextPage = () => {
                         value={formData.fullName}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        placeholder={t('contact.fullNamePlaceholder')}
                       />
-                    </div>
+                    </motion.div>
 
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('contact.email')}
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <label htmlFor="email" className="block text-white font-medium mb-2">
+                        {t('contact.email')} *
                       </label>
                       <input
                         type="email"
@@ -238,12 +342,19 @@ const Contact: NextPage = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        placeholder={t('contact.emailPlaceholder')}
                       />
-                    </div>
+                    </motion.div>
+                  </div>
 
-                    <div>
-                      <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.3 }}
+                    >
+                      <label htmlFor="phoneNumber" className="block text-white font-medium mb-2">
                         {t('contact.phone')}
                       </label>
                       <input
@@ -253,74 +364,156 @@ const Contact: NextPage = () => {
                         value={formData.phoneNumber}
                         onChange={handleChange}
                         required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        placeholder={t('contact.phonePlaceholder')}
                       />
-                    </div>
+                    </motion.div>
 
-                    <div>
-                      <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('contact.subject')}
-                      </label>
-                      <select
-                        id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
-                        required
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                      >
-                        <option value="">{t('contact.selectSubject')}</option>
-                        <option value="booking">{t('contact.subjects.booking')}</option>
-                        <option value="support">{t('contact.subjects.support')}</option>
-                        <option value="feedback">{t('contact.subjects.feedback')}</option>
-                        <option value="complaint">{t('contact.subjects.complaint')}</option>
-                        <option value="other">{t('contact.subjects.other')}</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                        {t('contact.message')}
-                      </label>
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
-                        required
-                        rows={4}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary"
-                      />
-                    </div>
-
-                    {error && (
-                      <p className="text-red-600 text-sm">{error}</p>
-                    )}
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors disabled:bg-gray-400"
+                    <motion.div
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
                     >
-                      {isSubmitting ? (
-                        <>
-                          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                          {t('contact.sending')}
-                        </>
-                      ) : (
-                        <>
-                          <Send className="w-5 h-5" />
-                          {t('contact.send')}
-                        </>
-                      )}
-                    </button>
-                  </form>
-                )}
-              </div>
-            </motion.div>
-          </div>
+                      <label htmlFor="bookingNumber" className="block text-white font-medium mb-2">
+                        {t('contact.bookingNumber')}
+                      </label>
+                      <input
+                        type="text"
+                        id="bookingNumber"
+                        name="bookingNumber"
+                        value={formData.bookingNumber}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all"
+                        placeholder={t('contact.bookingNumberPlaceholder')}
+                      />
+                    </motion.div>
+                  </div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.5 }}
+                  >
+                    <label htmlFor="subject" className="block text-white font-medium mb-2">
+                      {t('contact.subject')}
+                    </label>
+                    <Select
+                      value={formData.subject}
+                      onValueChange={handleSubjectChange}
+                      required
+                    >
+                      <SelectTrigger className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:ring-2 focus:ring-primary focus:border-primary transition-all h-auto">
+                        <SelectValue placeholder={t('contact.selectSubject')} />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white">
+                        <SelectItem value="booking">{t('contact.subjects.booking')}</SelectItem>
+                        <SelectItem value="support">{t('contact.subjects.support')}</SelectItem>
+                        <SelectItem value="feedback">{t('contact.subjects.feedback')}</SelectItem>
+                        <SelectItem value="complaint">{t('contact.subjects.complaint')}</SelectItem>
+                        <SelectItem value="other">{t('contact.subjects.other')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.6 }}
+                  >
+                    <label htmlFor="message" className="block text-white font-medium mb-2">
+                      {t('contact.message')}
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                      rows={5}
+                      className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
+                      placeholder={t('contact.messagePlaceholder')}
+                    />
+                  </motion.div>
+
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="bg-red-500/20 border border-red-500/30 rounded-xl p-4"
+                    >
+                      <p className="text-red-200 text-center">{error}</p>
+                    </motion.div>
+                  )}
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.7 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center gap-3 bg-white text-primary py-4 px-8 rounded-xl font-semibold text-lg hover:bg-white/90 transition-all disabled:bg-white/50 disabled:cursor-not-allowed shadow-lg"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        {t('contact.sending')}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-6 h-6" />
+                        {t('contact.send')}
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              )}
+            </div>
+          </motion.div>
         </div>
       </div>
+
+      {/* Custom Styles */}
+      <style jsx>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        @keyframes float-medium {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-15px) rotate(90deg); }
+        }
+        
+        @keyframes float-fast {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-10px) rotate(270deg); }
+        }
+
+        .animate-float-slow {
+          animation: float-slow 8s ease-in-out infinite;
+        }
+        
+        .animate-float-medium {
+          animation: float-medium 6s ease-in-out infinite;
+        }
+        
+        .animate-float-fast {
+          animation: float-fast 4s ease-in-out infinite;
+        }
+
+        .wave-contact-top,
+        .wave-contact-bottom {
+          animation: wave-animation 12s infinite ease-in-out;
+        }
+
+        @keyframes wave-animation {
+          0% { transform: translateY(0); }
+          50% { transform: translateY(15px); }
+          100% { transform: translateY(0); }
+        }
+      `}</style>
     </>
   )
 }
