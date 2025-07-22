@@ -29,7 +29,7 @@ const CarAnimation = () => {
           const outset = 4; // Outset the path by 4px
           const inset = 8; // Inset the path by 8px
           const insetButtonX = buttonX + inset;
-          const verticalOffset = width < 640 ? 3 : 0;
+          const verticalOffset = width < 640 ? 4 : 0;
           const insetButtonY = buttonY + inset + verticalOffset;
           const insetButtonW = buttonW - (inset * 2);
           const insetButtonH = buttonH - (inset * 2);
