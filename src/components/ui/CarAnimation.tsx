@@ -26,13 +26,14 @@ const CarAnimation = () => {
           const buttonW = buttonRect.width;
           const buttonH = buttonRect.height;
 
+          const outset = 4; // Outset the path by 4px
           const inset = 8; // Inset the path by 8px
           const insetButtonX = buttonX + inset;
           const insetButtonY = buttonY + inset;
           const insetButtonW = buttonW - (inset * 2);
           const insetButtonH = buttonH - (inset * 2);
 
-          const r = 24; // Corresponds to rounded-3xl of the form container
+          const r = 24 + outset; // Corresponds to rounded-3xl of the form container
           const br = insetButtonH / 2; // Button radius for rounded-full based on inset
 
           const p = {
@@ -45,12 +46,12 @@ const CarAnimation = () => {
           const detourStartX = insetButtonX + insetButtonW / 2;
 
           const newPathD = `
-            M ${r},0
-            L ${width - r},0
-            A ${r},${r} 0 0 1 ${width},${r}
-            L ${width},${height - r}
-            A ${r},${r} 0 0 1 ${width - r},${height}
-            L ${detourStartX}, ${height}
+            M ${r},-${outset}
+            L ${width - r},-${outset}
+            A ${r},${r} 0 0 1 ${width + outset},${r}
+            L ${width + outset},${height - r}
+            A ${r},${r} 0 0 1 ${width - r},${height + outset}
+            L ${detourStartX}, ${height + outset}
             L ${detourStartX}, ${p.bottomRight.y}
             L ${p.bottomRight.x - br}, ${p.bottomRight.y}
             A ${br},${br} 0 0 0 ${p.bottomRight.x}, ${p.bottomRight.y - br}
@@ -61,11 +62,11 @@ const CarAnimation = () => {
             L ${p.bottomLeft.x}, ${p.bottomLeft.y - br}
             A ${br},${br} 0 0 0 ${p.bottomLeft.x + br}, ${p.bottomLeft.y}
             L ${detourStartX}, ${p.bottomLeft.y}
-            L ${detourStartX}, ${height}
-            L ${r},${height}
-            A ${r},${r} 0 0 1 0,${height - r}
-            L 0,${r}
-            A ${r},${r} 0 0 1 ${r},0 Z
+            L ${detourStartX}, ${height + outset}
+            L ${r},${height + outset}
+            A ${r},${r} 0 0 1 -${outset},${height - r}
+            L -${outset},${r}
+            A ${r},${r} 0 0 1 ${r},-${outset} Z
           `.replace(/\s+/g, ' ').trim();
           
           setPathD(newPathD);
