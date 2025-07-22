@@ -1101,5 +1101,43 @@
         "description": "Read our terms and conditions for using our taxi services. Find information on bookings, payments, and liability."
       }
     }
+  },
+  "pricing": {
+    "popular": "Most Popular",
+    "stationWagon": "Station Wagon",
+    "bus": "Bus/Van",
+    "upTo4Passengers": "Up to 4 passengers",
+    "upTo8Passengers": "Up to 8 passengers",
+    "fixedPrice": "Fixed price guarantee",
+    "freeCancellation": "Free cancellation",
+    "meetAndGreet": "Meet & greet service",
+    "bookNow": "Book Now",
+    "fixedPrices": "Fixed Prices",
+    "title": "Transparent Pricing",
+    "subtitle": "No surprises, no hidden fees. Our fixed prices ensure you know exactly what you'll pay before you book.",
+    "features": {
+      "noHiddenFees": {
+        "title": "No Hidden Fees",
+        "description": "What you see is what you pay"
+      },
+      "available247": {
+        "title": "24/7 Available",
+        "description": "Book anytime, day or night"
+      },
+      "doorToDoor": {
+        "title": "Door to Door",
+        "description": "Direct service to your destination"
+      },
+      "professionalDrivers": {
+        "title": "Professional Drivers",
+        "description": "Licensed and experienced"
+      }
+    },
+    "cta": {
+      "title": "Ready to Book Your Ride?",
+      "description": "Choose your destination and vehicle type, then book instantly with our fixed price guarantee.",
+      "bookNow": "Book Online Now",
+      "callNow": "Or Call Us:"
+    }
   }
 }

@@ -4,6 +4,7 @@ import { useTranslation } from 'next-i18next'
 import Head from 'next/head'
 import { HeroSection } from '@/components/sections/HeroSection'
 import { FeaturesSection } from '@/components/sections/FeaturesSection'
+import {PricingSection} from '@/components/sections/PricingSection'
 import { ServicesSection } from '@/components/sections/ServicesSection'
 import { Footer } from '@/components/Footer'
 
@@ -54,6 +55,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <PricingSection />
         <ServicesSection />
       </main>
       <Footer />

@@ -1101,5 +1101,43 @@
         "description": "Lees onze algemene voorwaarden voor het gebruik van onze taxidiensten. Vind informatie over boekingen, betalingen en aansprakelijkheid."
       }
     }
+  },
+  "pricing": {
+    "popular": "Meest Populair",
+    "stationWagon": "Stationwagen",
+    "bus": "Bus/Van",
+    "upTo4Passengers": "Tot 4 passagiers",
+    "upTo8Passengers": "Tot 8 passagiers",
+    "fixedPrice": "Vaste prijs garantie",
+    "freeCancellation": "Gratis annuleren",
+    "meetAndGreet": "Meet & greet service",
+    "bookNow": "Boek Nu",
+    "fixedPrices": "Vaste Prijzen",
+    "title": "Transparante Prijzen",
+    "subtitle": "Geen verrassingen, geen verborgen kosten. Onze vaste prijzen zorgen ervoor dat u precies weet wat u betaalt voordat u boekt.",
+    "features": {
+      "noHiddenFees": {
+        "title": "Geen Verborgen Kosten",
+        "description": "Wat u ziet is wat u betaalt"
+      },
+      "available247": {
+        "title": "24/7 Beschikbaar",
+        "description": "Boek op elk moment, dag of nacht"
+      },
+      "doorToDoor": {
+        "title": "Deur tot Deur",
+        "description": "Directe service naar uw bestemming"
+      },
+      "professionalDrivers": {
+        "title": "Professionele Chauffeurs",
+        "description": "Gelicentieerd en ervaren"
+      }
+    },
+    "cta": {
+      "title": "Klaar om uw rit te boeken?",
+      "description": "Kies uw bestemming en voertuigtype en boek direct met onze vaste prijsgarantie.",
+      "bookNow": "Boek Nu Online",
+      "callNow": "Of Bel Ons:"
+    }
   }
 }
