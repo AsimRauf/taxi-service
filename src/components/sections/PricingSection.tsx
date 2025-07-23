@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef, useLayoutEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'next-i18next'
 import { 
@@ -160,16 +160,23 @@ export const PricingSection = () => {
   const { t } = useTranslation('common');
   const [currentPage, setCurrentPage] = useState(0);
   const [cardsPerPage, setCardsPerPage] = useState(3);
+  const [isMobile, setIsMobile] = useState(false);
+  const [activeCard, setActiveCard] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const handleResize = () => {
-      // Use 1024px as the breakpoint for showing 3 cards, matching lg:grid-cols-3
-      setCardsPerPage(window.innerWidth < 1024 ? 1 : 3);
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (!mobile) {
+        setCardsPerPage(3);
+      }
     };
-    
+
     handleResize();
     window.addEventListener('resize', handleResize);
-    
+
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
@@ -193,14 +200,82 @@ export const PricingSection = () => {
   const pageCount = Math.ceil(allPriceData.length / cardsPerPage);
 
   useEffect(() => {
-    if (pageCount <= 1) return;
+    if (!isMobile || !scrollContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0', 10);
+            setActiveCard(index);
+            break;
+          }
+        }
+      },
+      {
+        root: scrollContainerRef.current,
+        threshold: 0.5,
+      }
+    );
+
+    const cards = Array.from(scrollContainerRef.current.children);
+    cards.forEach(card => observer.observe(card));
+
+    return () => {
+      cards.forEach(card => observer.unobserve(card));
+    };
+  }, [isMobile, allPriceData]);
+
+  const handleMobileDotClick = (index: number) => {
+    const card = cardRefs.current[index];
+    const container = scrollContainerRef.current;
+
+    if (card && container) {
+      const containerWidth = container.offsetWidth;
+      const cardWidth = card.offsetWidth;
+      const cardLeft = card.offsetLeft;
+      
+      const scrollLeft = cardLeft - (containerWidth - cardWidth) / 2;
+
+      container.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth',
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (pageCount <= 1 || isMobile) return;
 
     const timer = setInterval(() => {
       setCurrentPage((prevPage) => (prevPage + 1) % pageCount);
     }, 15000); // 15 seconds
 
     return () => clearInterval(timer);
-  }, [pageCount]);
+  }, [pageCount, isMobile]);
+
+  useEffect(() => {
+    if (isMobile && scrollContainerRef.current && allPriceData.length > 0) {
+      // Use a timeout to ensure the layout is fully calculated and stable
+      const timeoutId = setTimeout(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const firstCard = container.querySelector('[data-index="0"]') as HTMLElement;
+        if (firstCard) {
+          const containerWidth = container.offsetWidth;
+          const cardWidth = firstCard.offsetWidth;
+          const containerPadding = 16; // Account for px-4 padding
+          
+          // Calculate the scroll position to perfectly center the card
+          const scrollLeft = firstCard.offsetLeft - (containerWidth - cardWidth) / 2 + containerPadding;
+          container.scrollLeft = Math.max(0, scrollLeft);
+        }
+      }, 150); // Slightly longer delay for better stability
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isMobile, allPriceData]);
 
   const variants = {
     enter: (direction: number) => ({
@@ -275,50 +350,86 @@ export const PricingSection = () => {
         </div>
 
         {/* Pricing Carousel */}
-        <div className="relative mb-8 pt-8 overflow-hidden">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={currentPage}
-              className="w-full h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              custom={direction}
+        <div className="relative mb-8">
+          {isMobile ? (
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto gap-6 pb-4 pt-8 px-6 no-scrollbar snap-x snap-mandatory"
+              style={{ scrollPaddingLeft: '50%', scrollPaddingRight: '50%' }}
             >
-              {allPriceData
-                .slice(
-                  currentPage * cardsPerPage,
-                  (currentPage + 1) * cardsPerPage
-                )
-                .map((price) => (
-                  <PriceCard
-                    key={`${price.from}-${price.to}`}
-                    priceData={price}
-                  />
-                ))}
-            </motion.div>
-          </AnimatePresence>
+              {allPriceData.map((price, index) => (
+                <div
+                  key={`${price.from}-${price.to}`}
+                  ref={el => { cardRefs.current[index] = el; }}
+                  data-index={index}
+                  className="flex-shrink-0 w-[85vw] max-w-[350px] py-4 snap-center"
+                >
+                  <PriceCard priceData={price} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="overflow-hidden">
+              <AnimatePresence initial={false} custom={direction} mode="wait">
+                <motion.div
+                  key={currentPage}
+                  className="w-full h-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8"
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: "spring", stiffness: 300, damping: 30 },
+                    opacity: { duration: 0.2 }
+                  }}
+                  custom={direction}
+                >
+                  {allPriceData
+                    .slice(
+                      currentPage * cardsPerPage,
+                      (currentPage + 1) * cardsPerPage
+                    )
+                    .map((price) => (
+                      <PriceCard
+                        key={`${price.from}-${price.to}`}
+                        priceData={price}
+                      />
+                    ))}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Dot Navigation */}
-        {pageCount > 1 && (
+        {isMobile ? (
           <div className="flex justify-center gap-2 mb-8">
-            {Array.from({ length: pageCount }).map((_, i) => (
+            {allPriceData.map((_, i) => (
               <button
                 key={i}
-                onClick={() => paginate(i)}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                  currentPage === i ? 'bg-primary scale-125' : 'bg-primary/30 hover:bg-primary/50'
+                onClick={() => handleMobileDotClick(i)}
+                className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+                  activeCard === i ? 'bg-primary scale-125 w-4' : 'bg-primary/30 hover:bg-primary/50'
                 }`}
-                aria-label={`Go to slide ${i + 1}`}
+                aria-label={`Go to card ${i + 1}`}
               />
             ))}
           </div>
+        ) : (
+          pageCount > 1 && (
+            <div className="flex justify-center gap-2 mb-8">
+              {Array.from({ length: pageCount }).map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => paginate(i)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    currentPage === i ? 'bg-primary scale-125' : 'bg-primary/30 hover:bg-primary/50'
+                  }`}
+                  aria-label={`Go to slide ${i + 1}`}
+                />
+              ))}
+            </div>
+          )
         )}
 
         {/* Additional Info - matching your existing glassmorphism style */}
@@ -405,6 +516,14 @@ export const PricingSection = () => {
       <style jsx>{`
         .pricing-wave {
           animation: gentle-wave-pricing 12s infinite ease-in-out;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
         
         @keyframes gentle-wave-pricing {
