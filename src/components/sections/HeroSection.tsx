@@ -1,5 +1,4 @@
 import { BookingForm } from '../forms/BookingForm';
-import CarAnimation from '../ui/CarAnimation';
 import { Phone, Star, Zap, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useTranslation } from 'next-i18next'
@@ -172,7 +171,6 @@ export const HeroSection = () => {
           <div
             className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 z-10"
           >
-            <CarAnimation />
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
             <div className="relative z-10 p-6 sm:p-8 md:p-10">
               <BookingForm />

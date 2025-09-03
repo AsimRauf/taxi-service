@@ -155,7 +155,7 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
                 gateAnimationRef.current.kill();
             }
         };
-    }, []);
+    }, [gateState.gateOpenProgress]);
 
     const renderBorderWithGates = () => {
         if (!containerRef.current) return null;
