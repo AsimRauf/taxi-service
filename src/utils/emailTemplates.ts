@@ -389,7 +389,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
         <div class="booking-info">
             <div class="section">
                 <div class="label">Booking Reference:</div>
-                <div class="highlight">#${booking.clientBookingId}</div>
+                <div class="highlight">${booking.clientBookingId}</div>
             </div>
 
             <div class="section">
@@ -509,7 +509,7 @@ export function createCancellationRequestEmail(booking: BookingData, reason: str
         <div class="booking-info">
             <div class="section">
                 <div class="label">Booking Reference:</div>
-                <div>#${booking.clientBookingId}</div>
+                <div>${booking.clientBookingId}</div>
             </div>
 
             <div class="section">

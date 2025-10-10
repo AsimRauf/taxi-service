@@ -88,7 +88,7 @@ const PaymentSuccessPage = () => {
             </div>
           ) : bookingDetails ? (
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
-              <p className="font-medium">{t('payment.bookingReference')}: #{bookingDetails.clientBookingId}</p>
+              <p className="font-medium">{t('payment.bookingReference')}: {bookingDetails.clientBookingId}</p>
               <p className="text-gray-600 mt-2">{t('payment.amount')}: €{bookingDetails.price.toFixed(2)}</p>
               <p className="text-gray-600 mt-2">{t('payment.status')}: {bookingDetails.payment?.status === 'completed' ? 
                 <span className="text-green-600 font-medium">{t('payment.statusCompleted')}</span> : 

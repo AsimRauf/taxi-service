@@ -64,6 +64,7 @@ export interface BookingData {
 
   // Added by travel-info.tsx
   flightNumber?: string;
+  incomingFlightNumber?: string;
   remarks?: string;
 
   // Added by personal-info.tsx
@@ -123,6 +124,7 @@ export interface Booking {
   bookingType: 'individual' | 'business';
   isFixedPrice: boolean;
   flightNumber?: string;
+  incomingFlightNumber?: string;
   remarks?: string;
   contactInfo?: {
     fullName: string;

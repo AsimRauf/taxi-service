@@ -474,9 +474,13 @@
       "invalidPassengers": "Selecteer aantal passagiers",
       "invalidLuggage": "Geef aan of u bagage heeft",
       "invalidVehicle": "Selecteer een voertuigtype",
-      "invalidRoute": "Kan route niet berekenen. Controleer uw locaties"
+      "invalidRoute": "Kan route niet berekenen. Controleer uw locaties",
+      "flightNumberRequired": "Vlucht nummer is verplicht voor luchthaven bestemmingen",
+      "incomingFlightNumberRequired": "Inkomend vlucht nummer is verplicht voor luchthaven ophaalpunten bij retour reizen"
     },
     "flightNumber": "Vlucht Nummer",
+    "outgoingFlightNumber": "Uitgaande Vlucht Nummer",
+    "incomingFlightNumber": "Inkomende Vlucht Nummer",
     "remarks": "Aanvullende Opmerkingen",
     "update": "Reisinformatie Bijwerken",
     "backToOverview": "Terug naar Overzicht"

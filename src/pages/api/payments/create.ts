@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/mongodb';
 import Booking from '@/models/Booking';
 import { createPaymentOrder } from '@/utils/paymentService';
+import { generateBookingId } from '@/utils/generateId';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Add CORS headers for all environments
@@ -46,9 +47,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const bookingDataWithoutId = Object.fromEntries(
       Object.entries(bookingData).filter(([key]) => !['_id', 'id'].includes(key))
     );
-    
+
+    let finalBookingData = bookingDataWithoutId;
+
+    // If no existing booking, generate new sequential clientBookingId
+    if (!existingBooking) {
+      const newClientBookingId = await generateBookingId();
+      finalBookingData = {
+        ...bookingDataWithoutId,
+        clientBookingId: newClientBookingId
+      };
+    }
+
     const tempBooking = existingBooking || new Booking({
-      ...bookingDataWithoutId,
+      ...finalBookingData,
       isTemporary: true,
       paymentPending: true
     });
@@ -67,10 +79,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const paymentResponse = await createPaymentOrder({
       bookingId: tempBooking._id.toString(),
-      clientBookingId: bookingData.clientBookingId,
+      clientBookingId: tempBooking.clientBookingId,
       amount: bookingData.price,
       currency: 'EUR',
-      description: `Taxi booking #${bookingData.clientBookingId}`,
+      description: `Taxi booking ${tempBooking.clientBookingId}`,
       customerName: bookingData.contactInfo.fullName,
       customerEmail: bookingData.contactInfo.email,
       customerPhone: bookingData.contactInfo.phoneNumber,

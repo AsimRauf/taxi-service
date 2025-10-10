@@ -489,6 +489,8 @@
     "rideDetails": "Your Ride",
     "airportCaution": "Always check with your airline how early you should be at the airport.",
     "flightNumber": "Flight Number",
+    "outgoingFlightNumber": "Outgoing Flight Number",
+    "incomingFlightNumber": "Incoming Flight Number",
     "remarks": "Additional Remarks",
     "optional": "optional",
     "via": "Via",
@@ -511,7 +513,9 @@
       "maxStopovers": "Maximum 3 stopovers allowed",
       "duplicateLocation": "Pickup and destination locations cannot be the same",
       "invalidPassengers": "Select number of passengers",
-      "invalidRoute": "Cannot calculate route. Check your locations"
+      "invalidRoute": "Cannot calculate route. Check your locations",
+      "flightNumberRequired": "Flight number is required for airport destinations",
+      "incomingFlightNumberRequired": "Incoming flight number is required for airport pickups on return trips"
     }
   },
   "overview": {

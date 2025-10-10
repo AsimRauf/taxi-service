@@ -251,7 +251,7 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
           {/* Top Row - Booking ID and Actions */}
           <div className="flex items-center justify-between gap-2 mb-3">
             <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs xs:text-sm">
-              #{booking.id}
+              {booking.id}
             </span>
 
             <Popover className="relative">

@@ -75,7 +75,7 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                         <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 rounded-2xl border border-primary/20 bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg shadow-lg" align="start">
+                <PopoverContent className="w-auto p-0 rounded-2xl overflow-hidden bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg shadow-lg" align="center">
                     <div className="flex flex-col sm:flex-row">
                         <Calendar
                             mode="single"
@@ -83,9 +83,9 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                             onSelect={handleDateSelect}
                             initialFocus
                             disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
-                            className="bg-transparent text-black"
+                            className="bg-white text-black"
                         />
-                        <div className="p-3 border-t border-primary/20 sm:border-t-0 sm:border-l sm:border-primary/20">
+                        <div className="p-3 border-t border-primary/20 sm:border-t-0 sm:border-l sm:border-primary/20 bg-white">
                             <p className="text-sm font-medium text-center mb-2 text-black">Select Time</p>
                             <Select value={time} onValueChange={handleTimeChange}>
                                 <SelectTrigger className="w-[120px] bg-primary/10 border-primary/20 text-black">

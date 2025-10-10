@@ -469,6 +469,11 @@ export const TravelInfoPage = () => {
       errors.destination = t('travelInfo.errors.invalidRoute');
     }
 
+    // Flight number validation - outgoing is optional, incoming mandatory for airport pickups on returns
+    if (bookingData.isReturn && isAirportPickup && !bookingData.incomingFlightNumber?.trim()) {
+      errors.incomingFlightNumber = t('travelInfo.errors.incomingFlightNumberRequired');
+    }
+
     setValidationErrors(errors);
 
     if (Object.keys(errors).length > 0) {
@@ -479,6 +484,7 @@ export const TravelInfoPage = () => {
     const updatedData: BookingData = {
       ...bookingData,
       flightNumber: bookingData.flightNumber || '',
+      incomingFlightNumber: bookingData.incomingFlightNumber || '',
       remarks: bookingData.remarks || ''
     };
 
@@ -1044,6 +1050,7 @@ export const TravelInfoPage = () => {
   );
 
   const isAirportDestination = bookingData?.destination?.mainAddress?.toLowerCase().includes('airport');
+  const isAirportPickup = bookingData?.pickup?.mainAddress?.toLowerCase().includes('airport');
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
@@ -1084,11 +1091,7 @@ export const TravelInfoPage = () => {
             </label>
           </div>
 
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-            <p className="text-sm text-yellow-700">
-              {t('travelInfo.airportCaution')}
-            </p>
-          </div>
+
 
           <div className="flex flex-col md:flex-row items-center justify-between rounded-lg p-4 mb-6 text-center md:text-left border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md">
             <div className="space-y-1 mb-4 md:mb-0">
@@ -1303,12 +1306,11 @@ export const TravelInfoPage = () => {
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                     <Plane size={18} className="text-secondary" />
-                    {t('travelInfo.flightNumber')}
-                    <span className="text-xs text-gray-500">({t('travelInfo.optional')})</span>
+                    {t('travelInfo.outgoingFlightNumber')}
                   </label>
                   <input
                     type="text"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                    className={`w-full p-3 border rounded-lg focus:ring-primary focus:border-primary ${validationErrors.flightNumber ? 'border-red-300' : 'border-gray-300'}`}
                     placeholder={t('travelInfo.flightNumberPlaceholder')}
                     value={bookingData?.flightNumber || ''}
                     onChange={(e) => {
@@ -1319,6 +1321,38 @@ export const TravelInfoPage = () => {
                       });
                     }}
                   />
+                  {validationErrors.flightNumber && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {validationErrors.flightNumber}
+                    </span>
+                  )}
+                </div>
+              )}
+              {bookingData?.isReturn && isAirportPickup && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Plane size={18} className="text-secondary" />
+                    {t('travelInfo.incomingFlightNumber')}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className={`w-full p-3 border rounded-lg focus:ring-primary focus:border-primary ${validationErrors.incomingFlightNumber ? 'border-red-300' : 'border-gray-300'}`}
+                    placeholder={t('travelInfo.flightNumberPlaceholder')}
+                    value={bookingData?.incomingFlightNumber || ''}
+                    onChange={(e) => {
+                      if (!bookingData) return;
+                      setBookingData({
+                        ...bookingData,
+                        incomingFlightNumber: e.target.value
+                      });
+                    }}
+                  />
+                  {validationErrors.incomingFlightNumber && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {validationErrors.incomingFlightNumber}
+                    </span>
+                  )}
                 </div>
               )}
               <div className="space-y-2">

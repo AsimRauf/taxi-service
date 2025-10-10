@@ -201,15 +201,6 @@ bookingSchema.statics.findByUser = function(userId) {
     return this.find({ user: new mongoose.Types.ObjectId(userId) })
         .sort({ createdAt: -1 })
         .populate('user', 'name email');
-};
-
-// Add any pre-save or methods you need
-bookingSchema.pre('save', function(next) {
-  // If this is a new booking, generate ID
-  if (this.isNew && !this.clientBookingId) {
-    this.clientBookingId = new Date().getTime().toString();
-  }
-  next();
 });
 
 const Booking = mongoose.models.Booking || mongoose.model('Booking', bookingSchema);
