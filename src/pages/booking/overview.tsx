@@ -624,14 +624,15 @@ export const OverviewPage = () => {
     localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
   };
 
-  const handleDuplicate = (id: string) => {
+  const handleDuplicate = async (id: string) => {
     const bookingToDuplicate = bookings.find(booking => booking.id === id);
     if (bookingToDuplicate) {
-      const newId = generateBookingId(); // Generate ID once
+      const newId = await generateBookingId(); // Generate ID once
       const newBooking = {
         ...bookingToDuplicate,
         id: newId, // Use the same ID
-        clientBookingId: newId // Use the same ID
+        clientBookingId: newId, // Use the same ID
+        createdAt: Date.now(),
       };
       const updatedBookings = [...bookings, newBooking];
       setBookings(updatedBookings);
@@ -713,4 +714,3 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => {
 };
 
 export default OverviewPage;
-

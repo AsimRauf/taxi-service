@@ -197,11 +197,11 @@ bookingSchema.add({
 bookingSchema.index({ user: 1, clientBookingId: 1 }, { unique: true });
 
 // Add methods to easily find user's bookings
-bookingSchema.statics.findByUser = function(userId) {
+bookingSchema.statics.findByUser = function(userId: string) {
     return this.find({ user: new mongoose.Types.ObjectId(userId) })
         .sort({ createdAt: -1 })
         .populate('user', 'name email');
-});
+};
 
 const Booking = mongoose.models.Booking || mongoose.model('Booking', bookingSchema);
 
