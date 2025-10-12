@@ -12,7 +12,6 @@ import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { WebsiteTranslations } from '@/types/translations';
 import { useEdit } from '@/contexts/EditContext';
 import { NavigationButtons } from '@/components/booking/NavigationButtons'; // Import NavigationButtons
-import { generateBookingId } from '@/utils/generateId';
 
 
 
@@ -164,7 +163,7 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     setIsLoading(true);
 
     try {
-        const bookingId = editingBookingId || generateBookingId();
+        const bookingId = editingBookingId || Date.now().toString();
         const updatedBookingData = {
             ...bookingDataToUse,
             id: bookingId,

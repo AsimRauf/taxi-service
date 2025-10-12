@@ -5,7 +5,6 @@ import { useTranslation } from 'next-i18next';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { GetStaticProps } from 'next';
 import { NextSeo } from 'next-seo';
-import { generateBookingId } from '@/utils/generateId';
 import { useEdit } from '@/contexts/EditContext';
 import { Popover, Transition } from '@headlessui/react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -624,10 +623,10 @@ export const OverviewPage = () => {
     localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
   };
 
-  const handleDuplicate = async (id: string) => {
+  const handleDuplicate = (id: string) => {
     const bookingToDuplicate = bookings.find(booking => booking.id === id);
     if (bookingToDuplicate) {
-      const newId = await generateBookingId(); // Generate ID once
+      const newId = Date.now().toString(); // Generate client-side ID
       const newBooking = {
         ...bookingToDuplicate,
         id: newId, // Use the same ID
