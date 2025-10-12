@@ -203,7 +203,6 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
       const finalBookingData = {
         ...booking,
         userId: user?.id || null,
-        id: bookingId,
         clientBookingId: bookingId,
         status: 'pending'
       };
@@ -623,10 +622,14 @@ export const OverviewPage = () => {
     localStorage.setItem('allBookings', JSON.stringify(updatedBookings));
   };
 
-  const handleDuplicate = (id: string) => {
+  const handleDuplicate = async (id: string) => {
     const bookingToDuplicate = bookings.find(booking => booking.id === id);
     if (bookingToDuplicate) {
-      const newId = Date.now().toString(); // Generate client-side ID
+      // Generate booking ID from server
+      const idResponse = await fetch('/api/bookings/generate-id');
+      const idData = await idResponse.json();
+      const newId = idData.bookingId;
+      
       const newBooking = {
         ...bookingToDuplicate,
         id: newId, // Use the same ID

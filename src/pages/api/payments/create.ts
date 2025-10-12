@@ -25,12 +25,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     console.log('Creating payment for booking:', bookingData.clientBookingId);
 
-    // Check for existing temporary booking
+    // Check for existing temporary booking (only search by clientBookingId)
     const existingBooking = await Booking.findOne({ 
-      $or: [
-        { clientBookingId: bookingData.clientBookingId },
-        { _id: bookingData.bookingId || bookingData._id }
-      ],
+      clientBookingId: bookingData.clientBookingId,
       paymentPending: true
     });
 
@@ -43,15 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Remove id fields while keeping other data
+    // Remove _id and id fields while keeping other data (keep clientBookingId)
     const bookingDataWithoutId = Object.fromEntries(
-      Object.entries(bookingData).filter(([key]) => !['_id', 'id'].includes(key))
+      Object.entries(bookingData).filter(([key]) => key !== '_id' && key !== 'id')
     );
 
+    // Use existing clientBookingId from frontend or generate new one
     let finalBookingData = bookingDataWithoutId;
-
-    // If no existing booking, generate new sequential clientBookingId
-    if (!existingBooking) {
+    
+    if (!existingBooking && !bookingDataWithoutId.clientBookingId) {
       const newClientBookingId = await generateBookingId();
       finalBookingData = {
         ...bookingDataWithoutId,
@@ -59,11 +56,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
     }
 
-    const tempBooking = existingBooking || new Booking({
-      ...finalBookingData,
-      isTemporary: true,
-      paymentPending: true
-    });
+    let tempBooking;
+    if (existingBooking) {
+      // Update placeholder with real booking data
+      Object.assign(existingBooking, {
+        ...finalBookingData,
+        isTemporary: true,
+        paymentPending: true
+      });
+      tempBooking = existingBooking;
+    } else {
+      tempBooking = new Booking({
+        ...finalBookingData,
+        isTemporary: true,
+        paymentPending: true
+      });
+    }
 
     // Always use NEXT_PUBLIC_BASE_URL for consistency
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;

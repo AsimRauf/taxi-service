@@ -163,7 +163,15 @@ const PersonalInfoPage = ({ translations }: BookingFormProps) => {
     setIsLoading(true);
 
     try {
-        const bookingId = editingBookingId || Date.now().toString();
+        let bookingId = editingBookingId;
+        
+        // Generate booking ID from server if not editing
+        if (!bookingId) {
+            const idResponse = await fetch('/api/bookings/generate-id');
+            const idData = await idResponse.json();
+            bookingId = idData.bookingId;
+        }
+        
         const updatedBookingData = {
             ...bookingDataToUse,
             id: bookingId,
