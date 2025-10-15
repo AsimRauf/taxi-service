@@ -1,6 +1,6 @@
 import { BookingForm } from '../forms/BookingForm';
 import { Phone, Star, Zap, Shield } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 
@@ -98,9 +98,22 @@ import { motion } from 'framer-motion';
 
 export const HeroSection = () => {
   const { t } = useTranslation('common');
+  const formRef = useRef<HTMLDivElement>(null);
 
-  // Split title into parts for responsive layout
-  // Split title into parts for responsive layout
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024;
+    
+    if (isMobile) {
+      const timer = setTimeout(() => {
+        if (formRef.current) {
+          formRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 500);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   const titleWords = t('hero.title').split(' ');
   const book = titleWords[0];
   const middlePart = titleWords.slice(1, -2).join(' ');
@@ -167,8 +180,8 @@ export const HeroSection = () => {
         <div className="lg:w-1/2 relative">
           <Image src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={topPlane} width={160} height={160} />
           <Image src="/plane.svg" alt="Plane" className="hidden lg:block absolute text-primary opacity-60 z-0" style={bottomPlane} width={160} height={160} />
-          {/* Booking form with enhanced styling */}
           <div
+            ref={formRef}
             className="relative bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl border border-white/20 hover:shadow-3xl transition-all duration-500 z-10"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-transparent to-purple-500/5 rounded-3xl"></div>
