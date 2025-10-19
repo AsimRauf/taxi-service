@@ -15,11 +15,9 @@ const createTransporter = () => {
             pass: process.env.SMTP_PASSWORD,
         },
         tls: {
-            // Do not fail on invalid certs
-            rejectUnauthorized: isProduction,
-            ciphers: 'SSLv3',
-            minVersion: 'TLSv1'
+            rejectUnauthorized: isProduction
         },
+        requireTLS: true,
         pool: true, // Use pooled connections
         maxConnections: 5,
         maxMessages: 100,

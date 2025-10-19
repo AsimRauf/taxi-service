@@ -1,0 +1,44 @@
+Subject: SMTP Configuration Issue - Unable to Send Emails from taxiritje.nl
+
+Dear Hostnet Support Team,
+
+I am experiencing issues with SMTP email configuration for my domain taxiritje.nl and need your assistance to resolve this problem.
+
+**Issue Summary:**
+I am unable to send emails through SMTP using my domain email account info@taxiritje.nl. I have tried multiple server configurations but encounter different errors.
+
+**Current Configuration:**
+- Email Account: info@taxiritje.nl
+- Password: Host786@!net
+- Domain: taxiritje.nl
+
+**Servers Tested and Results:**
+
+1. **Using mailout.hostnet.nl:587**
+   - Error: Connection timeout (ETIMEDOUT)
+   - Configuration: Port 587, STARTTLS, secure: false
+
+2. **Using smtp.hostnet.nl:587**
+   - Error: Invalid login: 535 5.7.0 Invalid login or password (EAUTH)
+   - Configuration: Port 587, STARTTLS, secure: false
+
+**Technical Details:**
+- Application: Node.js web application using nodemailer
+- Network: Tested from multiple networks
+- Authentication: Using full email address as username with correct password
+
+**Questions:**
+1. What is the correct SMTP server hostname I should use for outgoing emails?
+2. Are there any specific authentication requirements or settings I'm missing?
+3. Could there be any firewall or security restrictions on my account preventing SMTP access?
+4. Do I need to enable SMTP access specifically for my email account?
+
+**Request:**
+Please provide the correct SMTP configuration settings for my domain, or help identify why the authentication is failing despite using the correct credentials.
+
+I would appreciate your prompt assistance as this is affecting my website's email functionality.
+
+Best regards,
+Asim Rauf
+Domain: taxiritje.nl
+Email: info@taxiritje.nl

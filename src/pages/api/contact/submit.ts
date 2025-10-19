@@ -10,9 +10,13 @@ const transporter = nodemailer.createTransport({
   port: Number(process.env.SMTP_PORT),
   secure: false,
   auth: {
-    user: process.env.SUPPORT_EMAIL, // Use support email
+    user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASSWORD
-  }
+  },
+  tls: {
+    rejectUnauthorized: process.env.NODE_ENV === 'production'
+  },
+  requireTLS: true
 })
 
 export default async function handler(
@@ -46,7 +50,7 @@ export default async function handler(
     const supportMailOptions = {
       from: {
         name: 'Taxi Ritje Contact Form',
-        address: process.env.SUPPORT_EMAIL as string // Use support email as sender
+        address: process.env.SMTP_USER as string
       },
       to: process.env.SUPPORT_EMAIL, // Send to support email
       replyTo: email,
@@ -80,7 +84,7 @@ export default async function handler(
     const customerMailOptions = {
       from: {
         name: 'Taxi Ritje',
-        address: process.env.SUPPORT_EMAIL as string // Use support email as sender
+        address: process.env.SMTP_USER as string
       },
       to: email,
       subject: 'Thank you for contacting Taxi Ritje',
