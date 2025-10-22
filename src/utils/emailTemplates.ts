@@ -10,34 +10,34 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
     // Helper function to format luggage items
     const formatLuggage = (luggage: LuggageFormData) => {
         const items = [];
-        
+
         // Regular luggage
         if (luggage.regularLuggage) {
-            if (luggage.regularLuggage.large > 0) items.push(`Large Suitcases: ${luggage.regularLuggage.large}`);
-            if (luggage.regularLuggage.small > 0) items.push(`Small Suitcases: ${luggage.regularLuggage.small}`);
-            if (luggage.regularLuggage.handLuggage > 0) items.push(`Hand Luggage: ${luggage.regularLuggage.handLuggage}`);
-        }
-        
-        // Special luggage
-        if (luggage.specialLuggage) {
-            if (luggage.specialLuggage.foldableWheelchair > 0) items.push(`Foldable Wheelchairs: ${luggage.specialLuggage.foldableWheelchair}`);
-            if (luggage.specialLuggage.rollator > 0) items.push(`Rollators: ${luggage.specialLuggage.rollator}`);
-            if (luggage.specialLuggage.pets > 0) items.push(`Pets: ${luggage.specialLuggage.pets}`);
-            if (luggage.specialLuggage.bicycle > 0) items.push(`Bicycles: ${luggage.specialLuggage.bicycle}`);
-            if (luggage.specialLuggage.winterSports > 0) items.push(`Winter Sports Equipment: ${luggage.specialLuggage.winterSports}`);
-            if (luggage.specialLuggage.stroller > 0) items.push(`Strollers: ${luggage.specialLuggage.stroller}`);
-            if (luggage.specialLuggage.golfBag > 0) items.push(`Golf Bags: ${luggage.specialLuggage.golfBag}`);
-            if (luggage.specialLuggage.waterSports > 0) items.push(`Water Sports Equipment: ${luggage.specialLuggage.waterSports}`);
+            if (luggage.regularLuggage.large > 0) items.push(`Grote koffers: ${luggage.regularLuggage.large}`);
+            if (luggage.regularLuggage.small > 0) items.push(`Kleine koffers: ${luggage.regularLuggage.small}`);
+            if (luggage.regularLuggage.handLuggage > 0) items.push(`Handbagage: ${luggage.regularLuggage.handLuggage}`);
         }
 
-        return items.length > 0 ? items.join('<br>') : 'No luggage specified';
+        // Special luggage
+        if (luggage.specialLuggage) {
+            if (luggage.specialLuggage.foldableWheelchair > 0) items.push(`Opvouwbare rolstoelen: ${luggage.specialLuggage.foldableWheelchair}`);
+            if (luggage.specialLuggage.rollator > 0) items.push(`Rollators: ${luggage.specialLuggage.rollator}`);
+            if (luggage.specialLuggage.pets > 0) items.push(`Huisdieren: ${luggage.specialLuggage.pets}`);
+            if (luggage.specialLuggage.bicycle > 0) items.push(`Fietsen: ${luggage.specialLuggage.bicycle}`);
+            if (luggage.specialLuggage.winterSports > 0) items.push(`Wintersportuitrusting: ${luggage.specialLuggage.winterSports}`);
+            if (luggage.specialLuggage.stroller > 0) items.push(`Kinderwagens: ${luggage.specialLuggage.stroller}`);
+            if (luggage.specialLuggage.golfBag > 0) items.push(`Golftassen: ${luggage.specialLuggage.golfBag}`);
+            if (luggage.specialLuggage.waterSports > 0) items.push(`Watersportuitrusting: ${luggage.specialLuggage.waterSports}`);
+        }
+
+        return items.length > 0 ? items.join('<br>') : 'Geen bagage opgegeven';
     };
 
     // Get vehicle display name
     const getVehicleDisplay = (vehicle: string) => {
         switch (vehicle) {
             case 'sedan': return 'Sedan Taxi';
-            case 'stationWagon': return 'Station Wagon Taxi';
+            case 'stationWagon': return 'Stationwagen Taxi';
             case 'bus': return 'Minibus Taxi';
             default: return vehicle;
         }
@@ -48,292 +48,458 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
     <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
             body {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
+                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                line-height: 1.5;
                 color: #1f2937;
-                max-width: 600px;
-                margin: 0 auto;
-                background-color: #f9fafb;
-            }
-            
-            .header {
-                background-color: #2563eb;
-                color: white;
-                padding: 24px;
-                text-align: center;
-                border-radius: 8px 8px 0 0;
-            }
-            
-            .content {
-                padding: 32px;
-                background-color: white;
-                border-radius: 0 0 8px 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-            
-            .booking-details {
                 background-color: #f3f4f6;
-                padding: 24px;
-                border-radius: 8px;
-                margin: 24px 0;
-                border: 1px solid #e5e7eb;
+                -webkit-font-smoothing: antialiased;
             }
-            
-            .price-box {
-                background-color: #fef3c7;
-                border: 2px solid #fbbf24;
-                color: #92400e;
+
+            .email-wrapper {
+                width: 100%;
+                background-color: #f3f4f6;
+                padding: 16px 0;
+            }
+
+            .container {
+                max-width: 560px;
+                margin: 0 auto;
+                background-color: #ffffff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            }
+
+            .header {
+                background: linear-gradient(135deg, #00A3EE 0%, #0077BE 100%);
+                color: #ffffff;
+                padding: 24px 20px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0 0 4px 0;
+                letter-spacing: -0.3px;
+            }
+
+            .header p {
+                font-size: 13px;
+                font-weight: 400;
+                margin: 0;
+                opacity: 0.95;
+            }
+
+            .logo-section {
+                background-color: #ffffff;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .logo-section img {
+                max-width: 180px;
+                height: auto;
+                display: inline-block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .greeting {
+                font-size: 14px;
+                margin-bottom: 12px;
+                color: #374151;
+                font-weight: 500;
+            }
+
+            .intro-text {
+                font-size: 13px;
+                color: #6b7280;
+                margin-bottom: 16px;
+            }
+
+            .price-badge {
+                background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+                color: #1f2937;
                 padding: 16px;
                 border-radius: 8px;
                 text-align: center;
-                margin: 24px 0;
+                margin: 16px 0;
             }
-            
+
             .price-amount {
                 font-size: 24px;
-                font-weight: bold;
-                color: #92400e;
-            }
-            
-            .price-type {
-                font-size: 14px;
-                color: #92400e;
-                margin-top: 4px;
-            }
-            
-            .section-title {
-                color: #2563eb;
-                margin: 24px 0 8px 0;
-                font-size: 18px;
-                font-weight: bold;
-                border-bottom: 2px solid #e5e7eb;
-                padding-bottom: 8px;
+                font-weight: 700;
+                margin: 0;
             }
 
-            .route-box {
-                background-color: #f8fafc;
-                border-left: 4px solid #2563eb;
+            .price-label {
+                font-size: 12px;
+                font-weight: 500;
+                margin: 4px 0 0 0;
+                opacity: 0.8;
+            }
+
+            .section {
+                background-color: #f9fafb;
+                border-radius: 8px;
                 padding: 16px;
-                margin: 16px 0;
-            }
-
-            .route-point {
                 margin: 12px 0;
-                padding-left: 24px;
-                position: relative;
             }
 
-            .route-point:before {
-                content: "•";
-                color: #2563eb;
-                position: absolute;
-                left: 8px;
-            }
-
-            .luggage-box {
-                background-color: #f8fafc;
-                border: 1px solid #e5e7eb;
-                padding: 16px;
-                border-radius: 8px;
-                margin: 16px 0;
-            }
-
-            .contact-section {
-                background-color: #f3f4f6;
-                padding: 16px;
-                border-radius: 8px;
-                margin-top: 24px;
-            }
-            
-            .info-grid {
-                display: grid;
-                grid-template-columns: auto 1fr;
-                gap: 8px 16px;
-                margin: 16px 0;
-            }
-            
-            .info-label {
-                font-weight: bold;
-                color: #4b5563;
-            }
-            
-            .footer {
-                text-align: center;
-                padding: 24px;
-                color: #4b5563;
+            .section-title {
+                color: #0077BE;
                 font-size: 14px;
+                font-weight: 600;
+                margin: 0 0 10px 0;
             }
-            
-            .important-note {
-                background-color: #fee2e2;
-                border: 1px solid #ef4444;
-                color: #991b1b;
-                padding: 16px;
-                border-radius: 8px;
-                margin: 24px 0;
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px 0;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 13px;
+            }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-label {
+                font-weight: 500;
+                color: #6b7280;
+            }
+
+            .info-value {
+                color: #1f2937;
+                font-weight: 500;
+                text-align: right;
+                flex: 1;
+                margin-left: 12px;
+            }
+
+            .route-card {
+                background-color: #ffffff;
+                border-left: 3px solid #00A3EE;
+                padding: 12px;
+                margin: 10px 0;
+                border-radius: 4px;
+            }
+
+            .route-card h4 {
+                font-size: 13px;
+                font-weight: 600;
+                color: #0077BE;
+                margin: 0 0 8px 0;
+            }
+
+            .route-item {
+                font-size: 13px;
+                margin: 6px 0;
+                padding-left: 12px;
+                position: relative;
+                color: #374151;
+            }
+
+            .route-item::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 7px;
+                width: 6px;
+                height: 6px;
+                background-color: #00A3EE;
+                border-radius: 50%;
+            }
+
+            .route-label {
+                font-weight: 600;
+                color: #1f2937;
+            }
+
+            .luggage-list {
+                font-size: 13px;
+                color: #374151;
+                line-height: 1.6;
+            }
+
+            .notice-box {
+                background-color: #fef3c7;
+                border-left: 3px solid #FFD700;
+                padding: 12px;
+                border-radius: 4px;
+                margin: 16px 0;
+            }
+
+            .notice-title {
+                font-size: 13px;
+                font-weight: 600;
+                color: #92400e;
+                margin: 0 0 6px 0;
+            }
+
+            .notice-list {
+                font-size: 12px;
+                color: #92400e;
+                margin: 0;
+                padding-left: 16px;
+            }
+
+            .notice-list li {
+                margin: 4px 0;
+            }
+
+            .footer {
+                background-color: #f9fafb;
+                text-align: center;
+                padding: 16px 20px;
+                border-top: 1px solid #e5e7eb;
+            }
+
+            .footer-text {
+                font-size: 12px;
+                color: #6b7280;
+                margin: 4px 0;
+            }
+
+            .footer-contact {
+                font-size: 11px;
+                color: #9ca3af;
+                margin: 8px 0 0 0;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .container {
+                    border-radius: 0;
+                }
+
+                .email-wrapper {
+                    padding: 0;
+                }
+
+                .content {
+                    padding: 16px;
+                }
+
+                .section {
+                    padding: 12px;
+                }
+
+                .info-row {
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                .info-value {
+                    text-align: left;
+                    margin-left: 0;
+                }
+
+                .price-amount {
+                    font-size: 20px;
+                }
             }
         </style>
     </head>
     <body>
-        <div class="header">
-            <h1>Booking Confirmation</h1>
-            <p>Thank you for choosing our taxi service</p>
-        </div>
-        
-        <div class="content">
-            <p>Dear ${booking.contactInfo?.fullName},</p>
-            <p>Your booking has been confirmed. Below you will find all the details of your reservation.</p>
-            
-            <div class="price-box">
-                <div class="price-amount">${formattedPrice}</div>
-                <div class="price-type">${booking.isFixedPrice ? 'Fixed Price' : 'Estimated Price'}</div>
-            </div>
-
-            <div class="booking-details">
-                <h2 class="section-title">Booking Reference</h2>
-                <div class="info-grid">
-                    <span class="info-label">Booking ID:</span>
-                    <span>${booking.clientBookingId}</span>
-                    <span class="info-label">Vehicle Type:</span>
-                    <span>${getVehicleDisplay(booking.vehicle || 'unknown')}</span>
-                    <span class="info-label">Number of Passengers:</span>
-                    <span>${booking.passengers}</span>
+        <div class="email-wrapper">
+            <div class="container">
+                <div class="header">
+                    <h1>Boeking Bevestigd</h1>
+                    <p>Bedankt voor uw vertrouwen</p>
                 </div>
 
-                <h2 class="section-title">Route Details</h2>
-                <div class="route-box">
-                    <h3>Outbound Journey</h3>
-                    <div class="route-point">
-                        <strong>Pickup:</strong><br>
-                        ${booking.pickup.mainAddress}
-                        ${booking.pickup.exactAddress ? `<br>(${booking.pickup.exactAddress.businessName || ''} ${booking.pickup.exactAddress.city})` : ''}
+                <div class="logo-section">
+                    <img src="https://taxiritje.nl/_next/image?url=%2Fimages%2FLogo.png&w=384&q=75" alt="TaxiRitje Logo">
+                </div>
+
+                <div class="content">
+                    <p class="greeting">Beste ${booking.contactInfo?.fullName},</p>
+                    <p class="intro-text">Uw taxiboeking is bevestigd. Hier zijn uw ritgegevens:</p>
+
+                    <div class="price-badge">
+                        <div class="price-amount">${formattedPrice}</div>
+                        <div class="price-label">${booking.isFixedPrice ? 'Vaste Prijs' : 'Geschatte Prijs'}</div>
                     </div>
-                    ${booking.stopovers.map((stop: Location, index: number) => `
-                        <div class="route-point">
-                            <strong>Stopover ${index + 1}:</strong><br>
-                            ${stop.mainAddress}
+
+                    <div class="section">
+                        <h3 class="section-title">Boekingsinformatie</h3>
+                        <div class="info-row">
+                            <span class="info-label">Boeking ID</span>
+                            <span class="info-value">${booking.clientBookingId}</span>
                         </div>
-                    `).join('')}
-                    <div class="route-point">
-                        <strong>Destination:</strong><br>
-                        ${booking.destination.mainAddress}
-                        ${booking.destination.exactAddress ? `<br>(${booking.destination.exactAddress.businessName || ''} ${booking.destination.exactAddress.city})` : ''}
-                    </div>
-                </div>
-
-                ${booking.isReturn ? `
-                <div class="route-box">
-                    <h3>Return Journey</h3>
-                    <div class="route-point">
-                        <strong>Pickup:</strong><br>
-                        ${booking.destination.mainAddress}
-                    </div>
-                    ${booking.stopovers.slice().reverse().map((stop: Location, index: number) => `
-                        <div class="route-point">
-                            <strong>Stopover ${index + 1}:</strong><br>
-                            ${stop.mainAddress}
+                        <div class="info-row">
+                            <span class="info-label">Voertuig</span>
+                            <span class="info-value">${getVehicleDisplay(booking.vehicle || 'onbekend')}</span>
                         </div>
-                    `).join('')}
-                    <div class="route-point">
-                        <strong>Destination:</strong><br>
-                        ${booking.pickup.mainAddress}
+                        <div class="info-row">
+                            <span class="info-label">Passagiers</span>
+                            <span class="info-value">${booking.passengers}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Ophaaltijd</span>
+                            <span class="info-value">${pickupDate}</span>
+                        </div>
+                        ${returnDate ? `
+                        <div class="info-row">
+                            <span class="info-label">Retourtijd</span>
+                            <span class="info-value">${returnDate}</span>
+                        </div>
+                        ` : ''}
                     </div>
-                </div>
-                ` : ''}
 
-                <h2 class="section-title">Schedule</h2>
-                <div class="info-grid">
-                    <span class="info-label">Pickup Date & Time:</span>
-                    <span>${pickupDate}</span>
-                    ${returnDate ? `
-                        <span class="info-label">Return Date & Time:</span>
-                        <span>${returnDate}</span>
+                    <div class="section">
+                        <h3 class="section-title">Ritgegevens</h3>
+                        <div class="route-card">
+                            <h4>Heenreis</h4>
+                            <div class="route-item">
+                                <span class="route-label">Van:</span> ${booking.pickup.mainAddress}
+                                ${booking.pickup.exactAddress ? `<br><span style="font-size: 12px; color: #6b7280;">${booking.pickup.exactAddress.businessName || ''} ${booking.pickup.exactAddress.city || ''}</span>` : ''}
+                            </div>
+                            ${booking.stopovers.map((stop: Location, index: number) => `
+                                <div class="route-item">
+                                    <span class="route-label">Stop ${index + 1}:</span> ${stop.mainAddress}
+                                </div>
+                            `).join('')}
+                            <div class="route-item">
+                                <span class="route-label">Naar:</span> ${booking.destination.mainAddress}
+                                ${booking.destination.exactAddress ? `<br><span style="font-size: 12px; color: #6b7280;">${booking.destination.exactAddress.businessName || ''} ${booking.destination.exactAddress.city || ''}</span>` : ''}
+                            </div>
+                        </div>
+
+                        ${booking.isReturn ? `
+                        <div class="route-card">
+                            <h4>Retour</h4>
+                            <div class="route-item">
+                                <span class="route-label">Van:</span> ${booking.destination.mainAddress}
+                            </div>
+                            ${booking.stopovers.slice().reverse().map((stop: Location, index: number) => `
+                                <div class="route-item">
+                                    <span class="route-label">Stop ${index + 1}:</span> ${stop.mainAddress}
+                                </div>
+                            `).join('')}
+                            <div class="route-item">
+                                <span class="route-label">Naar:</span> ${booking.pickup.mainAddress}
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Bagage</h3>
+                        <div class="luggage-list">${formatLuggage(booking.luggage)}</div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Contactgegevens</h3>
+                        ${booking.bookingForOther ? `
+                            <div class="info-row">
+                                <span class="info-label">Geboekt door</span>
+                                <span class="info-value">${booking.contactInfo?.fullName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">E-mail</span>
+                                <span class="info-value">${booking.contactInfo?.email}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Telefoon</span>
+                                <span class="info-value">${booking.contactInfo?.phoneNumber}</span>
+                            </div>
+                            ${booking.contactInfo?.additionalPhoneNumber ? `
+                            <div class="info-row">
+                                <span class="info-label">Alternatief Tel.</span>
+                                <span class="info-value">${booking.contactInfo.additionalPhoneNumber}</span>
+                            </div>
+                            ` : ''}
+                            <div class="info-row">
+                                <span class="info-label">Passagier</span>
+                                <span class="info-value">${booking.bookingForOther.fullName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Passagier Tel.</span>
+                                <span class="info-value">${booking.bookingForOther.phoneNumber}</span>
+                            </div>
+                        ` : `
+                            <div class="info-row">
+                                <span class="info-label">Naam</span>
+                                <span class="info-value">${booking.contactInfo?.fullName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">E-mail</span>
+                                <span class="info-value">${booking.contactInfo?.email}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Telefoon</span>
+                                <span class="info-value">${booking.contactInfo?.phoneNumber}</span>
+                            </div>
+                            ${booking.contactInfo?.additionalPhoneNumber ? `
+                            <div class="info-row">
+                                <span class="info-label">Alternatief Tel.</span>
+                                <span class="info-value">${booking.contactInfo.additionalPhoneNumber}</span>
+                            </div>
+                            ` : ''}
+                        `}
+                    </div>
+
+                    ${booking.flightNumber || booking.remarks ? `
+                        <div class="section">
+                            <h3 class="section-title">Extra Informatie</h3>
+                            ${booking.flightNumber ? `
+                            <div class="info-row">
+                                <span class="info-label">Vluchtnummer</span>
+                                <span class="info-value">${booking.flightNumber}</span>
+                            </div>
+                            ` : ''}
+                            ${booking.remarks ? `
+                            <div class="info-row">
+                                <span class="info-label">Bijzonderheden</span>
+                                <span class="info-value">${booking.remarks}</span>
+                            </div>
+                            ` : ''}
+                        </div>
                     ` : ''}
-                </div>
 
-                <h2 class="section-title">Luggage Details</h2>
-                <div class="luggage-box">
-                    ${formatLuggage(booking.luggage)}
-                </div>
-            </div>
-            
-            <div class="contact-section">
-                <h2 class="section-title">Contact Information</h2>
-                ${booking.bookingForOther ? `
-                    <div class="info-grid">
-                        <span class="info-label">Booked by:</span>
-                        <span>${booking.contactInfo?.fullName}</span>
-                        <span class="info-label">Email:</span>
-                        <span>${booking.contactInfo?.email}</span>
-                        <span class="info-label">Phone:</span>
-                        <span>${booking.contactInfo?.phoneNumber}</span>
-                        ${booking.contactInfo?.additionalPhoneNumber ? `
-                            <span class="info-label">Additional Phone:</span>
-                            <span>${booking.contactInfo.additionalPhoneNumber}</span>
-                        ` : ''}
-                        <span class="info-label">Passenger Name:</span>
-                        <span>${booking.bookingForOther.fullName}</span>
-                        <span class="info-label">Passenger Phone:</span>
-                        <span>${booking.bookingForOther.phoneNumber}</span>
+                    <div class="notice-box">
+                        <div class="notice-title">Belangrijke Herinneringen</div>
+                        <ul class="notice-list">
+                            <li>Wees 5 minuten voor ophaaltijd gereed</li>
+                            <li>Houd uw telefoon bereikbaar voor contact met de chauffeur</li>
+                            <li>Neem 24 uur van tevoren contact op voor wijzigingen</li>
+                        </ul>
                     </div>
-                ` : `
-                    <div class="info-grid">
-                        <span class="info-label">Name:</span>
-                        <span>${booking.contactInfo?.fullName}</span>
-                        <span class="info-label">Email:</span>
-                        <span>${booking.contactInfo?.email}</span>
-                        <span class="info-label">Phone:</span>
-                        <span>${booking.contactInfo?.phoneNumber}</span>
-                        ${booking.contactInfo?.additionalPhoneNumber ? `
-                            <span class="info-label">Additional Phone:</span>
-                            <span>${booking.contactInfo.additionalPhoneNumber}</span>
-                        ` : ''}
-                    </div>
-                `}
-            </div>
 
-            ${booking.flightNumber || booking.remarks ? `
-                <div class="contact-section">
-                    <h2 class="section-title">Additional Information</h2>
-                    <div class="info-grid">
-                        ${booking.flightNumber ? `
-                            <span class="info-label">Flight Number:</span>
-                            <span>${booking.flightNumber}</span>
-                        ` : ''}
-                        ${booking.remarks ? `
-                            <span class="info-label">Special Notes:</span>
-                            <span>${booking.remarks}</span>
-                        ` : ''}
+                    <div class="section">
+                        <h3 class="section-title">Hulp Nodig?</h3>
+                        <div class="info-row">
+                            <span class="info-label">Telefoon</span>
+                            <span class="info-value">${process.env.SUPPORT_PHONE || '+1234567890'}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">E-mail</span>
+                            <span class="info-value">${process.env.SUPPORT_EMAIL || 'support@taxiservice.com'}</span>
+                        </div>
                     </div>
                 </div>
-            ` : ''}
 
-            <div class="important-note">
-                <strong>Important:</strong>
-                <ul>
-                    <li>Please be ready at the pickup location 5 minutes before the scheduled time.</li>
-                    <li>Keep your phone accessible for any updates from the driver.</li>
-                    <li>For any changes to your booking, please contact us at least 24 hours in advance.</li>
-                </ul>
-            </div>
-
-            <div class="contact-section">
-                <h2 class="section-title">Need Help?</h2>
-                <p>Our customer service team is available 24/7:</p>
-                <div class="info-grid">
-                    <span class="info-label">Phone:</span>
-                    <span>${process.env.SUPPORT_PHONE || '+1234567890'}</span>
-                    <span class="info-label">Email:</span>
-                    <span>${process.env.SUPPORT_EMAIL || 'support@taxiservice.com'}</span>
+                <div class="footer">
+                    <p class="footer-text">Bedankt voor het kiezen van onze taxiservice</p>
+                    <p class="footer-contact">© ${new Date().getFullYear()} TaxiRitje. Alle rechten voorbehouden.</p>
                 </div>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p>Thank you for choosing our service!</p>
-            <p>© ${new Date().getFullYear()} Taxi Service. All rights reserved.</p>
         </div>
     </body>
     </html>
@@ -345,115 +511,306 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
     const returnDate = booking.returnDateTime ? new Date(booking.returnDateTime).toLocaleString() : null;
     const formattedPrice = formatCurrency(booking.price);
 
+    // Get vehicle display name
+    const getVehicleDisplay = (vehicle: string) => {
+        switch (vehicle) {
+            case 'sedan': return 'Sedan';
+            case 'stationWagon': return 'Station Wagon';
+            case 'bus': return 'Minibus';
+            default: return vehicle;
+        }
+    };
+
     return `
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
             body {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
+                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                line-height: 1.5;
                 color: #1f2937;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            .booking-info {
                 background-color: #f3f4f6;
-                padding: 16px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .email-wrapper {
+                width: 100%;
+                background-color: #f3f4f6;
+                padding: 16px 0;
+            }
+
+            .container {
+                max-width: 560px;
+                margin: 0 auto;
+                background-color: #ffffff;
                 border-radius: 8px;
-                margin: 16px 0;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
+
+            .header {
+                background: linear-gradient(135deg, #0077BE 0%, #005A8D 100%);
+                color: #ffffff;
+                padding: 24px 20px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0;
+                letter-spacing: -0.3px;
+            }
+
+            .logo-section {
+                background-color: #ffffff;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .logo-section img {
+                max-width: 180px;
+                height: auto;
+                display: inline-block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .alert-badge {
+                background: linear-gradient(135deg, #FFD700 0%, #FFC700 100%);
+                color: #1f2937;
+                padding: 12px 16px;
+                border-radius: 8px;
+                text-align: center;
+                margin: 0 0 16px 0;
+                font-weight: 600;
+                font-size: 13px;
+            }
+
             .section {
-                margin-bottom: 16px;
+                background-color: #f9fafb;
+                border-radius: 8px;
+                padding: 16px;
+                margin: 12px 0;
             }
-            .label {
-                font-weight: bold;
-                color: #4b5563;
+
+            .section-title {
+                color: #0077BE;
+                font-size: 13px;
+                font-weight: 600;
+                margin: 0 0 10px 0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
-            .highlight {
-                background-color: #fef3c7;
-                padding: 8px;
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px 0;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 13px;
+            }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-label {
+                font-weight: 500;
+                color: #6b7280;
+            }
+
+            .info-value {
+                color: #1f2937;
+                font-weight: 500;
+                text-align: right;
+                flex: 1;
+                margin-left: 12px;
+            }
+
+            .route-info {
+                background-color: #ffffff;
+                border-left: 3px solid #00A3EE;
+                padding: 12px;
+                margin: 10px 0;
                 border-radius: 4px;
-                margin: 8px 0;
+                font-size: 13px;
+                color: #374151;
             }
-            .route {
-                border-left: 4px solid #2563eb;
-                padding-left: 12px;
-                margin: 8px 0;
+
+            .route-label {
+                font-weight: 600;
+                color: #1f2937;
+            }
+
+            .footer {
+                background-color: #f9fafb;
+                text-align: center;
+                padding: 16px 20px;
+                border-top: 1px solid #e5e7eb;
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .container {
+                    border-radius: 0;
+                }
+
+                .email-wrapper {
+                    padding: 0;
+                }
+
+                .content {
+                    padding: 16px;
+                }
+
+                .section {
+                    padding: 12px;
+                }
+
+                .info-row {
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                .info-value {
+                    text-align: left;
+                    margin-left: 0;
+                }
             }
         </style>
     </head>
     <body>
-        <h2>New Booking Notification</h2>
-        <div class="booking-info">
-            <div class="section">
-                <div class="label">Booking Reference:</div>
-                <div class="highlight">${booking.clientBookingId}</div>
-            </div>
-
-            <div class="section">
-                <div class="label">Customer Details:</div>
-                <div>${booking.contactInfo?.fullName}</div>
-                <div>${booking.contactInfo?.email}</div>
-                <div>${booking.contactInfo?.phoneNumber}</div>
-                ${booking.contactInfo?.additionalPhoneNumber ? 
-                    `<div>Additional Phone: ${booking.contactInfo.additionalPhoneNumber}</div>` : ''}
-            </div>
-
-            ${booking.bookingForOther ? `
-                <div class="section">
-                    <div class="label">Passenger Details:</div>
-                    <div>${booking.bookingForOther.fullName}</div>
-                    <div>${booking.bookingForOther.phoneNumber}</div>
+        <div class="email-wrapper">
+            <div class="container">
+                <div class="header">
+                    <h1>Nieuwe Boeking Ontvangen</h1>
                 </div>
-            ` : ''}
 
-            <div class="section">
-                <div class="label">Journey Details:</div>
-                <div class="route">
-                    <strong>From:</strong> ${booking.pickup.mainAddress}<br>
-                    <strong>To:</strong> ${booking.destination.mainAddress}
+                <div class="logo-section">
+                    <img src="https://taxiritje.nl/_next/image?url=%2Fimages%2FLogo.png&w=384&q=75" alt="TaxiRitje Logo">
                 </div>
-                ${booking.stopovers.length > 0 ? `
-                    <div class="label">Stopovers:</div>
-                    ${booking.stopovers.map((stop: Location, index: number) => 
-                        `<div>${index + 1}. ${stop.mainAddress}</div>`).join('')}
-                ` : ''}
-            </div>
 
-            <div class="section">
-                <div class="label">Schedule:</div>
-                <div>Pickup: ${pickupDate}</div>
-                ${returnDate ? `<div>Return: ${returnDate}</div>` : ''}
-            </div>
+                <div class="content">
+                    <div class="alert-badge">
+                        Boeking ID: ${booking.clientBookingId}
+                    </div>
 
-            <div class="section">
-                <div class="label">Vehicle & Passengers:</div>
-                <div>Vehicle: ${booking.vehicle?.toUpperCase()}</div>
-                <div>Passengers: ${booking.passengers}</div>
-            </div>
+                    <div class="section">
+                        <h3 class="section-title">Klantinformatie</h3>
+                        <div class="info-row">
+                            <span class="info-label">Naam</span>
+                            <span class="info-value">${booking.contactInfo?.fullName}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">E-mail</span>
+                            <span class="info-value">${booking.contactInfo?.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Telefoon</span>
+                            <span class="info-value">${booking.contactInfo?.phoneNumber}</span>
+                        </div>
+                        ${booking.contactInfo?.additionalPhoneNumber ? `
+                        <div class="info-row">
+                            <span class="info-label">Alternatief Tel.</span>
+                            <span class="info-value">${booking.contactInfo.additionalPhoneNumber}</span>
+                        </div>
+                        ` : ''}
+                    </div>
 
-            <div class="section">
-                <div class="label">Price:</div>
-                <div class="highlight">
-                    ${formattedPrice} (${booking.isFixedPrice ? 'Fixed' : 'Estimated'})
+                    ${booking.bookingForOther ? `
+                        <div class="section">
+                            <h3 class="section-title">Passagiersgegevens</h3>
+                            <div class="info-row">
+                                <span class="info-label">Naam</span>
+                                <span class="info-value">${booking.bookingForOther.fullName}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="info-label">Telefoon</span>
+                                <span class="info-value">${booking.bookingForOther.phoneNumber}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div class="section">
+                        <h3 class="section-title">Ritgegevens</h3>
+                        <div class="route-info">
+                            <span class="route-label">Van:</span> ${booking.pickup.mainAddress}
+                        </div>
+                        ${booking.stopovers.length > 0 ? booking.stopovers.map((stop: Location, index: number) => `
+                            <div class="route-info">
+                                <span class="route-label">Stop ${index + 1}:</span> ${stop.mainAddress}
+                            </div>
+                        `).join('') : ''}
+                        <div class="route-info">
+                            <span class="route-label">Naar:</span> ${booking.destination.mainAddress}
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Boekingsdetails</h3>
+                        <div class="info-row">
+                            <span class="info-label">Ophaaltijd</span>
+                            <span class="info-value">${pickupDate}</span>
+                        </div>
+                        ${returnDate ? `
+                        <div class="info-row">
+                            <span class="info-label">Retourtijd</span>
+                            <span class="info-value">${returnDate}</span>
+                        </div>
+                        ` : ''}
+                        <div class="info-row">
+                            <span class="info-label">Voertuig</span>
+                            <span class="info-value">${getVehicleDisplay(booking.vehicle || 'onbekend')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Passagiers</span>
+                            <span class="info-value">${booking.passengers}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Prijs</span>
+                            <span class="info-value">${formattedPrice} (${booking.isFixedPrice ? 'Vast' : 'Schatting'})</span>
+                        </div>
+                    </div>
+
+                    ${booking.flightNumber ? `
+                        <div class="section">
+                            <h3 class="section-title">Vluchtinformatie</h3>
+                            <div class="info-row">
+                                <span class="info-label">Vluchtnummer</span>
+                                <span class="info-value">${booking.flightNumber}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${booking.remarks ? `
+                        <div class="section">
+                            <h3 class="section-title">Bijzonderheden</h3>
+                            <div class="info-row">
+                                <span class="info-value">${booking.remarks}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="footer">
+                    Gelieve deze boeking snel te verwerken
                 </div>
             </div>
-
-            ${booking.flightNumber ? `
-                <div class="section">
-                    <div class="label">Flight Number:</div>
-                    <div>${booking.flightNumber}</div>
-                </div>
-            ` : ''}
-
-            ${booking.remarks ? `
-                <div class="section">
-                    <div class="label">Special Notes:</div>
-                    <div>${booking.remarks}</div>
-                </div>
-            ` : ''}
         </div>
     </body>
     </html>
@@ -464,85 +821,264 @@ export function createCancellationRequestEmail(booking: BookingData, reason: str
     const pickupDate = new Date(booking.pickupDateTime).toLocaleString();
     const formattedPrice = formatCurrency(booking.price);
 
+    // Get vehicle display name
+    const getVehicleDisplay = (vehicle: string) => {
+        switch (vehicle) {
+            case 'sedan': return 'Sedan';
+            case 'stationWagon': return 'Station Wagon';
+            case 'bus': return 'Minibus';
+            default: return vehicle;
+        }
+    };
+
     return `
     <!DOCTYPE html>
     <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
             body {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
+                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                line-height: 1.5;
                 color: #1f2937;
-                max-width: 600px;
-                margin: 0 auto;
-            }
-            .alert-box {
-                background-color: #fee2e2;
-                border: 2px solid #ef4444;
-                color: #991b1b;
-                padding: 16px;
-                border-radius: 8px;
-                margin: 16px 0;
-            }
-            .booking-info {
                 background-color: #f3f4f6;
-                padding: 16px;
+                -webkit-font-smoothing: antialiased;
+            }
+
+            .email-wrapper {
+                width: 100%;
+                background-color: #f3f4f6;
+                padding: 16px 0;
+            }
+
+            .container {
+                max-width: 560px;
+                margin: 0 auto;
+                background-color: #ffffff;
                 border-radius: 8px;
-                margin: 16px 0;
+                overflow: hidden;
+                box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             }
+
+            .header {
+                background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+                color: #ffffff;
+                padding: 24px 20px;
+                text-align: center;
+            }
+
+            .header h1 {
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0;
+                letter-spacing: -0.3px;
+            }
+
+            .logo-section {
+                background-color: #ffffff;
+                padding: 20px;
+                text-align: center;
+                border-bottom: 1px solid #e5e7eb;
+            }
+
+            .logo-section img {
+                max-width: 180px;
+                height: auto;
+                display: inline-block;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .alert-badge {
+                background-color: #fef3c7;
+                border-left: 3px solid #f59e0b;
+                color: #92400e;
+                padding: 12px 16px;
+                border-radius: 4px;
+                margin: 0 0 16px 0;
+                font-weight: 500;
+                font-size: 13px;
+            }
+
             .section {
-                margin-bottom: 16px;
+                background-color: #f9fafb;
+                border-radius: 8px;
+                padding: 16px;
+                margin: 12px 0;
             }
-            .label {
-                font-weight: bold;
+
+            .section-title {
                 color: #4b5563;
+                font-size: 13px;
+                font-weight: 600;
+                margin: 0 0 10px 0;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                padding: 8px 0;
+                border-bottom: 1px solid #e5e7eb;
+                font-size: 13px;
+            }
+
+            .info-row:last-child {
+                border-bottom: none;
+            }
+
+            .info-label {
+                font-weight: 500;
+                color: #6b7280;
+            }
+
+            .info-value {
+                color: #1f2937;
+                font-weight: 500;
+                text-align: right;
+                flex: 1;
+                margin-left: 12px;
+            }
+
+            .reason-box {
+                background-color: #ffffff;
+                border: 1px solid #e5e7eb;
+                padding: 12px;
+                border-radius: 4px;
+                font-size: 13px;
+                color: #374151;
+            }
+
+            .footer {
+                background-color: #f9fafb;
+                text-align: center;
+                padding: 16px 20px;
+                border-top: 1px solid #e5e7eb;
+                font-size: 12px;
+                color: #6b7280;
+            }
+
+            @media only screen and (max-width: 600px) {
+                .container {
+                    border-radius: 0;
+                }
+
+                .email-wrapper {
+                    padding: 0;
+                }
+
+                .content {
+                    padding: 16px;
+                }
+
+                .section {
+                    padding: 12px;
+                }
+
+                .info-row {
+                    flex-direction: column;
+                    gap: 2px;
+                }
+
+                .info-value {
+                    text-align: left;
+                    margin-left: 0;
+                }
             }
         </style>
     </head>
     <body>
-        <div class="alert-box">
-            <h2>Cancellation Request</h2>
-            <p>A customer has requested to cancel their booking.</p>
-        </div>
-
-        <div class="booking-info">
-            <div class="section">
-                <div class="label">Booking Reference:</div>
-                <div>${booking.clientBookingId}</div>
-            </div>
-
-            <div class="section">
-                <div class="label">Customer Details:</div>
-                <div>${booking.contactInfo?.fullName}</div>
-                <div>${booking.contactInfo?.email}</div>
-                <div>${booking.contactInfo?.phoneNumber}</div>
-            </div>
-
-            <div class="section">
-                <div class="label">Cancellation Reason:</div>
-                <div>${reason}</div>
-            </div>
-
-            <div class="section">
-                <div class="label">Original Booking Details:</div>
-                <div>Pickup: ${pickupDate}</div>
-                <div>From: ${booking.pickup.mainAddress}</div>
-                <div>To: ${booking.destination.mainAddress}</div>
-                <div>Vehicle: ${booking.vehicle?.toUpperCase()}</div>
-                <div>Price: ${formattedPrice}</div>
-                <div>Passengers: ${booking.passengers}</div>
-            </div>
-
-            ${booking.flightNumber ? `
-                <div class="section">
-                    <div class="label">Flight Number:</div>
-                    <div>${booking.flightNumber}</div>
+        <div class="email-wrapper">
+            <div class="container">
+                <div class="header">
+                    <h1>Annuleringsverzoek</h1>
                 </div>
-            ` : ''}
-        </div>
 
-        <p>Please review this cancellation request and take appropriate action.</p>
+                <div class="logo-section">
+                    <img src="https://taxiritje.nl/_next/image?url=%2Fimages%2FLogo.png&w=384&q=75" alt="TaxiRitje Logo">
+                </div>
+
+                <div class="content">
+                    <div class="alert-badge">
+                        Een klant heeft verzocht om boeking ${booking.clientBookingId} te annuleren
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Klantinformatie</h3>
+                        <div class="info-row">
+                            <span class="info-label">Naam</span>
+                            <span class="info-value">${booking.contactInfo?.fullName}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">E-mail</span>
+                            <span class="info-value">${booking.contactInfo?.email}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Telefoon</span>
+                            <span class="info-value">${booking.contactInfo?.phoneNumber}</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Annuleringsreden</h3>
+                        <div class="reason-box">${reason}</div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Boekingsdetails</h3>
+                        <div class="info-row">
+                            <span class="info-label">Ophaaltijd</span>
+                            <span class="info-value">${pickupDate}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Van</span>
+                            <span class="info-value">${booking.pickup.mainAddress}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Naar</span>
+                            <span class="info-value">${booking.destination.mainAddress}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Voertuig</span>
+                            <span class="info-value">${getVehicleDisplay(booking.vehicle || 'onbekend')}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Passagiers</span>
+                            <span class="info-value">${booking.passengers}</span>
+                        </div>
+                        <div class="info-row">
+                            <span class="info-label">Prijs</span>
+                            <span class="info-value">${formattedPrice}</span>
+                        </div>
+                    </div>
+
+                    ${booking.flightNumber ? `
+                        <div class="section">
+                            <h3 class="section-title">Vluchtinformatie</h3>
+                            <div class="info-row">
+                                <span class="info-label">Vluchtnummer</span>
+                                <span class="info-value">${booking.flightNumber}</span>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="footer">
+                    Gelieve dit annuleringsverzoek te beoordelen en te verwerken
+                </div>
+            </div>
+        </div>
     </body>
     </html>
     `;
