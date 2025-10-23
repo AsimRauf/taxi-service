@@ -2,9 +2,20 @@ import { BookingData, Location } from '@/types/booking';
 import { LuggageFormData } from '@/types/luggage';
 import { formatCurrency } from '@/utils/formatters';
 
+// Helper function to format date and time in DD/MM/YYYY, HH:mm:ss uur format (24-hour system)
+function formatDateTime(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} uur`;
+}
+
 export function createBookingConfirmationEmail(booking: BookingData): string {
-    const pickupDate = new Date(booking.pickupDateTime).toLocaleString();
-    const returnDate = booking.returnDateTime ? new Date(booking.returnDateTime).toLocaleString() : null;
+    const pickupDate = formatDateTime(new Date(booking.pickupDateTime));
+    const returnDate = booking.returnDateTime ? formatDateTime(new Date(booking.returnDateTime)) : null;
     const formattedPrice = formatCurrency(booking.price);
 
     // Helper function to format luggage items
@@ -37,7 +48,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
     const getVehicleDisplay = (vehicle: string) => {
         switch (vehicle) {
             case 'sedan': return 'Sedan Taxi';
-            case 'stationWagon': return 'Stationwagen Taxi';
+            case 'stationWagon': return 'Stationwagen';
             case 'bus': return 'Minibus Taxi';
             default: return vehicle;
         }
@@ -507,8 +518,8 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
 }
 
 export function createAdminBookingNotificationEmail(booking: BookingData): string {
-    const pickupDate = new Date(booking.pickupDateTime).toLocaleString();
-    const returnDate = booking.returnDateTime ? new Date(booking.returnDateTime).toLocaleString() : null;
+    const pickupDate = formatDateTime(new Date(booking.pickupDateTime));
+    const returnDate = booking.returnDateTime ? formatDateTime(new Date(booking.returnDateTime)) : null;
     const formattedPrice = formatCurrency(booking.price);
 
     // Get vehicle display name
@@ -818,7 +829,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
 }
 
 export function createCancellationRequestEmail(booking: BookingData, reason: string): string {
-    const pickupDate = new Date(booking.pickupDateTime).toLocaleString();
+    const pickupDate = formatDateTime(new Date(booking.pickupDateTime));
     const formattedPrice = formatCurrency(booking.price);
 
     // Get vehicle display name
