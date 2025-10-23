@@ -9,7 +9,7 @@ I am unable to send emails through SMTP using my domain email account info@taxir
 
 **Current Configuration:**
 - Email Account: info@taxiritje.nl
-- Password: Host786@!net
+- Password: [REMOVED - See .env file]
 - Domain: taxiritje.nl
 
 **Servers Tested and Results:**

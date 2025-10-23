@@ -64,7 +64,7 @@ export const DateSelector = ({ onChange, value, placeholder = "Select date and t
                         variant="outline"
                         className={cn(
                             "w-full h-[60px] font-normal justify-start text-left bg-primary/10 bg-gradient-to-br from-primary/20 to-primary/5 backdrop-blur-lg border border-primary/20 rounded-xl text-black",
-                            !value && "text-gray-500"
+                            !value && "text-gray-900"
                         )}
                     >
                         {value ? (

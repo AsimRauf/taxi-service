@@ -1,16 +1,22 @@
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 async function testSMTPWithTLS() {
     console.log('Testing SMTP with TLS enabled...');
 
-    // Hardcoded SMTP credentials from .env
+    if (!process.env.SMTP_PASSWORD) {
+        console.error('❌ SMTP_PASSWORD not found in .env file');
+        process.exit(1);
+    }
+
+    // SMTP credentials from environment variables
     const smtpConfig = {
-        host: 'smtp.hostnet.nl',
-        port: 587, // Use 587 for STARTTLS (TLS enabled)
+        host: process.env.SMTP_HOST || 'smtp.hostnet.nl',
+        port: Number(process.env.SMTP_PORT) || 587, // Use 587 for STARTTLS (TLS enabled)
         secure: false, // false for STARTTLS, true for SMTPS (port 465)
         auth: {
-            user: 'info@taxiritje.nl',
-            pass: 'AsimRauf678#'
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASSWORD
         },
         tls: {
             ciphers: 'SSLv3',

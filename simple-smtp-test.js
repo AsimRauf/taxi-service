@@ -1,30 +1,36 @@
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 async function testSMTP() {
-    console.log('Testing hardcoded SMTP...');
+    console.log('Testing SMTP from environment variables...');
     
-    // Try multiple configurations
+    if (!process.env.SMTP_PASSWORD) {
+        console.error('❌ SMTP_PASSWORD not found in .env file');
+        process.exit(1);
+    }
+    
+    // Try multiple configurations using env variables
     const configs = [
         {
             name: 'Port 25',
-            host: 'mailout.hostnet.nl',
+            host: process.env.SMTP_HOST || 'mailout.hostnet.nl',
             port: 25,
             secure: false,
-            auth: { user: 'info@taxiritje.nl', pass: 'Host786@!net' }
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
         },
         {
             name: 'Port 2525',
-            host: 'mailout.hostnet.nl', 
+            host: process.env.SMTP_HOST || 'mailout.hostnet.nl', 
             port: 2525,
             secure: false,
-            auth: { user: 'info@taxiritje.nl', pass: 'Host786@!net' }
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
         },
         {
             name: 'Gmail SMTP',
             host: 'smtp.gmail.com',
             port: 587,
             secure: false,
-            auth: { user: 'info@taxiritje.nl', pass: 'Host786@!net' }
+            auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD }
         }
     ];
 

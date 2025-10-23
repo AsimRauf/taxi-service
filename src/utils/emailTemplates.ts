@@ -486,11 +486,11 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
                         <h3 class="section-title">Hulp Nodig?</h3>
                         <div class="info-row">
                             <span class="info-label">Telefoon</span>
-                            <span class="info-value">${process.env.SUPPORT_PHONE || '+1234567890'}</span>
+                            <span class="info-value">0850607086</span>
                         </div>
                         <div class="info-row">
                             <span class="info-label">E-mail</span>
-                            <span class="info-value">${process.env.SUPPORT_EMAIL || 'support@taxiservice.com'}</span>
+                            <span class="info-value">info@taxiritje.nl</span>
                         </div>
                     </div>
                 </div>

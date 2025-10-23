@@ -41,9 +41,9 @@ const PhoneButton = () => {
   return (
     <a 
       href="tel:0850607086" 
-      className={`group relative inline-flex items-center gap-3 mt-6 px-6 py-4 bg-secondary text-white font-bold text-lg xs:text-xl sm:text-2xl rounded-full shadow-2xl hover:shadow-secondary/25 transition-all duration-300 hover:scale-105`}
+      className={`group relative inline-flex items-center gap-2 md:gap-3 mt-2 md:mt-6 px-4 py-2.5 md:px-6 md:py-4 bg-secondary text-white font-bold text-base md:text-lg lg:text-xl xl:text-2xl rounded-full shadow-2xl hover:shadow-secondary/25 transition-all duration-300 hover:scale-105`}
     >
-      <Phone className={`w-6 h-6 ${isAnimating ? 'animate-ringing' : ''}`} />
+      <Phone className={`w-5 h-5 md:w-6 md:h-6 ${isAnimating ? 'animate-ringing' : ''}`} />
       <span>085 06 07 086</span>
       <div className="absolute inset-0 rounded-full bg-secondary/50 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
     </a>
@@ -145,7 +145,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="mt-8 text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4"
+            className="hidden md:block mt-8 text-4xl xs:text-5xl sm:text-6xl md:text-7xl font-bold mb-6 leading-tight tracking-tight px-2 xs:px-4"
           >
             <span className="font-script text-5xl xs:text-6xl sm:text-7xl md:text-8xl text-taxi-yellow">
               {book}
@@ -166,7 +166,7 @@ export const HeroSection = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: 'easeOut', delay: 0.3 }}
-            className="text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed"
+            className="hidden md:block text-base xs:text-lg sm:text-xl md:text-2xl text-white/90 font-light max-w-3xl mx-auto lg:mx-0 px-2 xs:px-4 leading-relaxed"
           >
             {t('hero.subtitle')}
           </motion.p>
