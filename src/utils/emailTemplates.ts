@@ -2,15 +2,14 @@ import { BookingData, Location } from '@/types/booking';
 import { LuggageFormData } from '@/types/luggage';
 import { formatCurrency } from '@/utils/formatters';
 
-// Helper function to format date and time in DD/MM/YYYY, HH:mm:ss uur format (24-hour system)
+// Helper function to format date and time in DD/MM/YYYY, HH:mm uur format (24-hour system)
 function formatDateTime(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    const seconds = date.getSeconds().toString().padStart(2, '0');
-    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds} uur`;
+    return `${day}/${month}/${year}, ${hours}:${minutes} uur`;
 }
 
 export function createBookingConfirmationEmail(booking: BookingData): string {
@@ -794,7 +793,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
                         </div>
                         <div class="info-row">
                             <span class="info-label">Prijs</span>
-                            <span class="info-value">${formattedPrice} (${booking.isFixedPrice ? 'Vast' : 'Schatting'})</span>
+                            <span class="info-value">${formattedPrice}</span>
                         </div>
                     </div>
 
