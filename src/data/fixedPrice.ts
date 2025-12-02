@@ -183,8 +183,8 @@ export const fixedRoutes: FixedRouteMap = {
             bus: 127.50 
         },
         "Nieuwerkerk aan den IJssel": { 
-            stationWagon: 87.50,
-            bus: 117.50 
+            stationWagon: 77.50,
+            bus: 107.50 
         },
         "Rhoon": { 
             stationWagon: 87.50,
@@ -233,11 +233,59 @@ export const fixedRoutes: FixedRouteMap = {
             bus: 175.00 
         },
         "Capelle aan den ijssel": { 
-            stationWagon: 150.00,
-            bus: 175.00 
+            stationWagon: 137.50,
+            bus: 177.50 
+        },
+        "Krimpen aan den Ijssel": { 
+            stationWagon: 137.50,
+            bus: 177.50 
+        },
+        "Nieuwerkerk aan den IJssel": { 
+            stationWagon: 137.50,
+            bus: 177.50 
         }
     },
     "Rotterdam The Hague Airport (RTM)": {
+        "Rotterdam": { 
+            stationWagon: 30.00,
+            bus: 40.00 
+        },
+        "Schiedam": { 
+            stationWagon: 30.00,
+            bus: 40.00 
+        },
+        "Vlaardingen": { 
+            stationWagon: 30.00,
+            bus: 40.00 
+        },
+        "Barendrecht": { 
+            stationWagon: 30.00,
+            bus: 40.00 
+        },
+        "Ridderkerk": { 
+            stationWagon: 37.50,
+            bus: 47.50 
+        },
+        "Spijkenisse": { 
+            stationWagon: 37.50,
+            bus: 47.50 
+        },
+        "Hoogvliet Rotterdam": { 
+            stationWagon: 37.50,
+            bus: 47.50 
+        },
+        "Capelle aan den Ijssel": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
+        "Krimpen aan den Ijssel": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
+        "Nieuwerkerk aan den IJssel": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
         "Leeuwarden": { 
             stationWagon: 330.00,
             bus: 350.00 
@@ -285,6 +333,48 @@ export const fixedRoutes: FixedRouteMap = {
         "Maastricht": { 
             stationWagon: 360.00,
             bus: 380.00 
+        }
+    },
+    "Krimpen aan den Ijssel": {
+        "Rotterdam The Hague Airport (RTM)": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
+        "Amsterdam Airport Schiphol (AMS)": { 
+            stationWagon: 97.50,
+            bus: 127.50 
+        },
+        "Eindhoven Airport (EIN)": { 
+            stationWagon: 137.50,
+            bus: 177.50 
+        }
+    },
+    "Nieuwerkerk aan den IJssel": {
+        "Rotterdam The Hague Airport (RTM)": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
+        "Amsterdam Airport Schiphol (AMS)": { 
+            stationWagon: 77.50,
+            bus: 107.50 
+        },
+        "Eindhoven Airport (EIN)": { 
+            stationWagon: 137.50,
+            bus: 177.50 
+        }
+    },
+    "Capelle aan den Ijssel": {
+        "Rotterdam The Hague Airport (RTM)": { 
+            stationWagon: 47.50,
+            bus: 67.50 
+        },
+        "Amsterdam Airport Schiphol (AMS)": { 
+            stationWagon: 87.50,
+            bus: 117.50 
+        },
+        "Eindhoven Airport (EIN)": { 
+            stationWagon: 137.50,
+            bus: 177.50 
         }
     }
 };
