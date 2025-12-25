@@ -11,6 +11,21 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
+        <script type="text/javascript">
+          {`
+            var sc_project=13194699; 
+            var sc_invisible=1; 
+            var sc_security="4caffc9e";
+          `}
+        </script>
+        <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js" async></script>
+        <noscript>
+          <div className="statcounter">
+            <a title="web counter" href="https://statcounter.com/" target="_blank" rel="noreferrer">
+              <img className="statcounter" src="https://c.statcounter.com/13194699/0/4caffc9e/1/" alt="web counter" referrerPolicy="no-referrer-when-downgrade" />
+            </a>
+          </div>
+        </noscript>
       </body>
     </Html>
   );
