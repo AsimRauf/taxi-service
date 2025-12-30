@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:smtp": "node scripts/test-smtp.js"
+    "test:smtp": "node scripts/test-smtp.js",
+    "test:smtp:asim": "node scripts/test-smtp-to-asim.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -36,7 +37,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.475.0",
     "mongoose": "^7.8.6",
-    "next": "15.1.7",
+    "next": "15.1.9",
     "next-i18next": "^15.4.2",
     "next-seo": "^6.6.0",
     "nodemailer": "^6.10.0",
