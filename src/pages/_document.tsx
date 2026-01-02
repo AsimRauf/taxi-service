@@ -8,6 +8,15 @@ export default function Document() {
         <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon.svg?v=2" />
         <link rel="shortcut icon" href="/favicon.svg?v=2" />
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-5E3GW1M5VD"></script>
+        <script>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-5E3GW1M5VD');
+          `}
+        </script>
       </Head>
       <body>
         <Main />
