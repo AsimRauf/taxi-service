@@ -1,4 +1,5 @@
 import { Html, Head, Main, NextScript } from 'next/document';
+import Script from 'next/script';
 
 export default function Document() {
   return (
@@ -11,14 +12,14 @@ export default function Document() {
       <body>
         <Main />
         <NextScript />
-        <script type="text/javascript">
+        <Script id="statcounter-vars" strategy="beforeInteractive">
           {`
-            var sc_project=13194699; 
-            var sc_invisible=1; 
+            var sc_project=13194699;
+            var sc_invisible=1;
             var sc_security="4caffc9e";
           `}
-        </script>
-        <script type="text/javascript" src="https://www.statcounter.com/counter/counter.js"></script>
+        </Script>
+        <Script src="https://www.statcounter.com/counter/counter.js" strategy="afterInteractive" />
         <noscript>
           <div className="statcounter">
             <a title="Web Analytics Made Easy - Statcounter" href="https://statcounter.com/" target="_blank" rel="noreferrer">
