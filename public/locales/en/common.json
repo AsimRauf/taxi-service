@@ -514,7 +514,7 @@
       "duplicateLocation": "Pickup and destination locations cannot be the same",
       "invalidPassengers": "Select number of passengers",
       "invalidRoute": "Cannot calculate route. Check your locations",
-      "flightNumberRequired": "Flight number is required for airport destinations",
+      "flightNumberRequired": "Flight number is required for airport trips",
       "incomingFlightNumberRequired": "Incoming flight number is required for airport pickups on return trips"
     }
   },
