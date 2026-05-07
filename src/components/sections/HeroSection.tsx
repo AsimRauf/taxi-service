@@ -4,29 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'next-i18next'
 import Image from 'next/image'
 
-const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
-  <div
-    className={`absolute left-0 w-full h-auto ${position === 'top' ? 'top-0' : 'bottom-0'}`}
-    style={position === 'top' ? { transform: 'scaleY(-1) scaleX(-1)' } : {}}
-  >
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
-      <defs>
-        <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: 'rgba(255, 255, 255, 0.12)' }} />
-          <stop offset="100%" style={{ stopColor: 'rgba(255, 255, 255, 0.04)' }} />
-        </linearGradient>
-        <linearGradient id="wave-gradient-2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: 'rgba(255, 215, 0, 0.18)' }} />
-          <stop offset="100%" style={{ stopColor: 'rgba(255, 215, 0, 0.06)' }} />
-        </linearGradient>
-      </defs>
-      <path className="wave-1" fill="url(#wave-gradient)" fillOpacity="1" d="M0,160L48,181.3C96,203,192,245,288,256C384,267,480,245,576,208C672,171,768,117,864,117.3C960,117,1056,171,1152,192C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-      <path className="wave-2" fill="url(#wave-gradient-2)" fillOpacity="1" d="M0,224L48,213.3C96,203,192,181,288,192C384,203,480,245,576,256C672,267,768,245,864,213.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-    </svg>
-  </div>
-);
-
-
 const PhoneButton = () => {
   const [isAnimating, setIsAnimating] = useState(false)
 
@@ -134,9 +111,6 @@ export const HeroSection = () => {
 
   return (
     <div className="min-h-screen bg-primary pt-32 pb-10 lg:pb-0 relative overflow-hidden">
-      <WaveBackground position="top" />
-      <WaveBackground position="bottom" />
-      
       {/* Main content */}
       <div className="w-[90%] md:max-w-7xl mt-6 lg:mt-10 mx-auto relative z-10 lg:flex lg:items-center lg:gap-16">
         <div className="lg:w-1/2 text-center lg:text-left text-white mb-12 lg:mb-0">
@@ -228,26 +202,6 @@ export const HeroSection = () => {
           animation: slide-in-left 0.6s ease-out forwards;
         }
 
-        @keyframes wave-animation {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(10px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        .wave-1 {
-          animation: wave-animation 10s infinite ease-in-out;
-        }
-
-        .wave-2 {
-          animation: wave-animation 15s infinite ease-in-out;
-        }
-        
         .shadow-3xl {
           box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
         }
