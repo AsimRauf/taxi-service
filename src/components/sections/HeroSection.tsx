@@ -12,12 +12,12 @@ const WaveBackground = ({ position }: { position: 'top' | 'bottom' }) => (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full h-auto">
       <defs>
         <linearGradient id="wave-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: 'rgba(0, 163, 238, 0.5)' }} />
-          <stop offset="100%" style={{ stopColor: 'rgba(0, 119, 190, 0.5)' }} />
+          <stop offset="0%" style={{ stopColor: 'rgba(255, 255, 255, 0.12)' }} />
+          <stop offset="100%" style={{ stopColor: 'rgba(255, 255, 255, 0.04)' }} />
         </linearGradient>
         <linearGradient id="wave-gradient-2" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" style={{ stopColor: 'rgba(0, 163, 238, 0.3)' }} />
-          <stop offset="100%" style={{ stopColor: 'rgba(0, 119, 190, 0.3)' }} />
+          <stop offset="0%" style={{ stopColor: 'rgba(255, 215, 0, 0.18)' }} />
+          <stop offset="100%" style={{ stopColor: 'rgba(255, 215, 0, 0.06)' }} />
         </linearGradient>
       </defs>
       <path className="wave-1" fill="url(#wave-gradient)" fillOpacity="1" d="M0,160L48,181.3C96,203,192,245,288,256C384,267,480,245,576,208C672,171,768,117,864,117.3C960,117,1056,171,1152,192C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
