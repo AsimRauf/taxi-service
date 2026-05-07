@@ -91,7 +91,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
             }
 
             .header {
-                background: linear-gradient(135deg, #00A3EE 0%, #0077BE 100%);
+                background: linear-gradient(135deg, #0b1e3b 0%, #0b1e3b 100%);
                 color: #ffffff;
                 padding: 24px 20px;
                 text-align: center;
@@ -171,7 +171,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
             }
 
             .section-title {
-                color: #0077BE;
+                color: #0b1e3b;
                 font-size: 14px;
                 font-weight: 600;
                 margin: 0 0 10px 0;
@@ -204,7 +204,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
 
             .route-card {
                 background-color: #ffffff;
-                border-left: 3px solid #00A3EE;
+                border-left: 3px solid #0b1e3b;
                 padding: 12px;
                 margin: 10px 0;
                 border-radius: 4px;
@@ -213,7 +213,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
             .route-card h4 {
                 font-size: 13px;
                 font-weight: 600;
-                color: #0077BE;
+                color: #0b1e3b;
                 margin: 0 0 8px 0;
             }
 
@@ -232,7 +232,7 @@ export function createBookingConfirmationEmail(booking: BookingData): string {
                 top: 7px;
                 width: 6px;
                 height: 6px;
-                background-color: #00A3EE;
+                background-color: #0b1e3b;
                 border-radius: 50%;
             }
 
@@ -569,7 +569,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
             }
 
             .header {
-                background: linear-gradient(135deg, #0077BE 0%, #005A8D 100%);
+                background: linear-gradient(135deg, #0b1e3b 0%, #0b1e3b 100%);
                 color: #ffffff;
                 padding: 24px 20px;
                 text-align: center;
@@ -618,7 +618,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
             }
 
             .section-title {
-                color: #0077BE;
+                color: #0b1e3b;
                 font-size: 13px;
                 font-weight: 600;
                 margin: 0 0 10px 0;
@@ -653,7 +653,7 @@ export function createAdminBookingNotificationEmail(booking: BookingData): strin
 
             .route-info {
                 background-color: #ffffff;
-                border-left: 3px solid #00A3EE;
+                border-left: 3px solid #0b1e3b;
                 padding: 12px;
                 margin: 10px 0;
                 border-radius: 4px;

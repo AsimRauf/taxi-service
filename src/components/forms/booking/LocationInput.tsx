@@ -333,7 +333,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                       setSelectedLocation(null);
                       setShowSuggestions(false);
                     }}
-                    className="cursor-pointer p-2 text-gray-400 hover:text-[#0077BE] transition-colors"
+                    className="cursor-pointer p-2 text-gray-400 hover:text-[#0b1e3b] transition-colors"
                   >
                     <svg
                       className="w-5 h-5"
@@ -393,10 +393,10 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   width: '100% !important',
                   minWidth: '100% !important',
                   flex: '1 1 auto !important',
-                  border: `2px solid ${state.isFocused ? '#0077BE' : '#FFD700'}`,
+                  border: `2px solid ${state.isFocused ? '#0b1e3b' : '#FFD700'}`,
                   borderColor: 'transparent',
                   borderRadius: '0.75rem',
-                  boxShadow: state.isFocused ? '0 0 0 2px rgba(0, 119, 190, 0.1)' : 'none',
+                  boxShadow: state.isFocused ? '0 0 0 2px rgba(11, 30, 59, 0.1)' : 'none',
                   overflow: 'auto',
                   scrollbarWidth: 'none',
                   '&::-webkit-scrollbar': {
@@ -405,7 +405,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   transition: 'all 0.2s ease',
                   backgroundColor: state.isDisabled ? 'rgb(249 250 251)' : 'white',
                   '&:hover': {
-                    borderColor: state.isFocused ? '#0077BE' : '#FFD700',
+                    borderColor: state.isFocused ? '#0b1e3b' : '#FFD700',
                     boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)'
                   },
                   touchAction: 'manipulation',
@@ -416,7 +416,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   margin: 0,
                   padding: 0,
                   cursor: 'text',
-                  caretColor: '#0077BE',
+                  caretColor: '#0b1e3b',
                   color: '#333333',
                   fontSize: '0.875rem',
                   '@media (min-width: 400px)': {
@@ -433,7 +433,7 @@ export const LocationInput = ({ value, onChange, placeholder, translations, onCl
                   width: '100%',
                   input: {
                     opacity: '1 !important',
-                    caretColor: '#0077BE',
+                    caretColor: '#0b1e3b',
                     '-webkit-touch-callout': 'default',
                     '-webkit-user-select': 'text',
                     'user-select': 'text',

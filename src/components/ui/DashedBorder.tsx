@@ -243,8 +243,8 @@ export const DashedBorder: React.FC<DashedBorderProps> = ({ children, className 
             <svg className="absolute top-0 left-0 w-full h-full" style={{ zIndex: -1 }}>
                 <defs>
                     <linearGradient id="border-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor="#00A3EE" stopOpacity="0.5" />
-                        <stop offset="100%" stopColor="#0077BE" stopOpacity="0.5" />
+                        <stop offset="0%" stopColor="#0b1e3b" stopOpacity="0.5" />
+                        <stop offset="100%" stopColor="#0b1e3b" stopOpacity="0.5" />
                     </linearGradient>
                 </defs>
                 {renderBorderWithGates()}
