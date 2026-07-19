@@ -6,6 +6,7 @@ interface User {
   email: string
   name: string
   phoneNumber: string
+  role?: 'user' | 'admin'
 }
 
 interface RegisterParams {
@@ -46,10 +47,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initAuth()
   }, [])
 
-  // Add route protection
+  // Add route protection — admins land on the admin panel
   useEffect(() => {
     if (user && (router.pathname === '/auth/signin' || router.pathname === '/auth/signup')) {
-      router.push('/')
+      router.push(user.role === 'admin' ? '/admin' : '/')
     }
   }, [user, router.pathname, router])
 

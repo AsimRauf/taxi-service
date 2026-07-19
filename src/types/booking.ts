@@ -51,6 +51,10 @@ export interface BookingData {
   pickupDateTime: string;
   returnDateTime: string | null;
   isReturn: boolean; // Added to track if the trip is a return trip
+  // Return-leg drop-off. Unset means the return goes back to the original pickup.
+  returnDestination?: Location | null;
+  returnDistance?: string;   // distance of destination → return drop-off
+  returnPrice?: number;      // price of the return leg (included in `price`)
   hasLuggage: boolean;
   passengers: number;
 
@@ -91,11 +95,16 @@ export interface Booking {
   _id: string;
   clientBookingId: string;
   userId: string;
+  pickup?: Location;
+  destination?: Location;
   sourceAddress: string;
   destinationAddress: string;
   stopovers: Location[];
   pickupDateTime: string;
   returnDateTime?: string;
+  returnDestination?: Location;
+  returnDistance?: string;
+  returnPrice?: number;
   passengers: number;
   hasLuggage: boolean;
   luggage?: {
@@ -146,6 +155,11 @@ export interface Booking {
     reason: string;
     status: CancellationStatus;
     adminResponse?: string;
+  };
+  payment?: {
+    status: string;
+    paidAt?: string;
+    paymentMethod?: string;
   };
   createdAt: string;
   updatedAt: string;

@@ -1,43 +1,57 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/mongodb';
 import Booking from '@/models/Booking';
-import { createPaymentOrder } from '@/utils/paymentService';
+import { createPaymentOrder, getPaymentStatus } from '@/utils/paymentService';
 import { generateBookingId } from '@/utils/generateId';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Add CORS headers for all environments
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
   try {
+    const { bookingData } = req.body || {};
+
+    // Basic input validation before touching the database
+    if (!bookingData || typeof bookingData !== 'object') {
+      return res.status(400).json({ error: 'Missing booking data' });
+    }
+    if (typeof bookingData.price !== 'number' || bookingData.price <= 0) {
+      return res.status(400).json({ error: 'Invalid booking price' });
+    }
+    if (!bookingData.contactInfo?.fullName || !bookingData.contactInfo?.email) {
+      return res.status(400).json({ error: 'Missing customer contact information' });
+    }
+
     await connectToDatabase();
-    const { bookingData } = req.body;
 
     console.log('Creating payment for booking:', bookingData.clientBookingId);
 
-    // Check for existing temporary booking (only search by clientBookingId)
-    const existingBooking = await Booking.findOne({ 
-      clientBookingId: bookingData.clientBookingId,
-      paymentPending: true
-    });
+    const existingBooking = bookingData.clientBookingId
+      ? await Booking.findOne({ clientBookingId: bookingData.clientBookingId })
+      : null;
 
-    if (existingBooking && existingBooking.payment?.paymentUrl) {
-      console.log('Found existing payment URL for booking:', existingBooking.clientBookingId);
-      // Return existing payment URL if booking exists
-      return res.status(200).json({
-        paymentUrl: existingBooking.payment.paymentUrl,
-        orderId: existingBooking.payment.orderId
-      });
+    // Never create a second payment for an already-paid booking
+    if (existingBooking?.payment?.status === 'completed') {
+      return res.status(409).json({ error: 'This booking has already been paid' });
+    }
+
+    // Reuse the open payment URL only when MultiSafepay confirms the order is
+    // still awaiting payment. A failed/cancelled/expired order can't be paid
+    // again under the same order id — a fresh order is created below instead.
+    if (existingBooking?.payment?.paymentUrl && existingBooking.payment.orderId) {
+      try {
+        const mspStatus = await getPaymentStatus(existingBooking.payment.orderId);
+        if (mspStatus.data?.status === 'initialized') {
+          console.log('Reusing open payment URL for booking:', existingBooking.clientBookingId);
+          return res.status(200).json({
+            paymentUrl: existingBooking.payment.paymentUrl,
+            orderId: existingBooking.payment.orderId
+          });
+        }
+      } catch (statusError) {
+        console.error('Could not verify existing order status, creating a new order:', statusError);
+      }
     }
 
     // Remove _id and id fields while keeping other data (keep clientBookingId)
@@ -45,20 +59,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       Object.entries(bookingData).filter(([key]) => key !== '_id' && key !== 'id')
     );
 
-    // Use existing clientBookingId from frontend or generate new one
     let finalBookingData = bookingDataWithoutId;
-    
     if (!existingBooking && !bookingDataWithoutId.clientBookingId) {
-      const newClientBookingId = await generateBookingId();
       finalBookingData = {
         ...bookingDataWithoutId,
-        clientBookingId: newClientBookingId
+        clientBookingId: await generateBookingId()
       };
     }
 
     let tempBooking;
     if (existingBooking) {
-      // Update placeholder with real booking data
+      // Update placeholder with the latest booking data
       Object.assign(existingBooking, {
         ...finalBookingData,
         isTemporary: true,
@@ -73,58 +84,48 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    // Always use NEXT_PUBLIC_BASE_URL for consistency
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
-    if (!baseUrl) {
-      throw new Error('NEXT_PUBLIC_BASE_URL environment variable is required');
-    }
-    
-    const webhookUrl = `${baseUrl}/api/payments/webhook`;
-    const redirectUrl = baseUrl;
-    
-    console.log('Using webhook URL:', webhookUrl);
-    console.log('Using redirect URL base:', redirectUrl);
+    // MSP order ids must be unique per attempt: first attempt uses the
+    // clientBookingId, retries get a -R<n> suffix
+    const previousAttempts = existingBooking?.payment?.attempts || 0;
+    const orderId = previousAttempts === 0
+      ? tempBooking.clientBookingId
+      : `${tempBooking.clientBookingId}-R${previousAttempts}`;
 
     const paymentResponse = await createPaymentOrder({
       bookingId: tempBooking._id.toString(),
       clientBookingId: tempBooking.clientBookingId,
+      orderId,
       amount: bookingData.price,
       currency: 'EUR',
       description: `Taxi booking ${tempBooking.clientBookingId}`,
       customerName: bookingData.contactInfo.fullName,
       customerEmail: bookingData.contactInfo.email,
       customerPhone: bookingData.contactInfo.phoneNumber,
-      webhookUrl: webhookUrl,
-      redirectUrl: redirectUrl
+      locale: typeof req.body.locale === 'string' ? req.body.locale : undefined
     });
 
-    console.log("Payment response from MultiSafepay:", paymentResponse);
-    console.log("Payment order created with ID:", paymentResponse.data?.order_id || paymentResponse.order_id);
-    
-    // Extract payment details from the nested response structure
-    const paymentUrl = paymentResponse.data?.payment_url || paymentResponse.payment_url;
-    const orderId = paymentResponse.data?.order_id || paymentResponse.order_id;
-    
-    if (!paymentUrl || !orderId) {
+    const paymentUrl = paymentResponse.data?.payment_url;
+    const mspOrderId = paymentResponse.data?.order_id;
+
+    if (!paymentUrl || !mspOrderId) {
       throw new Error('Invalid payment response from MultiSafepay');
     }
-    
-    // Update booking with payment information
+
     tempBooking.payment = {
-      orderId: orderId,
+      orderId: mspOrderId,
       status: 'pending',
       amount: bookingData.price,
       currency: 'EUR',
       paymentUrl: paymentUrl,
+      attempts: previousAttempts + 1
     };
-    
+
     await tempBooking.save();
     console.log('Temporary booking saved with payment info:', tempBooking._id.toString());
-    
-    // Return the payment URL and order ID
-    return res.status(200).json({ 
+
+    return res.status(200).json({
       paymentUrl: paymentUrl,
-      orderId: orderId
+      orderId: mspOrderId
     });
   } catch (error: unknown) {
     console.error('Payment creation error:', error);

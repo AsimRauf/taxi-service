@@ -26,18 +26,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(401).json({ message: 'Invalid credentials' })
     }
 
-    const token = signToken({ 
+    const role = user.role === 'admin' ? 'admin' : 'user'
+
+    const token = signToken({
       userId: user._id.toString(),
-      email: user.email 
+      email: user.email,
+      role
     })
-    
-    return res.status(200).json({ 
+
+    return res.status(200).json({
       token,
       user: {
         id: user._id.toString(),
         name: user.name,
         email: user.email,
-        phoneNumber: user.phoneNumber
+        phoneNumber: user.phoneNumber,
+        role
       }
     })
   } catch (error) {

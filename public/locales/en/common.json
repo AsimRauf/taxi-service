@@ -135,7 +135,9 @@
       "pending": "Pending",
       "confirmed": "Confirmed",
       "completed": "Completed",
-      "cancelled": "Cancelled"
+      "cancelled": "Cancelled",
+      "in-progress": "In Progress",
+      "no-show": "No-show"
     },
     "timeRemaining": {
       "days": "{{days}}d {{hours}}h until pickup",
@@ -156,7 +158,8 @@
     "cancellationStatus": {
       "requested": "Cancellation request pending",
       "approved": "Cancellation approved",
-      "rejected": "Cancellation request rejected"
+      "rejected": "Cancellation request rejected",
+      "auto-approved": "Cancellation approved"
     },
     "title": "Booking Reference",
     "vehicleType": "Vehicle Type",
@@ -270,7 +273,14 @@
     "enterHouseNumberOptional": "Enter house number (optional)",
     "optional": "optional",
     "houseNumberOptionalForBusiness": "House number is optional for business locations",
-    "exactLocationRequired": "Please add exact location details"
+    "exactLocationRequired": "Please add exact location details",
+    "cancellationPolicy": "Free cancellation up to {{hours}} hours before pickup. Requests are reviewed by our team.",
+    "filters": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    }
   },
   "luggage": {
     "title": "Luggage Details",
@@ -480,7 +490,8 @@
     "save": "Save",
     "cancel": "Cancel",
     "saving": "Saving...",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "tryAgain": "Try again"
   },
   "travelInfo": {
     "title": "Travel Information",
@@ -515,7 +526,20 @@
       "invalidPassengers": "Select number of passengers",
       "invalidRoute": "Cannot calculate route. Check your locations",
       "flightNumberRequired": "Flight number is required for airport trips",
-      "incomingFlightNumberRequired": "Incoming flight number is required for airport pickups on return trips"
+      "incomingFlightNumberRequired": "Incoming flight number is required for airport pickups on return trips",
+      "invalidReturnRoute": "The return drop-off cannot be the same as the return pickup location"
+    },
+    "returnDropoffHint": "By default you are dropped off at your original pickup address. You can select a different drop-off location.",
+    "customReturnDropoff": "Custom return drop-off selected — the return trip is priced on its own route.",
+    "pricing": {
+      "outbound": "Outbound",
+      "return": "Return",
+      "total": "Total",
+      "fixedRoute": "Fixed price for this route",
+      "perKm": "Distance-based price: €{{rate}} per km",
+      "minimumFare": "Minimum fare €{{min}} per trip",
+      "returnNote": "Return trip back to your pickup address costs the same as the outbound trip",
+      "customReturnNote": "The return trip is priced separately based on its own route"
     }
   },
   "overview": {
@@ -836,9 +860,9 @@
     "title": "Contact Us",
     "subtitle": "Get in touch with us for any questions or concerns.",
     "getInTouch": "Get in Touch",
-    "phone": "Phone",
+    "phone": "Phone *",
     "phoneDescription": "We are available by phone for urgent matters.",
-    "email": "Email",
+    "email": "Email *",
     "emailDescription": "For general inquiries, please email us.",
     "address": "Address",
     "addressDescription": "Visit our office at the location below.",
@@ -853,8 +877,6 @@
     "sendMessage": "Send us a Message",
     "formDescription": "Fill out the form below and we'll get back to you as soon as possible.",
     "fullName": "Full Name *",
-    "email": "Email *",
-    "phone": "Phone *",
     "fullNamePlaceholder": "Enter your full name",
     "emailPlaceholder": "Enter your email address",
     "phonePlaceholder": "Enter your phone number",
@@ -1068,7 +1090,18 @@
     "viewBookings": "View My Bookings",
     "retryPayment": "Retry Payment",
     "backToBookings": "Back to Bookings",
-    "backToHome": "Back to Home"
+    "backToHome": "Back to Home",
+    "verifying": {
+      "title": "Verifying your payment…",
+      "message": "One moment — we're confirming your payment with the payment provider."
+    },
+    "processing": {
+      "title": "Payment Being Processed",
+      "message": "Your payment hasn't been confirmed yet. This can take a few minutes.",
+      "note": "You will receive a confirmation email as soon as the payment is confirmed. You can safely close this page."
+    },
+    "retryError": "We couldn't restart the payment. Please try again in a moment or contact us.",
+    "redirecting": "Redirecting to payment provider…"
   },
   "seo": {
     "home": {

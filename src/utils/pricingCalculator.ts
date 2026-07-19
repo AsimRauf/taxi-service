@@ -1,11 +1,19 @@
 import { FixedPrice, PriceResult } from '@/types/pricing';
+import { Location } from '@/types/booking';
 import { fixedRoutes } from '@/data/fixedPrice';
 import { findCanonicalName } from '@/data/placeAliases';
 
 // Update price constants
-const STATION_WAGON_PRICE_PER_KM = 1.50;  // €3 per km for station wagon
-const BUS_PRICE_PER_KM = 1.75;            // €5 per km for bus
+const STATION_WAGON_PRICE_PER_KM = 1.50;  // €1.50 per km for station wagon
+const BUS_PRICE_PER_KM = 1.75;            // €1.75 per km for bus
 const MINIMUM_PRICE = 30.0;              // Minimum price of €30 for any ride
+
+// Exposed so the UI can state the pricing convention explicitly
+export const PRICE_PER_KM = {
+    stationWagon: STATION_WAGON_PRICE_PER_KM,
+    bus: BUS_PRICE_PER_KM
+} as const;
+export const MINIMUM_TRIP_PRICE = MINIMUM_PRICE;
 
 export const determineVehicleAvailability = (
     passengers: number,
@@ -165,12 +173,83 @@ export const calculatePrice = (
         isFixedPrice: false
     };
     
-    console.log('💰 Final dynamic price:', { 
+    console.log('💰 Final dynamic price:', {
         totalDistance,
         stationWagonRate: STATION_WAGON_PRICE_PER_KM,
         busRate: BUS_PRICE_PER_KM,
-        result 
+        result
     });
-    
+
     return result;
+};
+
+// ---- Return-trip pricing -------------------------------------------------
+// A return trip has two priced legs:
+//   outbound: pickup → (stopovers) → destination
+//   return:   destination → return drop-off (defaults to the original pickup)
+// When the drop-off is the original pickup the return leg mirrors the
+// outbound (same route reversed, same stopovers) and costs the same.
+// When the customer picks a different drop-off, the return leg is priced
+// on its own route/distance.
+
+interface ReturnPricingData {
+    isReturn: boolean;
+    pickup?: Location | null;
+    destination?: Location | null;
+    returnDestination?: Location | null;
+    destinationAddress?: string;
+    returnDistance?: string;
+}
+
+const toExactInfo = (loc?: Location | null) =>
+    loc?.exactAddress
+        ? {
+            businessName: loc.exactAddress.businessName || '',
+            city: loc.exactAddress.city || ''
+        }
+        : undefined;
+
+export const hasCustomReturnDestination = (data: ReturnPricingData): boolean =>
+    Boolean(
+        data.isReturn &&
+        data.returnDestination?.value?.place_id &&
+        data.returnDestination.value.place_id !== data.pickup?.value?.place_id
+    );
+
+// Prices for the return leg on its own, or null when the return leg simply
+// mirrors the outbound route (drop-off = original pickup).
+export const calculateReturnLegPrices = (data: ReturnPricingData): PriceResult | null => {
+    if (!hasCustomReturnDestination(data)) return null;
+
+    return calculatePrice(
+        data.destination?.mainAddress || data.destinationAddress || '',
+        data.returnDestination?.mainAddress || '',
+        data.returnDistance || '0 km',
+        '0 km',
+        toExactInfo(data.destination),
+        toExactInfo(data.returnDestination)
+    );
+};
+
+export interface BookingTotal {
+    outbound: number;
+    returnLeg: number;
+    total: number;
+}
+
+export const calculateBookingTotal = (
+    data: ReturnPricingData,
+    outboundPrices: PriceResult,
+    vehicle: 'stationWagon' | 'bus'
+): BookingTotal => {
+    const outbound = outboundPrices[vehicle];
+
+    if (!data.isReturn) {
+        return { outbound, returnLeg: 0, total: outbound };
+    }
+
+    const returnPrices = calculateReturnLegPrices(data);
+    const returnLeg = returnPrices ? returnPrices[vehicle] : outbound;
+
+    return { outbound, returnLeg, total: outbound + returnLeg };
 };

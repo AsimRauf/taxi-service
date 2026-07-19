@@ -34,7 +34,7 @@ import {
 import { BookingData } from '@/types/booking';
 import { Snackbar } from '@/components/ui/Snackbar';
 import { determineVehicleAvailability } from '@/utils/pricingCalculator';
-import { calculatePrice } from '@/utils/pricingCalculator';
+import { calculatePrice, calculateBookingTotal } from '@/utils/pricingCalculator';
 
 const LuggageIcon = ({ type }: { type: string }) => {
   switch (type) {
@@ -77,6 +77,7 @@ interface RouteDisplayProps {
   destination: Address;
   stopovers: Address[];
   isReturn: boolean;
+  returnDestination?: Address | null;
 }
 
 const formatDateTime = (dateString: string | null): string => {
@@ -85,8 +86,12 @@ const formatDateTime = (dateString: string | null): string => {
 };
 
 
-const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplayProps) => {
+const RouteDisplay = ({ pickup, destination, stopovers, isReturn, returnDestination }: RouteDisplayProps) => {
   const { t } = useTranslation();
+
+  // Return drop-off defaults to the original pickup unless a custom one was chosen
+  const returnDropoff = returnDestination?.mainAddress ? returnDestination : pickup;
+  const isCustomReturn = returnDropoff.mainAddress !== pickup.mainAddress;
 
   return (
     <div className="flex flex-col">
@@ -115,7 +120,7 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
             <ArrowRight className="text-primary flex-shrink-0 w-4 h-4" />
             <span className="font-medium">{destination.mainAddress}</span>
           </div>
-          {stopovers.slice().reverse().map((stop: Address, index: number) => (
+          {!isCustomReturn && stopovers.slice().reverse().map((stop: Address, index: number) => (
             <div key={index} className="flex items-center mt-2">
               <ArrowRight className="text-secondary flex-shrink-0 w-4 h-4" />
               <span className="text-gray-600">{stop.mainAddress}</span>
@@ -123,7 +128,7 @@ const RouteDisplay = ({ pickup, destination, stopovers, isReturn }: RouteDisplay
           ))}
           <div className="flex items-center mt-2">
             <ArrowRight className="text-green-500 flex-shrink-0 w-4 h-4" />
-            <span className="font-medium">{pickup.mainAddress}</span>
+            <span className="font-medium">{returnDropoff.mainAddress}</span>
           </div>
         </div>
       )}
@@ -192,6 +197,7 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
   const [isBooking, setIsBooking] = useState(false);
   const { t } = useTranslation();
   const { user } = useAuth();
+  const router = useRouter();
 
 
   const handleBookNow = async () => {
@@ -213,8 +219,9 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          bookingData: finalBookingData // Send full booking data
+        body: JSON.stringify({
+          bookingData: finalBookingData, // Send full booking data
+          locale: router.locale
         }),
       });
 
@@ -387,6 +394,7 @@ const BookingCard = ({ booking, onDelete, onDuplicate, onEdit }: BookingCardProp
                 destination={booking.destination}
                 stopovers={booking.stopovers}
                 isReturn={booking.isReturn}
+                returnDestination={booking.returnDestination}
               />
               <div className="mt-4">
                 <h4 className="font-medium text-gray-700">{t('overview.schedule')}</h4>
@@ -566,14 +574,14 @@ export const OverviewPage = () => {
             } : undefined
           );
 
-          // Calculate new price based on vehicle type
-          const basePrice = calculatedPrices[newVehicle];
-          const finalPrice = booking.isReturn ? basePrice * 2 : basePrice;
+          // Calculate new price based on vehicle type (return-leg aware)
+          const totals = calculateBookingTotal(booking, calculatedPrices, newVehicle);
 
           return {
             ...booking,
             vehicle: newVehicle,
-            price: finalPrice,
+            price: totals.total,
+            returnPrice: totals.returnLeg,
             isFixedPrice: calculatedPrices.isFixedPrice
           };
         }

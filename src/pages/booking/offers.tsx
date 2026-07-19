@@ -7,7 +7,7 @@ import { GetStaticProps } from 'next';
 import Image from 'next/image';
 import { Check } from 'lucide-react';
 import { Stepper } from '@/components/booking/Stepper';
-import { calculatePrice, determineVehicleAvailability } from '@/utils/pricingCalculator';
+import { calculatePrice, calculateBookingTotal, determineVehicleAvailability } from '@/utils/pricingCalculator';
 import { BookingData } from '@/types/booking';
 import { useEdit } from '@/contexts/EditContext';
 import { NavigationButtons } from '@/components/booking/NavigationButtons'; // Import the NavigationButtons component
@@ -109,6 +109,16 @@ const VehicleCard = ({
 }) => {
     const { t } = useTranslation();
 
+    // Return-trip total: outbound + return leg (which may have its own
+    // route/price when a custom return drop-off was chosen)
+    const returnTotal = bookingData?.isReturn
+        ? calculateBookingTotal(
+            bookingData,
+            { stationWagon: price, bus: price, isFixedPrice: false },
+            vehicle.id
+        ).total
+        : price;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -152,7 +162,7 @@ const VehicleCard = ({
                         </div>
                         {bookingData?.isReturn && (
                             <div className="text-sm text-gray-600 mt-1">
-                                {t('offers.returnTotalPrice', { price: (price * 2).toFixed(2) })}
+                                {t('offers.returnTotalPrice', { price: returnTotal.toFixed(2) })}
                             </div>
                         )}
                     </div>
@@ -257,11 +267,11 @@ export const OffersPage = () => {
 
         // Update price if vehicle is already selected
         if (parsedData.vehicle) {
-            const basePrice = calculatedPrices[parsedData.vehicle];
-            const finalPrice = parsedData.isReturn ? basePrice * 2 : basePrice;
+            const totals = calculateBookingTotal(parsedData, calculatedPrices, parsedData.vehicle);
             const updatedData: BookingData = {
                 ...parsedData,
-                price: finalPrice,
+                price: totals.total,
+                returnPrice: totals.returnLeg,
                 isFixedPrice: calculatedPrices.isFixedPrice
             };
             setBookingData(updatedData);
@@ -295,14 +305,14 @@ export const OffersPage = () => {
             }
         );
 
-        const basePrice = calculatedPrices[vehicleId];
-        const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
+        const totals = calculateBookingTotal(bookingData, calculatedPrices, vehicleId);
         setSelectedVehicle(vehicleId);
 
         const updatedData: BookingData = {
             ...bookingData,
             vehicle: vehicleId,
-            price: finalPrice,
+            price: totals.total,
+            returnPrice: totals.returnLeg,
             isFixedPrice: calculatedPrices.isFixedPrice
         };
 
@@ -333,12 +343,16 @@ export const OffersPage = () => {
     const handleContinue = () => {
         if (!selectedVehicle || !bookingData) return;
 
-        const basePrice = prices[selectedVehicle];
-        const finalPrice = bookingData.isReturn ? basePrice * 2 : basePrice;
+        const totals = calculateBookingTotal(
+            bookingData,
+            { ...prices, isFixedPrice },
+            selectedVehicle
+        );
 
         const finalData: BookingData = {
             ...bookingData,
-            price: finalPrice,
+            price: totals.total,
+            returnPrice: totals.returnLeg,
             isFixedPrice
         };
 

@@ -10,7 +10,13 @@ import { LocationInput } from '@/components/forms/booking/LocationInput';
 import { Location, BookingData } from '@/types/booking';
 import { calculateSegmentDistances } from '@/utils/distanceCalculations';
 import { createTranslationsObject } from '@/utils/translations';
-import { calculatePrice } from '@/utils/pricingCalculator';
+import {
+  calculatePrice,
+  calculateBookingTotal,
+  hasCustomReturnDestination,
+  PRICE_PER_KM,
+  MINIMUM_TRIP_PRICE
+} from '@/utils/pricingCalculator';
 import { Plane } from 'lucide-react';
 import { DateSelector } from '@/components/forms/booking/DateSelector';
 import { isBefore } from 'date-fns';
@@ -121,7 +127,7 @@ const ExactLocationModal = ({
   isOpen: boolean;
   onClose: () => void;
   location: Location;
-  type: 'pickup' | 'stopover' | 'destination';
+  type: 'pickup' | 'stopover' | 'destination' | 'returnDestination';
   index?: number;
   parsedAddress: ParsedAddress;
   bookingData: BookingData | null;
@@ -187,6 +193,11 @@ const ExactLocationModal = ({
         ...bookingData,
         destination: updatedLocation,
         destinationAddress: updatedLocation.mainAddress || ''
+      };
+    } else if (type === 'returnDestination') {
+      updatedData = {
+        ...bookingData,
+        returnDestination: updatedLocation
       };
     } else {
       const stopovers = [...bookingData.stopovers];
@@ -379,7 +390,7 @@ export const TravelInfoPage = () => {
   const [showExactLocationModal, setShowExactLocationModal] = useState<{
     isOpen: boolean;
     location?: Location;
-    type?: 'pickup' | 'stopover' | 'destination';
+    type?: 'pickup' | 'stopover' | 'destination' | 'returnDestination';
     index?: number;
   }>({ isOpen: false });
 
@@ -462,6 +473,17 @@ export const TravelInfoPage = () => {
       } else if (isBefore(bookingData.returnDateTime, bookingData.pickupDateTime!)) {
         errors.returnDate = t('travelInfo.errors.invalidReturnTime');
       }
+
+      // Custom return drop-off: must be a valid location, different from the
+      // return-leg origin (the outbound destination), with exact address
+      if (hasCustomReturnDestination(bookingData)) {
+        const customDropoff = bookingData.returnDestination!;
+        if (customDropoff.value.place_id === bookingData.destination?.value?.place_id) {
+          errors.returnDestination = t('travelInfo.errors.invalidReturnRoute');
+        } else if (!validateExactLocation(customDropoff)) {
+          errors.returnDestination = t('errors.exactAddressRequired');
+        }
+      }
     }
 
     if (bookingData.pickup && bookingData.destination &&
@@ -469,20 +491,23 @@ export const TravelInfoPage = () => {
       errors.destination = t('travelInfo.errors.invalidRoute');
     }
 
-    // Flight number validation
-    // Mandatory for single trip from airport
-    if (isAirportPickup && !bookingData.isReturn && !bookingData.flightNumber?.trim()) {
-      errors.flightNumber = t('travelInfo.errors.flightNumberRequired');
-    }
-    
-    // Mandatory for return trip from airport (incoming flight)
-    if (bookingData.isReturn && isAirportPickup && !bookingData.incomingFlightNumber?.trim()) {
-      errors.incomingFlightNumber = t('travelInfo.errors.incomingFlightNumberRequired');
-    }
-    
-    // Mandatory for single trip to airport (outgoing flight)
-    if (isAirportDestination && !bookingData.isReturn && !bookingData.flightNumber?.trim()) {
-      errors.flightNumber = t('travelInfo.errors.flightNumberRequired');
+    // Flight number validation, per leg:
+    //  - a leg that starts at an airport needs the arriving flight number
+    //  - a leg that ends at an airport needs the departing flight number
+    if (!bookingData.isReturn) {
+      // Single trip from or to an airport
+      if ((isAirportPickup || isAirportDestination) && !bookingData.flightNumber?.trim()) {
+        errors.flightNumber = t('travelInfo.errors.flightNumberRequired');
+      }
+    } else {
+      // Outbound from airport, or return leg departing the airport (destination)
+      if ((isAirportPickup || isAirportDestination) && !bookingData.incomingFlightNumber?.trim()) {
+        errors.incomingFlightNumber = t('travelInfo.errors.incomingFlightNumberRequired');
+      }
+      // Outbound to airport, or return leg arriving at an airport drop-off
+      if ((isAirportDestination || isAirportReturnDropoff) && !bookingData.flightNumber?.trim()) {
+        errors.flightNumber = t('travelInfo.errors.flightNumberRequired');
+      }
     }
 
     setValidationErrors(errors);
@@ -564,60 +589,94 @@ export const TravelInfoPage = () => {
     }
   };
 
+  // Recalculates distances and pricing for the outbound leg and — for return
+  // trips — the return leg (destination → return drop-off). The return leg
+  // mirrors the outbound price when the drop-off is the original pickup.
+  const recalculatePricing = async (updatedData: BookingData): Promise<BookingData> => {
+    if (!updatedData.pickup?.mainAddress || !updatedData.destination?.mainAddress) {
+      return updatedData;
+    }
+
+    const validStopovers = (updatedData.stopovers || []).filter(stopover =>
+      stopover &&
+      stopover.mainAddress &&
+      stopover.mainAddress.length > 0
+    );
+
+    const segments = await calculateSegmentDistances(
+      updatedData.pickup,
+      updatedData.destination,
+      validStopovers
+    );
+
+    const calculatedPrices = calculatePrice(
+      updatedData.pickup.mainAddress,
+      updatedData.destination.mainAddress,
+      segments[0].distance,
+      segments[1]?.distance || '0 km',
+      updatedData.pickup.exactAddress ? {
+        businessName: updatedData.pickup.exactAddress.businessName || '',
+        city: updatedData.pickup.exactAddress.city || ''
+      } : undefined,
+      updatedData.destination.exactAddress ? {
+        businessName: updatedData.destination.exactAddress.businessName || '',
+        city: updatedData.destination.exactAddress.city || ''
+      } : undefined
+    );
+
+    // Distance of the return leg when a custom drop-off is chosen
+    let returnDistance = updatedData.returnDistance || '';
+    if (hasCustomReturnDestination(updatedData)) {
+      const returnSegments = await calculateSegmentDistances(
+        updatedData.destination,
+        updatedData.returnDestination!,
+        []
+      );
+      returnDistance = returnSegments[0]?.distance || '0 km';
+    }
+
+    const withDistances: BookingData = {
+      ...updatedData,
+      directDistance: segments[0].distance || '0 km',
+      extraDistance: segments[1]?.distance || '0 km',
+      returnDistance
+    };
+
+    if (!withDistances.vehicle) {
+      return { ...withDistances, price: 0, returnPrice: 0 };
+    }
+
+    const totals = calculateBookingTotal(withDistances, calculatedPrices, withDistances.vehicle);
+
+    return {
+      ...withDistances,
+      price: totals.total,
+      returnPrice: totals.returnLeg,
+      isFixedPrice: calculatedPrices.isFixedPrice
+    };
+  };
+
   const handleReturnTripChange = async (checked: boolean) => {
     if (!bookingData) return;
 
-    const updatedData = {
+    const updatedData: BookingData = {
       ...bookingData,
-      returnDateTime: checked ? '' : null,
+      returnDateTime: checked ? (bookingData.returnDateTime || '') : null,
+      // Reset the drop-off to "back to pickup" when toggling off
+      returnDestination: checked ? bookingData.returnDestination : null,
       isReturn: checked
     };
 
     // Update state first to ensure UI consistency
     setBookingData(updatedData);
+    localStorage.setItem('bookingData', JSON.stringify(updatedData));
 
-    // Then recalculate price if we have the necessary data
-    if (updatedData.pickup?.mainAddress && updatedData.destination?.mainAddress) {
-      const segments = await calculateSegmentDistances(
-        updatedData.pickup,
-        updatedData.destination,
-        (updatedData.stopovers || []).filter(stopover =>
-          stopover &&
-          stopover.mainAddress &&
-          stopover.mainAddress.length > 0
-        )
-      );
-
-      const calculatedPrices = calculatePrice(
-        updatedData.pickup.mainAddress,
-        updatedData.destination.mainAddress,
-        segments[0].distance,
-        segments[1]?.distance || '0 km',
-        updatedData.pickup.exactAddress ? {
-          businessName: updatedData.pickup.exactAddress.businessName || '',
-          city: updatedData.pickup.exactAddress.city || '',
-        } : undefined,
-        updatedData.destination.exactAddress ? {
-          businessName: updatedData.destination.exactAddress.businessName || '',
-          city: updatedData.destination.exactAddress.city || '',
-        } : undefined
-      );
-
-      const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
-      const finalPrice = checked ? basePrice * 2 : basePrice;
-
-      const finalData = {
-        ...updatedData,
-        price: finalPrice,
-        isFixedPrice: calculatedPrices.isFixedPrice,
-        directDistance: segments[0].distance || '0 km',
-        extraDistance: segments[1]?.distance || '0 km'
-      };
-
+    try {
+      const finalData = await recalculatePricing(updatedData);
       setBookingData(finalData);
       localStorage.setItem('bookingData', JSON.stringify(finalData));
-    } else {
-      localStorage.setItem('bookingData', JSON.stringify(updatedData));
+    } catch (error) {
+      console.error('Error updating return trip pricing:', error);
     }
   };
 
@@ -628,47 +687,7 @@ export const TravelInfoPage = () => {
     if (!updatedData.pickup?.mainAddress || !updatedData.destination?.mainAddress) return;
 
     try {
-      const validStopovers = (updatedData.stopovers || []).filter(stopover =>
-        stopover &&
-        stopover.mainAddress &&
-        stopover.mainAddress.length > 0
-      );
-
-      const segments = await calculateSegmentDistances(
-        updatedData.pickup,
-        updatedData.destination,
-        validStopovers
-      );
-
-      const calculatedPrices = calculatePrice(
-        updatedData.pickup.mainAddress,
-        updatedData.destination.mainAddress,
-        segments[0].distance,
-        segments[1]?.distance || '0 km',
-        updatedData.pickup.exactAddress ? {
-          businessName: updatedData.pickup.exactAddress.businessName || '',
-          city: updatedData.pickup.exactAddress.city || '' // Add default empty string
-        } : undefined,
-        updatedData.destination.exactAddress ? {
-          businessName: updatedData.destination.exactAddress.businessName || '',
-          city: updatedData.destination.exactAddress.city || '' // Add default empty string
-        } : undefined
-      );
-
-      // Calculate base price first
-      const basePrice = updatedData.vehicle ? calculatedPrices[updatedData.vehicle] : 0;
-
-      // Double the price if it's a return trip using isReturn flag
-      const finalPrice = updatedData.isReturn ? basePrice * 2 : basePrice;
-
-      const finalData: BookingData = {
-        ...updatedData,
-        directDistance: segments[0].distance || '0 km',
-        extraDistance: segments[1]?.distance || '0 km',
-        price: finalPrice,
-        isFixedPrice: calculatedPrices.isFixedPrice,
-      };
-
+      const finalData = await recalculatePricing(updatedData);
       setBookingData(finalData);
       localStorage.setItem('bookingData', JSON.stringify(finalData));
     } catch (error) {
@@ -685,10 +704,17 @@ export const TravelInfoPage = () => {
     }
   };
 
-  const handleLocationUpdate = (newLocation: Location | null, type: 'pickup' | 'destination' | 'stopover', index?: number) => {
+  const handleLocationUpdate = (newLocation: Location | null, type: 'pickup' | 'destination' | 'stopover' | 'returnDestination', index?: number) => {
     if (!bookingData) return;
 
     const updatedData = { ...bookingData };
+
+    if (!newLocation && type === 'returnDestination') {
+      // Clearing the return drop-off falls back to "return to pickup"
+      updatedData.returnDestination = null;
+      updateBookingData(updatedData);
+      return;
+    }
 
     if (newLocation) {
       // Parse address immediately when location is selected
@@ -720,6 +746,8 @@ export const TravelInfoPage = () => {
         updatedData.destinationAddress = locationWithAddress.mainAddress || '';
       } else if (type === 'stopover' && typeof index !== 'undefined') {
         updatedData.stopovers[index] = locationWithAddress;
+      } else if (type === 'returnDestination') {
+        updatedData.returnDestination = locationWithAddress;
       }
 
       // Clear validation error for this location
@@ -727,6 +755,7 @@ export const TravelInfoPage = () => {
       if (type === 'pickup') delete newValidationErrors.pickup;
       else if (type === 'destination') delete newValidationErrors.destination;
       else if (type === 'stopover') delete newValidationErrors[`stopover_${index}`];
+      else if (type === 'returnDestination') delete newValidationErrors.returnDestination;
       setValidationErrors(newValidationErrors);
 
       // Show exact location modal with parsed address
@@ -747,12 +776,19 @@ export const TravelInfoPage = () => {
     const newPickup = { ...bookingData.destination };
     const newDestination = { ...bookingData.pickup };
 
-    const updatedData = {
+    const updatedData: BookingData = {
       ...bookingData,
       pickup: newPickup,
       destination: newDestination,
       sourceAddress: newPickup.mainAddress || '',
       destinationAddress: newDestination.mainAddress || '',
+      // A custom return drop-off that pointed at one of the swapped ends no
+      // longer makes sense — fall back to "return to pickup"
+      returnDestination:
+        bookingData.returnDestination?.value?.place_id === newPickup.value?.place_id ||
+          bookingData.returnDestination?.value?.place_id === newDestination.value?.place_id
+          ? null
+          : bookingData.returnDestination,
     };
 
     updateBookingData(updatedData);
@@ -811,12 +847,14 @@ export const TravelInfoPage = () => {
     updateBookingData(updatedData);
   };
 
-  const handleAddExactLocation = (type: 'pickup' | 'stopover' | 'destination', index?: number) => {
+  const handleAddExactLocation = (type: 'pickup' | 'stopover' | 'destination' | 'returnDestination', index?: number) => {
     const location = type === 'pickup'
       ? bookingData?.pickup
       : type === 'destination'
         ? bookingData?.destination
-        : bookingData?.stopovers[index!];
+        : type === 'returnDestination'
+          ? bookingData?.returnDestination
+          : bookingData?.stopovers[index!];
 
     if (!location?.value?.structured_formatting) {
       alert(t('errors.selectLocationFirst'));
@@ -1062,6 +1100,22 @@ export const TravelInfoPage = () => {
 
   const isAirportDestination = bookingData?.destination?.mainAddress?.toLowerCase().includes('airport');
   const isAirportPickup = bookingData?.pickup?.mainAddress?.toLowerCase().includes('airport');
+  // Return-leg drop-off: a custom location if chosen, otherwise the original pickup
+  const returnDropoff = bookingData?.returnDestination?.value?.place_id
+    ? bookingData.returnDestination
+    : bookingData?.pickup;
+  const isAirportReturnDropoff = Boolean(
+    bookingData?.isReturn && returnDropoff?.mainAddress?.toLowerCase().includes('airport')
+  );
+
+  // Price breakdown for display. Older stored bookings may predate the
+  // returnPrice field — for those the return leg mirrored the outbound (×2).
+  const returnLegPrice = bookingData?.isReturn
+    ? (typeof bookingData.returnPrice === 'number' && bookingData.returnPrice > 0
+      ? bookingData.returnPrice
+      : (bookingData.price || 0) / 2)
+    : 0;
+  const outboundLegPrice = Math.max((bookingData?.price || 0) - returnLegPrice, 0);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-primary via-primary/80 to-secondary pt-24 pb-8">
@@ -1104,27 +1158,59 @@ export const TravelInfoPage = () => {
 
 
 
-          <div className="flex flex-col md:flex-row items-center justify-between rounded-lg p-4 mb-6 text-center md:text-left border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md">
-            <div className="space-y-1 mb-4 md:mb-0">
-              <h3 className="text-base sm:text-lg font-medium text-gray-900">
-                {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).name}
-              </h3>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-600">
-                  {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).capacity}
-                </p>
+          <div className="rounded-lg p-4 mb-6 border border-white/20 bg-gradient-to-br from-primary/10 to-primary/20 shadow-lg backdrop-blur-md">
+            <div className="flex flex-col md:flex-row items-center justify-between text-center md:text-left">
+              <div className="space-y-1 mb-4 md:mb-0">
+                <h3 className="text-base sm:text-lg font-medium text-gray-900">
+                  {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).name}
+                </h3>
+                <div className="space-y-1">
+                  <p className="text-sm text-gray-600">
+                    {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).capacity}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl">
+                  {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).icon}
+                </div>
+                {bookingData?.isReturn ? (
+                  <div className="mt-1 text-sm text-gray-600 space-y-0.5">
+                    <div>
+                      {t('travelInfo.pricing.outbound')}: €{outboundLegPrice.toFixed(2)}
+                    </div>
+                    <div>
+                      {t('travelInfo.pricing.return')}: €{returnLegPrice.toFixed(2)}
+                    </div>
+                    <div className="font-semibold text-gray-900">
+                      {t('travelInfo.pricing.total')}: €{(bookingData.price || 0).toFixed(2)}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="mt-1 text-sm text-gray-600">
+                    €{(bookingData?.price || 0).toFixed(2)}
+                  </div>
+                )}
               </div>
             </div>
-            <div className="text-right">
-              <div className="text-2xl">
-                {bookingData?.vehicle && getVehicleInfo(bookingData.vehicle).icon}
-              </div>
-              <div className="mt-1 text-sm text-gray-600">
-                {bookingData?.isReturn ? t('offers.returnTotalPrice', { 
-                  price: (bookingData.price || 0).toFixed(2) 
-                }) : `€${(bookingData?.price || 0).toFixed(2)}`}
-              </div>
-            </div>
+            {/* Pricing convention */}
+            <p className="mt-3 pt-3 border-t border-primary/10 text-xs text-gray-500 text-center md:text-left">
+              {bookingData?.isFixedPrice
+                ? t('travelInfo.pricing.fixedRoute')
+                : t('travelInfo.pricing.perKm', {
+                  rate: (bookingData?.vehicle ? PRICE_PER_KM[bookingData.vehicle] : PRICE_PER_KM.stationWagon).toFixed(2)
+                })}
+              {' · '}
+              {t('travelInfo.pricing.minimumFare', { min: MINIMUM_TRIP_PRICE.toFixed(0) })}
+              {bookingData?.isReturn && (
+                <>
+                  {' · '}
+                  {hasCustomReturnDestination(bookingData)
+                    ? t('travelInfo.pricing.customReturnNote')
+                    : t('travelInfo.pricing.returnNote')}
+                </>
+              )}
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
@@ -1202,12 +1288,21 @@ export const TravelInfoPage = () => {
                         value={bookingData?.returnDateTime ? new Date(bookingData.returnDateTime.replace(' ', 'T')) : null}
                         onChange={(date) => {
                           if (!bookingData) return;
-                          const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
 
-                          setBookingData({
+                          let dateString = '';
+                          if (date) {
+                            // Adjust for timezone offset (same as pickup date)
+                            const localDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+                            dateString = localDate.toISOString().slice(0, 16).replace('T', ' ');
+                          }
+
+                          const updatedData = {
                             ...bookingData,
                             returnDateTime: dateString
-                          });
+                          };
+
+                          setBookingData(updatedData);
+                          localStorage.setItem('bookingData', JSON.stringify(updatedData));
                         }}
                         placeholder={t('hero.returnPlaceholder')}
                       />
@@ -1216,93 +1311,111 @@ export const TravelInfoPage = () => {
                       )}
                     </div>
 
-                    <div className="space-y-4 border-b border-gray-200 pb-6">
-                      <h3 className="text-base font-medium text-gray-900">{t('travelInfo.returnSection')}</h3>
-                      <DateSelector
-                        label={t('hero.returnDateTime')}
-                        value={bookingData?.returnDateTime ? new Date(bookingData.returnDateTime.replace(' ', 'T')) : null}
-                        onChange={(date) => {
-                          if (!bookingData) return;
-                          const dateString = date ? date.toISOString().slice(0, 16).replace('T', ' ') : '';
-
-                          setBookingData({
-                            ...bookingData,
-                            returnDateTime: dateString
-                          });
-                        }}
-                        placeholder={t('hero.returnPlaceholder')}
-                      />
-                      {validationErrors.returnDate && (
-                        <span className="text-red-500 text-sm mt-1">{validationErrors.returnDate}</span>
-                      )}
-                    </div>
                     <div className="space-y-4 sm:space-y-6 relative">
-                      {bookingData?.isReturn && (
-                        <>
-                          <div className="hidden md:block h-px bg-gray-200 my-6" />
-                          <div className="space-y-6">
+                      <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-green-500/80 to-primary/80" />
 
-                            <span className="block mb-[-20px] lg:ms-[60px] ms-[35px] text-sm font-medium text-gray-600">{t('booking.from')}</span>
-
-                            <div className="space-y-4 sm:space-y-6 relative">
-                              <div className="absolute left-[12px] xs:left-[14px] sm:left-[24px] top-10 bottom-8 w-0.5 bg-gradient-to-b from-green-500/80 to-primary/80" />
-
-                              {/* Return route display */}
-                              <div className="space-y-4">
-                                {/* From (original destination) */}
-                                <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-                                  <div className="flex justify-center pt-8">
-                                    <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
-                                      <MapPin className="text-white" size={16} />
-                                    </div>
-                                  </div>
-                                  <div className="w-full space-y-1">
-                                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
-                                      {bookingData?.destination?.mainAddress || t('common.notSpecified')}
-                                    </div>
-                                  </div>
-                                  <div className="w-[24px]" />
-                                </div>
-
-                                {/* Stopovers in reverse */}
-                                {bookingData?.stopovers.slice().reverse().map((stopover, index) => (
-                                  <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-                                    <div className="flex justify-center pt-8">
-                                      <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-10">
-                                        <MapPin className="text-white" size={12} />
-                                      </div>
-                                    </div>
-                                    <div className="w-full space-y-1">
-                                      <span className="block text-sm font-medium text-gray-600">{t('travelInfo.via')}</span>
-                                      <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
-                                        {stopover.mainAddress || t('common.notSpecified')}
-                                      </div>
-                                    </div>
-                                    <div className="w-[24px]" />
-                                  </div>
-                                ))}
-
-                                {/* To (original pickup) */}
-                                <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
-                                  <div className="flex justify-center pt-8">
-                                    <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
-                                      <MapPin className="text-white" size={16} />
-                                    </div>
-                                  </div>
-                                  <div className="w-full space-y-1">
-                                    <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
-                                    <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
-                                      {bookingData?.pickup?.mainAddress || t('common.notSpecified')}
-                                    </div>
-                                  </div>
-                                  <div className="w-[24px]" />
-                                </div>
-                              </div>
+                      {/* Return route display */}
+                      <div className="space-y-4">
+                        {/* From (original destination) */}
+                        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                          <div className="flex justify-center pt-8">
+                            <div className="w-6 h-6 rounded-full mt-2 bg-primary flex items-center justify-center relative z-10">
+                              <MapPin className="text-white" size={16} />
                             </div>
                           </div>
-                        </>
-                      )}
+                          <div className="w-full space-y-1">
+                            <span className="block text-sm font-medium text-gray-600">{t('booking.from')}</span>
+                            <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                              {bookingData?.destination?.mainAddress || t('common.notSpecified')}
+                            </div>
+                          </div>
+                          <div className="w-[24px]" />
+                        </div>
+
+                        {/* Stopovers in reverse — only when returning to the original pickup */}
+                        {!hasCustomReturnDestination(bookingData) && bookingData?.stopovers.slice().reverse().map((stopover, index) => (
+                          <div key={index} className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                            <div className="flex justify-center pt-8">
+                              <div className="w-4 h-4 rounded-full bg-secondary mt-4 flex items-center justify-center relative z-10">
+                                <MapPin className="text-white" size={12} />
+                              </div>
+                            </div>
+                            <div className="w-full space-y-1">
+                              <span className="block text-sm font-medium text-gray-600">{t('travelInfo.via')}</span>
+                              <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-700">
+                                {stopover.mainAddress || t('common.notSpecified')}
+                              </div>
+                            </div>
+                            <div className="w-[24px]" />
+                          </div>
+                        ))}
+
+                        {/* To (return drop-off — editable, defaults to original pickup) */}
+                        <div className="grid grid-cols-[24px_1fr_24px] xs:grid-cols-[32px_1fr_32px] sm:grid-cols-[48px_1fr_48px] items-start gap-1 sm:gap-2">
+                          <div className="flex justify-center pt-8">
+                            <div className="w-6 h-6 rounded-full mt-2 bg-green-500 flex items-center justify-center relative z-10">
+                              <MapPin className="text-white" size={16} />
+                            </div>
+                          </div>
+                          <div className="w-full space-y-1">
+                            <span className="block text-sm font-medium text-gray-600">{t('booking.to')}</span>
+                            <LocationInput
+                              value={returnDropoff || null}
+                              onChange={(place) => {
+                                if (!place) return;
+                                const location: Location = {
+                                  ...place.value,
+                                  label: place.label,
+                                  mainAddress: place.value.description,
+                                  description: place.value.description,
+                                  secondaryAddress: place.value.structured_formatting?.secondary_text || '',
+                                  value: {
+                                    place_id: place.value.place_id,
+                                    description: place.value.description,
+                                    structured_formatting: place.value.structured_formatting
+                                  },
+                                  exactAddress: {
+                                    streetName: '',
+                                    houseNumber: '',
+                                    postalCode: '',
+                                    city: place.value.structured_formatting?.secondary_text || '',
+                                    businessName: ''
+                                  }
+                                };
+                                handleLocationUpdate(location, 'returnDestination');
+                              }}
+                              placeholder={t('hero.destinationPlaceholder')}
+                              translations={translations}
+                              onClear={() => handleLocationUpdate(null, 'returnDestination')}
+                            />
+                            <p className="text-xs text-gray-500">
+                              {hasCustomReturnDestination(bookingData)
+                                ? t('travelInfo.customReturnDropoff')
+                                : t('travelInfo.returnDropoffHint')}
+                            </p>
+                          </div>
+                          <div className="w-[24px]" />
+                        </div>
+                      </div>
                     </div>
+
+                    {hasCustomReturnDestination(bookingData) && (
+                      <div className="ml-[24px] xs:ml-[32px] sm:ml-[48px]">
+                        <button
+                          type="button"
+                          onClick={() => handleAddExactLocation('returnDestination')}
+                          className="text-sm text-secondary hover:text-primary transition-colors flex items-center gap-1"
+                        >
+                          <Plus size={16} />
+                          {t('booking.addExactLocation')}
+                        </button>
+                      </div>
+                    )}
+                    {validationErrors.returnDestination && (
+                      <span className="block ml-[24px] xs:ml-[32px] sm:ml-[48px] text-red-500 text-sm mt-1">
+                        {validationErrors.returnDestination}
+                      </span>
+                    )}
                   </div>
                 </>
               )}
@@ -1368,7 +1481,7 @@ export const TravelInfoPage = () => {
                   )}
                 </div>
               )}
-              {bookingData?.isReturn && isAirportPickup && (
+              {bookingData?.isReturn && (isAirportPickup || isAirportDestination) && (
                 <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
                     <Plane size={18} className="text-secondary" />
@@ -1391,6 +1504,33 @@ export const TravelInfoPage = () => {
                   {validationErrors.incomingFlightNumber && (
                     <span className="text-red-500 text-xs mt-1">
                       {validationErrors.incomingFlightNumber}
+                    </span>
+                  )}
+                </div>
+              )}
+              {bookingData?.isReturn && (isAirportDestination || isAirportReturnDropoff) && (
+                <div className="space-y-2">
+                  <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <Plane size={18} className="text-secondary" />
+                    {t('travelInfo.outgoingFlightNumber')}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    className={`w-full p-3 border rounded-lg focus:ring-primary focus:border-primary ${validationErrors.flightNumber ? 'border-red-300' : 'border-gray-300'}`}
+                    placeholder={t('travelInfo.flightNumberPlaceholder')}
+                    value={bookingData?.flightNumber || ''}
+                    onChange={(e) => {
+                      if (!bookingData) return;
+                      setBookingData({
+                        ...bookingData,
+                        flightNumber: e.target.value
+                      });
+                    }}
+                  />
+                  {validationErrors.flightNumber && (
+                    <span className="text-red-500 text-xs mt-1">
+                      {validationErrors.flightNumber}
                     </span>
                   )}
                 </div>

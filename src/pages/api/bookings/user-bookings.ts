@@ -21,15 +21,29 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
     const userId = req.user.userId;
     console.log('Fetching bookings for user:', userId);
     
-    // Query the database for all bookings belonging to this user
-    const bookings = await Booking.find({ userId })
-      .sort({ createdAt: -1 }) // Sort by creation date, newest first
-      .lean(); // Convert to plain JavaScript objects for better performance
-    
-    return res.status(200).json({ 
-      success: true, 
+    // Optional pagination (backwards compatible: no params = first 100)
+    const page = Math.max(parseInt(String(req.query.page)) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(String(req.query.limit)) || 100, 1), 100);
+
+    // Query the database for all real bookings belonging to this user.
+    // Temporary bookings are unpaid payment placeholders — never show them.
+    const filter = { userId, isTemporary: { $ne: true } };
+    const [bookings, total] = await Promise.all([
+      Booking.find(filter)
+        .sort({ createdAt: -1 }) // Sort by creation date, newest first
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Booking.countDocuments(filter)
+    ]);
+
+    return res.status(200).json({
+      success: true,
       bookings,
-      count: bookings.length
+      count: bookings.length,
+      total,
+      page,
+      pages: Math.ceil(total / limit) || 1
     });
   } catch (error) {
     console.error('Error fetching user bookings:', error);

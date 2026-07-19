@@ -205,7 +205,9 @@
       "pending": "In Behandeling",
       "confirmed": "Bevestigd",
       "completed": "Voltooid",
-      "cancelled": "Geannuleerd"
+      "cancelled": "Geannuleerd",
+      "in-progress": "Onderweg",
+      "no-show": "Niet verschenen"
     },
     "timeRemaining": {
       "days": "{{days}}d {{hours}}u tot ophalen",
@@ -226,7 +228,8 @@
     "cancellationStatus": {
       "requested": "Annuleringsverzoek in behandeling",
       "approved": "Annulering goedgekeurd",
-      "rejected": "Annuleringsverzoek afgewezen"
+      "rejected": "Annuleringsverzoek afgewezen",
+      "auto-approved": "Annulering goedgekeurd"
     },
     "vehicleNotAvailable": "Reguliere taxi is niet beschikbaar voor deze hoeveelheid bagage. Voertuigtype is automatisch bijgewerkt naar bus",
     "vehicleType": "Voertuigtype",
@@ -236,7 +239,14 @@
     "fixedPrice": "Vaste Prijs",
     "estimatedPrice": "Geschatte Prijs",
     "bookingReference": "Boekingsreferentie",
-    "flightNumber": "Vluchtnummer"
+    "flightNumber": "Vluchtnummer",
+    "cancellationPolicy": "Gratis annuleren tot {{hours}} uur voor ophaaltijd. Verzoeken worden beoordeeld door ons team.",
+    "filters": {
+      "all": "Alle",
+      "active": "Actief",
+      "completed": "Voltooid",
+      "cancelled": "Geannuleerd"
+    }
   },
   "luggage": {
     "title": "Bagagegegevens",
@@ -444,7 +454,8 @@
     "save": "Opslaan",
     "cancel": "Annuleren",
     "saving": "Opslaan...",
-    "processing": "Verwerken..."
+    "processing": "Verwerken...",
+    "tryAgain": "Probeer opnieuw"
   },
   "travelInfo": {
     "title": "Reisinformatie",
@@ -476,14 +487,27 @@
       "invalidVehicle": "Selecteer een voertuigtype",
       "invalidRoute": "Kan route niet berekenen. Controleer uw locaties",
       "flightNumberRequired": "Vlucht nummer is verplicht voor luchthaven reizen",
-      "incomingFlightNumberRequired": "Inkomend vlucht nummer is verplicht voor luchthaven ophaalpunten bij retour reizen"
+      "incomingFlightNumberRequired": "Inkomend vlucht nummer is verplicht voor luchthaven ophaalpunten bij retour reizen",
+      "invalidReturnRoute": "De afzetlocatie van de retour kan niet hetzelfde zijn als de ophaallocatie van de retour"
     },
     "flightNumber": "Vlucht Nummer",
     "outgoingFlightNumber": "Uitgaande Vlucht Nummer",
     "incomingFlightNumber": "Inkomende Vlucht Nummer",
     "remarks": "Aanvullende Opmerkingen",
     "update": "Reisinformatie Bijwerken",
-    "backToOverview": "Terug naar Overzicht"
+    "backToOverview": "Terug naar Overzicht",
+    "returnDropoffHint": "Standaard wordt u afgezet op uw oorspronkelijke ophaaladres. U kunt een andere afzetlocatie kiezen.",
+    "customReturnDropoff": "Aangepaste afzetlocatie geselecteerd — de retourreis wordt apart berekend.",
+    "pricing": {
+      "outbound": "Heenreis",
+      "return": "Retour",
+      "total": "Totaal",
+      "fixedRoute": "Vaste prijs voor deze route",
+      "perKm": "Prijs op basis van afstand: €{{rate}} per km",
+      "minimumFare": "Minimumtarief €{{min}} per rit",
+      "returnNote": "De retourreis naar uw ophaaladres kost hetzelfde als de heenreis",
+      "customReturnNote": "De retourreis wordt apart berekend op basis van de eigen route"
+    }
   },
   "overview": {
     "outbound": "Heenreis",
@@ -829,9 +853,9 @@
     "title": "Contact",
     "subtitle": "Neem contact met ons op voor al uw vragen of opmerkingen.",
     "getInTouch": "Neem contact op",
-    "phone": "Telefoon",
+    "phone": "Telefoon *",
     "phoneDescription": "Voor dringende zaken zijn wij telefonisch bereikbaar.",
-    "email": "E-mail",
+    "email": "E-mail *",
     "emailDescription": "Voor algemene vragen kunt u ons mailen.",
     "address": "Adres",
     "addressDescription": "Bezoek ons kantoor op onderstaande locatie.",
@@ -846,8 +870,6 @@
     "sendMessage": "Stuur ons een bericht",
     "formDescription": "Vul onderstaand formulier in en we nemen zo snel mogelijk contact met u op.",
     "fullName": "Volledige Naam *",
-    "email": "E-mail *",
-    "phone": "Telefoon *",
     "fullNamePlaceholder": "Voer uw volledige naam in",
     "emailPlaceholder": "Voer uw e-mailadres in",
     "phonePlaceholder": "Voer uw telefoonnummer in",
@@ -1068,7 +1090,18 @@
     "viewBookings": "Bekijk Mijn Boekingen",
     "retryPayment": "Betaling Opnieuw Proberen",
     "backToBookings": "Terug naar Boekingen",
-    "backToHome": "Terug naar Home"
+    "backToHome": "Terug naar Home",
+    "verifying": {
+      "title": "Betaling controleren…",
+      "message": "Een moment — we bevestigen uw betaling bij de betaalprovider."
+    },
+    "processing": {
+      "title": "Betaling Wordt Verwerkt",
+      "message": "Uw betaling is nog niet bevestigd. Dit kan enkele minuten duren.",
+      "note": "U ontvangt een bevestigingsmail zodra de betaling is bevestigd. U kunt deze pagina veilig sluiten."
+    },
+    "retryError": "We konden de betaling niet opnieuw starten. Probeer het over een moment opnieuw of neem contact met ons op.",
+    "redirecting": "Doorsturen naar betaalprovider…"
   },
   "seo": {
     "home": {

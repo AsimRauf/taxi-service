@@ -16,13 +16,20 @@ async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   try {
     await connectToDatabase();
     const userId = req.user.userId;
-    const now = new Date();
 
-    // Get confirmed bookings with pickup time in the future
+    // pickupDateTime is stored as a "yyyy-MM-dd HH:mm" local-time string, so
+    // the comparison value must use the same format (an ISO string with its
+    // 'T' separator sorts after every same-day booking and hides them)
+    const now = new Date();
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    const nowString = local.toISOString().slice(0, 16).replace('T', ' ');
+
+    // Paid rides that haven't happened yet
     const bookings = await Booking.find({
       userId,
-      status: 'confirmed',
-      pickupDateTime: { $gt: now.toISOString() }
+      status: { $in: ['confirmed', 'in-progress'] },
+      isTemporary: { $ne: true },
+      pickupDateTime: { $gt: nowString }
     })
     .sort({ pickupDateTime: 1 }) // Sort by pickup time ascending
     .lean();

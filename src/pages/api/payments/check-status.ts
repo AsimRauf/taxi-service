@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
+import mongoose from 'mongoose';
 import { connectToDatabase } from '@/lib/mongodb';
 import Booking from '@/models/Booking';
 import { getPaymentStatus } from '@/utils/paymentService';
+import { applyPaymentStatus } from '@/utils/paymentFinalizer';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
@@ -16,50 +18,37 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     await connectToDatabase();
-    
-    // Find booking
-    const booking = await Booking.findOne(
-      bookingId 
-        ? { _id: bookingId } 
-        : { 'payment.orderId': orderId }
-    );
-    
+
+    let booking = null;
+    if (typeof bookingId === 'string') {
+      if (mongoose.Types.ObjectId.isValid(bookingId)) {
+        booking = await Booking.findById(bookingId);
+      }
+      if (!booking) {
+        booking = await Booking.findOne({ clientBookingId: bookingId });
+      }
+    } else if (typeof orderId === 'string') {
+      booking = await Booking.findOne({ 'payment.orderId': orderId });
+    }
+
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' });
     }
-    
-    // If we have an orderId, check payment status
-    if (booking.payment?.orderId) {
+
+    // Re-check with MultiSafepay unless the payment is already final —
+    // this makes the success page work even when the webhook is delayed
+    if (booking.payment?.orderId && booking.payment.status !== 'completed') {
       const paymentStatus = await getPaymentStatus(booking.payment.orderId);
-      
-      // Update booking if status has changed
-      if (paymentStatus.data?.status && 
-          paymentStatus.data.status !== booking.payment.status) {
-        
-        booking.payment.status = paymentStatus.data.status;
-        
-        if (paymentStatus.data.status === 'completed') {
-          booking.status = 'pending';
-          booking.paymentPending = false;
-          booking.isTemporary = false;
-        }
-        
-        await booking.save();
-      }
-      
-      return res.status(200).json({
-        bookingId: booking._id,
-        clientBookingId: booking.clientBookingId,
-        paymentStatus: booking.payment.status,
-        bookingStatus: booking.status
-      });
+      await applyPaymentStatus(booking, paymentStatus.data || {}, 'check-status');
+      await booking.save();
     }
-    
+
     return res.status(200).json({
       bookingId: booking._id,
       clientBookingId: booking.clientBookingId,
       paymentStatus: booking.payment?.status || 'unknown',
-      bookingStatus: booking.status
+      bookingStatus: booking.status,
+      price: booking.price
     });
   } catch (error) {
     console.error('Payment status check error:', error);

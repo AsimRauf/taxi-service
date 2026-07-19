@@ -5,6 +5,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 export interface TokenPayload {
   userId: string
   email: string
+  role?: 'user' | 'admin'
   [key: string]: unknown
 }
 

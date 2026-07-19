@@ -108,6 +108,117 @@ export async function sendBookingConfirmation(booking: BookingData) {
     }
 }
 
+// Sent to the customer when an admin edits their booking (fare, times,
+// addresses, vehicle, …). `changes` is a list of human-readable change lines.
+export async function sendBookingUpdatedEmail(booking: BookingData, changes: string[]) {
+    if (!booking.contactInfo?.email) {
+        console.log('No customer email on booking, skipping update email:', booking.clientBookingId);
+        return null;
+    }
+
+    try {
+        const transporter = createTransporter();
+
+        const changeRows = changes
+            .map(change => `<li style="margin: 4px 0; color: #333;">${change}</li>`)
+            .join('');
+
+        const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f8f9fa; border-radius: 8px;">
+            <h2 style="color: #0b1e3b; margin-top: 0;">Your booking has been updated</h2>
+            <p style="color: #333;">Dear ${booking.contactInfo?.fullName || 'customer'},</p>
+            <p style="color: #333;">Our team has updated your booking <strong>#${booking.clientBookingId}</strong>. The changes are:</p>
+            <ul style="background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px 32px;">${changeRows}</ul>
+            <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 16px; margin-top: 16px;">
+                <p style="margin: 4px 0; color: #333;"><strong>Pickup:</strong> ${booking.sourceAddress}</p>
+                <p style="margin: 4px 0; color: #333;"><strong>Destination:</strong> ${booking.destinationAddress}</p>
+                <p style="margin: 4px 0; color: #333;"><strong>Date &amp; time:</strong> ${booking.pickupDateTime}</p>
+                <p style="margin: 4px 0; color: #333;"><strong>Price:</strong> €${(booking.price || 0).toFixed(2)}</p>
+            </div>
+            <p style="color: #333; margin-top: 16px;">If anything looks wrong, reply to this email or call us and we'll sort it out.</p>
+            <p style="color: #888; font-size: 12px; margin-top: 24px;">Taxi Ritje — this is an automated message about booking #${booking.clientBookingId}.</p>
+        </div>`;
+
+        const info = await transporter.sendMail({
+            from: `"Taxi Ritje" <${process.env.SMTP_USER}>`,
+            to: booking.contactInfo.email,
+            subject: `Booking Updated - #${booking.clientBookingId}`,
+            html
+        });
+
+        console.log('Booking update email sent:', {
+            messageId: info.messageId,
+            recipient: booking.contactInfo.email,
+            bookingId: booking.clientBookingId
+        });
+
+        return info;
+    } catch (error) {
+        console.error('Failed to send booking update email:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            bookingId: booking.clientBookingId
+        });
+        throw error;
+    }
+}
+
+// Sent to the customer when an admin approves or rejects their cancellation request
+export async function sendCancellationDecisionEmail(
+    booking: BookingData,
+    decision: 'approved' | 'rejected',
+    adminResponse?: string
+) {
+    if (!booking.contactInfo?.email) {
+        console.log('No customer email on booking, skipping decision email:', booking.clientBookingId);
+        return null;
+    }
+
+    try {
+        const transporter = createTransporter();
+        const approved = decision === 'approved';
+
+        const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; background: #f8f9fa; border-radius: 8px;">
+            <h2 style="color: ${approved ? '#16a34a' : '#dc2626'}; margin-top: 0;">
+                Cancellation ${approved ? 'approved' : 'rejected'}
+            </h2>
+            <p style="color: #333;">Dear ${booking.contactInfo?.fullName || 'customer'},</p>
+            <p style="color: #333;">
+                Your cancellation request for booking <strong>#${booking.clientBookingId}</strong>
+                (${booking.sourceAddress} → ${booking.destinationAddress}, ${booking.pickupDateTime})
+                has been <strong>${approved ? 'approved' : 'rejected'}</strong>.
+            </p>
+            ${approved
+                ? '<p style="color: #333;">The ride will not take place. If you already paid, the refund will be processed according to our refund policy.</p>'
+                : '<p style="color: #333;">Your booking remains active and the driver will pick you up as planned.</p>'}
+            ${adminResponse ? `<div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px 16px;"><p style="margin: 0; color: #333;"><strong>Note from our team:</strong> ${adminResponse}</p></div>` : ''}
+            <p style="color: #888; font-size: 12px; margin-top: 24px;">Taxi Ritje — this is an automated message about booking #${booking.clientBookingId}.</p>
+        </div>`;
+
+        const info = await transporter.sendMail({
+            from: `"Taxi Ritje" <${process.env.SMTP_USER}>`,
+            to: booking.contactInfo.email,
+            subject: `Cancellation ${approved ? 'Approved' : 'Rejected'} - #${booking.clientBookingId}`,
+            html
+        });
+
+        console.log('Cancellation decision email sent:', {
+            messageId: info.messageId,
+            recipient: booking.contactInfo.email,
+            decision,
+            bookingId: booking.clientBookingId
+        });
+
+        return info;
+    } catch (error) {
+        console.error('Failed to send cancellation decision email:', {
+            error: error instanceof Error ? error.message : 'Unknown error',
+            bookingId: booking.clientBookingId
+        });
+        throw error;
+    }
+}
+
 export async function sendCancellationEmail(booking: BookingData, reason: string) {
     try {
         const transporter = createTransporter();

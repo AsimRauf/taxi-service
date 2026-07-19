@@ -9,7 +9,7 @@ export function authMiddleware(handler: (req: AuthenticatedRequest, res: NextApi
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const token = req.headers.authorization?.replace('Bearer ', '')
-     
+
       if (!token) {
         return res.status(401).json({ message: 'Authentication required' })
       }
@@ -22,4 +22,16 @@ export function authMiddleware(handler: (req: AuthenticatedRequest, res: NextApi
       return res.status(401).json({ message: 'Invalid token' })
     }
   }
+}
+
+// Same as authMiddleware but additionally requires the admin role.
+// The role claim comes from the signed JWT, so it cannot be forged client-side.
+export function adminMiddleware(handler: (req: AuthenticatedRequest, res: NextApiResponse) => Promise<void>) {
+  return authMiddleware(async (req, res) => {
+    if (req.user.role !== 'admin') {
+      res.status(403).json({ message: 'Admin access required' })
+      return
+    }
+    return handler(req, res)
+  })
 }

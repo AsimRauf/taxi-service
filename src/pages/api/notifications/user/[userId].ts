@@ -2,8 +2,13 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { connectToDatabase } from '@/lib/mongodb';
 import { authMiddleware } from '@/middleware/auth';
 import Notification from '@/models/Notification';
+import { TokenPayload } from '@/lib/jwt';
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+interface AuthenticatedRequest extends NextApiRequest {
+  user: TokenPayload;
+}
+
+async function handler(req: AuthenticatedRequest, res: NextApiResponse) {
   if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -12,7 +17,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     await connectToDatabase();
     const userId = req.query.userId as string;
 
-    const notifications = await Notification.find({ 
+    // Users may only read their own notifications (admins may read any)
+    if (userId !== req.user.userId && req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Forbidden' });
+    }
+
+    const notifications = await Notification.find({
       userId: userId,
       recipientType: 'user'
     })

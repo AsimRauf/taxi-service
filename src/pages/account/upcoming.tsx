@@ -60,8 +60,14 @@ const UpcomingRidesPage: FC = () => {
   if (error) {
     return (
       <AccountLayout>
-        <div className="text-center text-red-600">
-          <p>{t('common.error.generic')}</p>
+        <div className="text-center py-8">
+          <p className="text-red-600 mb-4">{t('common.error.generic')}</p>
+          <button
+            onClick={refresh}
+            className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            {t('common.tryAgain')}
+          </button>
         </div>
       </AccountLayout>
     );

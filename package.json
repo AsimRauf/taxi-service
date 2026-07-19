@@ -10,6 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "seed:admin": "ts-node -P tsconfig.scripts.json src/scripts/seed-admin.ts",
     "test:smtp": "node scripts/test-smtp.js",
     "test:smtp:asim": "node scripts/test-smtp-to-asim.js"
   },

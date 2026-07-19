@@ -111,6 +111,13 @@ const bookingSchema = new mongoose.Schema({
     extraDistance: String,
     pickupDateTime: String,
     returnDateTime: String,
+    returnDestination: {
+        type: addressSchema,
+        required: false,
+        default: null
+    },
+    returnDistance: String,
+    returnPrice: Number,
     hasLuggage: Boolean,
     passengers: Number,
     luggage: luggageSchema,
@@ -127,13 +134,16 @@ const bookingSchema = new mongoose.Schema({
     },
     isFixedPrice: Boolean,
     flightNumber: String,
+    incomingFlightNumber: String,
     remarks: String,
     contactInfo: contactInfoSchema,
     bookingForOther: bookingForOtherSchema,
     businessInfo: businessInfoSchema,
     status: {
         type: String,
-        enum: ['pending', 'confirmed', 'completed', 'cancelled'],
+        // Full ride lifecycle — 'in-progress' and 'no-show' are set by the
+        // (future) driver/admin panel, the rest by the payment/cancel flows
+        enum: ['pending', 'confirmed', 'in-progress', 'completed', 'cancelled', 'no-show'],
         default: 'pending'
     },
     // Add the cancellation field
@@ -182,7 +192,12 @@ const paymentSchema = new mongoose.Schema({
   paymentUrl: String,
   transactionId: String,
   paymentMethod: String,
-  paidAt: Date
+  paidAt: Date,
+  attempts: {
+    type: Number,
+    default: 1
+  },
+  lastWebhookAt: Date
 }, { timestamps: true });
 
 // Add this to your bookingSchema
